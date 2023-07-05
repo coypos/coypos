@@ -7,5 +7,5 @@ namespace CoyposServer.Controllers;
 public class KtoFajnyJestController : ControllerBase
 {
     [HttpGet(Name = "ktofajnyjest")]
-    public string Get() => "Kajetan";
+    public string Get() => "Piotr";
 }
