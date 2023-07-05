@@ -47,7 +47,7 @@ jobs:
         port: 2137
         script: |
           cd /srv/coypos
-          git pull origin master
+          git pull origin main
           git status
           sudo service coypos restart
 
