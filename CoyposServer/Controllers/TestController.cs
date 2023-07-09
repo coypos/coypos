@@ -56,7 +56,7 @@ public class TestController : ControllerBase
     }
 
     /// <summary>
-    /// Creates a thing
+    /// Creates a new thing
     /// </summary>
     [HttpPost]
     [Route("thing")]
