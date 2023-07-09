@@ -49,8 +49,8 @@ jobs:
           cd /srv/coypos
           git pull origin main
           git status
-          sudo service coypos restart
-
+          sudo service coypos stop
+          sudo service coypos start
     - name: Notify discord
       uses: th0th/notify-discord@v0.4.1
       if: ${{ always() }}
