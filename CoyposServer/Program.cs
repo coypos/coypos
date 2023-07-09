@@ -5,10 +5,10 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(
     policy =>
     {
         policy.WithOrigins(
-            "https://smilginp.evolpe.net/",
-            "http://localhost:8080/",
-            "http://localhost:5016/",
-            "https://localhost:7091/",
+            "https://smilginp.evolpe.net",
+            "http://localhost:8080",
+            "http://localhost:5016",
+            "https://localhost:7091",
             "http://localhost:13966" // IIS
             )
             .AllowAnyHeader()
@@ -21,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
