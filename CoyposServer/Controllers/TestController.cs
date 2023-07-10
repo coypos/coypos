@@ -1,9 +1,13 @@
 using System.Net;
 using CoyposServer.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoyposServer.Controllers;
 
+/// <summary>
+/// Template controller
+/// </summary>
 [ApiController]
 public class TestController : ControllerBase
 {
@@ -14,6 +18,7 @@ public class TestController : ControllerBase
     /// </summary>
     [HttpGet]
     [Route("things")]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(List<ThingModel>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
     public ObjectResult Get()
@@ -34,6 +39,7 @@ public class TestController : ControllerBase
     /// <param name="thingId">Thing ID</param>
     [HttpGet]
     [Route("thing/{thingId:int}")]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(ThingModel), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
@@ -60,6 +66,7 @@ public class TestController : ControllerBase
     /// </summary>
     [HttpPost]
     [Route("thing")]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(ThingModel), (int)HttpStatusCode.Created)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
@@ -98,6 +105,7 @@ public class TestController : ControllerBase
     /// <param name="thingId">Thing ID</param>
     [HttpDelete]
     [Route("thing/{thingId:int}")]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(ResponseModel), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
