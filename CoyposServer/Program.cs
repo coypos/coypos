@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Rewrite;
+
 var builder = WebApplication.CreateBuilder(args);
 
 {
@@ -35,6 +37,7 @@ var app = builder.Build();
         app.UseDeveloperExceptionPage();
         app.UseSwagger();
         app.UseSwaggerUI();
+        app.UseRewriter(new RewriteOptions().AddRedirect("^$", "swagger"));
     }
 
     app.UseHttpsRedirection();
