@@ -69,11 +69,11 @@ var app = builder.Build();
     }
 
     app.UseHttpsRedirection();
-    app.UseMiddleware<ApiKeyMiddleware>();
-    
+
 // <> UseCors must be placed after UseRouting and before UseAuthorization. This is to ensure that CORS headers are included in the response for both authorized and unauthorized calls.
     app.UseCors();
 // </>
+    app.UseMiddleware<ApiKeyMiddleware>();
     app.UseAuthorization();
     app.MapControllers();
 }
