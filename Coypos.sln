@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_SolutionItems", "{00F3F7B1-67E7-4479-8102-36E73889C6AD}"
     ProjectSection(SolutionItems) = preProject
         docker-compose.yml = docker-compose.yml
+        .gitignore = .gitignore
+        .env = .env
+        .env.template = .env.template
+        .dockerignore = .dockerignore
+        docker-runconfig.xml = docker-runconfig.xml
     EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoyposServer", "CoyposServer\CoyposServer.csproj", "{246C342D-145C-4ADC-A4D7-8B34A67593C5}"
