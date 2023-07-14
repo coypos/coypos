@@ -2,10 +2,14 @@ using CoyposServer.Middleware;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.OpenApi.Models;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace CoyposServer;
 
+class Program
 {
-    // Cors
+    static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+        // Cors
     builder.Services.AddCors(o => o.AddDefaultPolicy(
         policy =>
         {
@@ -53,12 +57,13 @@ var builder = WebApplication.CreateBuilder(args);
         });
     });
     builder.Services.AddSwaggerGenNewtonsoftSupport();
-
-}
+    
+    
+    
 
 var app = builder.Build();
 
-{
+
     // Swagger app
     if (app.Environment.IsDevelopment())
     {
@@ -76,6 +81,9 @@ var app = builder.Build();
     app.UseMiddleware<ApiKeyMiddleware>();
     app.UseAuthorization();
     app.MapControllers();
+    
+    
+    app.Run();
 }
-
-app.Run();
+    
+}

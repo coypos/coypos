@@ -1,0 +1,12 @@
+version: '3'
+services:
+  server:
+    build:
+      context: ./
+      dockerfile: ./CoyposServer/Dockerfile
+    ports:
+      - '5016:80'
+    environment:
+      - SQLSERVER_CREDS=${SQLSERVER_CREDS}
+      - SQLSERVER_IP=${SQLSERVER_IP}
+      - SERVER_APIKEY=${SERVER_APIKEY}
