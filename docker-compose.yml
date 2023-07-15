@@ -3,7 +3,7 @@ services:
   server:
     build:
       context: ./
-      dockerfile: ./CoyposServer/Dockerfile
+      dockerfile: ./Dockerfile
     ports:
       - '5016:80'
     environment:
