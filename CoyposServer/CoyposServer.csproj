@@ -36,9 +36,9 @@
 
     <Target Name="CopyRunConfiguration" AfterTargets="Build">
         <Exec ContinueOnError="WarnAndContinue" Condition=" '$(OS)' == 'Windows_NT' And !Exists('$(SolutionDir)\.run') " Command="mkdir &quot;$(SolutionDir)/.run&quot;" />
-        <Exec ContinueOnError="WarnAndContinue" Condition=" '$(OS)' == 'Windows_NT' And !Exists('$(SolutionDir)\.run\Docker Compose.run.xml') " Command="copy &quot;$(SolutionDir)/docker-runconfig.xml&quot; &quot;$(SolutionDir)/.run/Docker Compose.run.xml&quot;"/>
+        <Exec ContinueOnError="WarnAndContinue" Condition=" '$(OS)' == 'Windows_NT' And !Exists('$(SolutionDir)\.run\Docker Compose.run.xml') " Command="copy &quot;$(SolutionDir)/docker-runconfig.xml&quot; &quot;$(SolutionDir)/.run/Docker Compose.run.xml&quot;" />
         <Exec ContinueOnError="WarnAndContinue" Condition=" '$(OS)' != 'Windows_NT' And !Exists('$(SolutionDir)/.run') " Command="mkdir &quot;$(SolutionDir).run&quot; ; cp &quot;$(SolutionDir)/Docker Compose.run.xml&quot; &quot;$(SolutionDir)/.run/Docker Compose.run.xml&quot;" />
-        <Exec ContinueOnError="WarnAndContinue" Condition=" '$(OS)' != 'Windows_NT' And !Exists('$(SolutionDir)/.run/Docker Compose.run.xml') " Command="cp &quot;$(SolutionDir)/docker-runconfig.xml&quot; &quot;$(SolutionDir)/.run/Docker Compose.run.xml&quot;"/>
+        <Exec ContinueOnError="WarnAndContinue" Condition=" '$(OS)' != 'Windows_NT' And !Exists('$(SolutionDir)/.run/Docker Compose.run.xml') " Command="cp &quot;$(SolutionDir)/docker-runconfig.xml&quot; &quot;$(SolutionDir)/.run/Docker Compose.run.xml&quot;" />
     </Target>
     
 </Project>

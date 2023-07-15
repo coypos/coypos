@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using CoyposServer.Models;
+using CoyposServer.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -17,9 +18,10 @@ public class ApiKeyMiddleware
         if (!context.Request.Headers.TryGetValue("XApiKey", out var extractedApiKey) || extractedApiKey != ApiKey)
         {
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            Log.Wrn($"🔒 {context.Connection.RemoteIpAddress} failed to authenticate!", "REST");
             return;
         }
-
+        Log.Msg($"🔓 {context.Connection.RemoteIpAddress} authenticated.", "REST");
         await _next(context);
     }
 }
