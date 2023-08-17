@@ -15,4 +15,4 @@ dotnet run --project CoyposServer
 dotnet test --project CoyposServer
 ```
 
-Jest też wsparcie dla dockera ale nie modyfikowałem w ogóle 
+Jest też wsparcie dla dockera - do ustalenia zasade dzialania
