@@ -1,98 +1,130 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using CoyposServer.Middleware;
 using CoyposServer.Utils;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.OpenApi.Models;
 using System.Web;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoyposServer;
 
 public class Setup
 {
     public static void App()
-    { 
-        var builder = WebApplication.CreateBuilder();
-                // Cors
-
-        var origins = new string[]
+    {
+        WebApplication app;
+        try
         {
-            "https://smilginp.evolpe.net",
-            "http://localhost:8080",
-            "http://localhost:5016",
-            "https://localhost:7091"
-        };
-        Log.Msg($"Adding origins:", "Setup - CORS");
-        foreach (var origin in origins)
-            Log.Msg(origin, "Setup - CORS");
-        builder.Services.AddCors(o => o.AddDefaultPolicy(policy => {
-            policy.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod();
-        }));
+            EnvVars.VerifyEnvVars();
+            
+            var builder = WebApplication.CreateBuilder();
+            // Cors
 
-        // Controllers
-        builder.Services.AddControllers();
-        
-        // Swagger builder
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddControllers().AddNewtonsoftJson();
-        builder.Services.AddSwaggerGen(o =>
-        {
-            o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "CoyposServer.xml"));
-            o.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+            var origins = new string[]
             {
-                Type = SecuritySchemeType.ApiKey,
-                Name = "XApiKey",
-                In = ParameterLocation.Header
-            });
-            o.AddSecurityRequirement(new OpenApiSecurityRequirement
+                "https://smilginp.evolpe.net",
+                "http://localhost:8080",
+                "http://localhost:5016",
+                "https://localhost:7091"
+            };
+            Log.Msg($"Adding origins:", "Setup - CORS");
+            foreach (var origin in origins)
+                Log.Msg(origin, "Setup - CORS");
+            builder.Services.AddCors(o => o.AddDefaultPolicy(policy =>
             {
+                policy.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod();
+            }));
+
+            // Controllers
+            builder.Services.AddControllers();
+
+            // Swagger builder
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddControllers().AddNewtonsoftJson();
+            builder.Services.AddSwaggerGen(o =>
+            {
+                o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "CoyposServer.xml"));
+                o.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
                 {
-                    new OpenApiSecurityScheme
+                    Type = SecuritySchemeType.ApiKey,
+                    Name = "XApiKey",
+                    In = ParameterLocation.Header
+                });
+                o.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
                     {
-                        Reference = new OpenApiReference
+                        new OpenApiSecurityScheme
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "ApiKey"
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "ApiKey"
+                            },
+                            Scheme = "Bearer",
+                            Name = "XApiKey",
+                            In = ParameterLocation.Header
                         },
-                        Scheme = "Bearer",
-                        Name = "XApiKey",
-                        In = ParameterLocation.Header
-                    },
-                    new List<string>()
-                }
+                        new List<string>()
+                    }
+                });
             });
-        });
-        builder.Services.AddSwaggerGenNewtonsoftSupport();
-        
-        
-        var app = builder.Build();
+            builder.Services.AddSwaggerGenNewtonsoftSupport();
 
-        // Swagger app
-        if (app.Environment.IsDevelopment())
+            builder.Services.AddDbContext<DatabaseContext>(options =>
+                options.UseSqlServer(
+                    $"Server={EnvVars.DatabaseHost},{EnvVars.DatabasePort};Database=COYPOS;User Id={EnvVars.DatabaseUser};Password={EnvVars.DatabasePass};encrypt=False"));
+
+            app = builder.Build();
+
+            // Swagger app
+            if (app.Environment.IsDevelopment())
+            {
+                Log.Msg("Enabling Swagger...", "Setup - Swagger");
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI();
+                app.UseRewriter(new RewriteOptions().AddRedirect("^$", "swagger"));
+            }
+
+            app.UseHttpsRedirection();
+
+            // <> UseCors must be placed after UseRouting and before UseAuthorization. This is to ensure that CORS headers are included in the response for both authorized and unauthorized calls.
+            app.UseCors();
+            // </>
+            app.UseMiddleware<LoggingMiddleware>();
+            app.UseMiddleware<ApiKeyMiddleware>();
+            app.Use(async (context, next) =>
+            {
+                Log.Msg($"🔄 Performing {context.Connection.RemoteIpAddress}'s request...", "REST");
+                var timer = Stopwatch.StartNew();
+                await next.Invoke();
+
+                Log.Msg(
+                $"✅ Sent '{((HttpStatusCode)context.Response.StatusCode).ToString()}' response to {context.Connection.RemoteIpAddress} ({(int)timer.Elapsed.TotalMilliseconds}ms)",
+                "REST");
+            });
+            app.UseAuthorization();
+            app.MapControllers();
+
+            Log.Msg($"✅ Done! Listening on port 80...", "Setup");
+        }
+        catch (Exception e)
         {
-            Log.Msg("Enabling Swagger...", "Setup - Swagger");
-            app.UseDeveloperExceptionPage();
-            app.UseSwagger();
-            app.UseSwaggerUI();
-            app.UseRewriter(new RewriteOptions().AddRedirect("^$", "swagger"));
+            Log.Err("❌ Setup failure => " + e.Message, "Setup");
+            if (e.StackTrace != null) Log.Err(e.StackTrace);
+            return;
         }
 
-        app.UseHttpsRedirection();
-
-        // <> UseCors must be placed after UseRouting and before UseAuthorization. This is to ensure that CORS headers are included in the response for both authorized and unauthorized calls.
-        app.UseCors();
-        // </>
-        app.UseMiddleware<LoggingMiddleware>();
-        app.UseMiddleware<ApiKeyMiddleware>();
-        app.Use(async (context, next) =>
+        try
         {
-            Log.Msg($"🔄 Performing {context.Connection.RemoteIpAddress}'s request...", "REST");
-            await next.Invoke();
-            Log.Msg($"✅ Sent '{((HttpStatusCode)context.Response.StatusCode).ToString()}' response to {context.Connection.RemoteIpAddress}", "REST");
-        });
-        app.UseAuthorization();
-        app.MapControllers();
-
-        Log.Msg($"✅ Done! Listening on port 80...", "Setup");
-        app.Run();
+            app.Run();
+        }
+        catch (Exception e)
+        {
+            Log.Err("❌ Runtime error => " + e.Message);
+            if (e.StackTrace != null) Log.Err(e.StackTrace);
+            return;
+        }
     }
 }

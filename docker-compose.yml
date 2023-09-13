@@ -7,6 +7,8 @@ services:
     ports:
       - '5016:80'
     environment:
-      - SQLSERVER_CREDS=${SQLSERVER_CREDS}
-      - SQLSERVER_IP=${SQLSERVER_IP}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
       - SERVER_APIKEY=${SERVER_APIKEY}

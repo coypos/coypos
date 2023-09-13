@@ -1,5 +1,6 @@
 using System.Net;
 using CoyposServer.Models;
+using CoyposServer.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -127,5 +128,12 @@ public class TestController : ControllerBase
             // Handle exceptions
             return StatusCode((int)HttpStatusCode.InternalServerError, new ProblemDetails() { Title = e.Message });
         }
+    }
+
+    [HttpGet]
+    [Route("test")]
+    public ObjectResult Test()
+    {
+        return StatusCode((int)HttpStatusCode.OK, new ProblemDetails() {Title = "ok"});
     }
 }
