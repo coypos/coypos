@@ -47,10 +47,18 @@ jobs:
         port: 2137
         script: |
           cd /srv/coypos
+          sudo rm .env
           git pull origin main
           git status
-          sudo service coypos stop
-          sudo service coypos start
+          touch .env
+          echo DB_USER=${{ secrets.DB_USER }} >> .env
+          echo DB_PASS=${{ secrets.DB_PASS }} >> .env
+          echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+          echo DB_PORT=${{ secrets.DB_PORT }}  >> .env
+          sudo docker-compose kill
+          sudo docker-compose rm -f
+          sudo docker image prune -af
+          sudo docker-compose up -d
     - name: Notify discord
       uses: th0th/notify-discord@v0.4.1
       if: ${{ always() }}
