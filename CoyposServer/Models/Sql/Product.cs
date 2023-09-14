@@ -11,11 +11,11 @@ public class Product
     [Key] [Column("ID")]
     public int? ID { get; set; }
 
-    [Column("CREATEDATE")]
+    [Column("CREATEDATE")] 
     public DateTime? CreateDate { get; set; }
 
     [Column("UPDATEDATE")]
-    public DateTime? UpdatedDate { get; set; }
+    public DateTime? UpdateDate { get; set; }
 
     [Column("Status")]
     public bool? Status { get; set; } 
