@@ -11,14 +11,14 @@ public class Product
     [Key] [Column("ID")]
     public int? ID { get; set; }
 
-    [Column("CREATEDATE")] 
+    [Column("CreateDate")] 
     public DateTime? CreateDate { get; set; }
 
-    [Column("UPDATEDATE")]
+    [Column("UpdateDate")]
     public DateTime? UpdateDate { get; set; }
 
-    [Column("Status")]
-    public bool? Status { get; set; } 
+    [Column("Enabled")]
+    public bool? Enabled { get; set; } 
 
     [MaxLength(255)] [Column("Name")]
     public string? Name { get; set; }
@@ -29,21 +29,17 @@ public class Product
     [Column("Price")]
     public decimal? Price { get; set; }
 
-    [Column("Quantity")]
-    public int? Quantity { get; set; }
-
-    [Column("isWeight")]
-    public bool? IsWeight { get; set; }
-
     [Column("isLoose")]
     public bool? IsLoose { get; set; }
+    
+    [Column("Weight")]
+    public int? Weight { get; set; }
 
     [Column("Description")]
     public string? Description { get; set; }
-
-    [MaxLength(50)]
-    [Column("Category")]
-    public string? Category { get; set; }
+    
+    [Column("CategoryID")]
+    public virtual Category? Category { get; set; }
 
     [MaxLength(255)]
     [Column("Image")]

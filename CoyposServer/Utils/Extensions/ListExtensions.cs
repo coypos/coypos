@@ -47,20 +47,44 @@ public static class ListExtensions
             return list;
 
         var propertyInfos = typeof(T).GetProperties();
-        var outList = new List<T>();
         
+        // if all properties are null, don't filter anything.
+        if (propertyInfos.All(p => p.GetValue(filter) == null))
+            return list;
+        
+        // filter:
+        var outList = new List<T>();
         foreach (var item in list)
         {
             var results = new List<bool>();
             foreach (var propertyInfo in propertyInfos)
             {
-                var filterVal = propertyInfo.GetValue(filter);
-                if (filterVal == null)
-                    continue;
-                var listVal = propertyInfo.GetValue(item);
+                object? filterVal;
+                object? listVal;
+                // reference hack: compare IDs instead!
+                var idProperty = propertyInfo.PropertyType.GetProperties().FirstOrDefault(p => p.Name == "ID");
+                if (propertyInfo.PropertyType.AssemblyQualifiedName.Contains(".Sql.") && idProperty is not null)
+                {
+                    if (propertyInfo.GetValue(filter) == null || propertyInfo.GetValue(item) == null)
+                        continue;
+                    filterVal = idProperty.GetValue(propertyInfo.GetValue(filter));
+                    listVal = idProperty.GetValue(propertyInfo.GetValue(item));
+                }
+                // </hack>
+                else
+                {
+                    filterVal = propertyInfo.GetValue(filter);
+                    if (filterVal == null)
+                        continue;
+                    listVal = propertyInfo.GetValue(item);
+                }
                 results.Add(Equals(filterVal, listVal));
             }
+
+            if (results.Count == 0)
+                continue;
             
+            // got our results, now let's see what we care about
             switch (filterType)
             {
                 case FilterType.AND:

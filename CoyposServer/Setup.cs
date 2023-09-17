@@ -5,6 +5,7 @@ using CoyposServer.Utils;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.OpenApi.Models;
 using System.Web;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoyposServer;
@@ -72,8 +73,19 @@ public class Setup
             builder.Services.AddSwaggerGenNewtonsoftSupport();
 
             builder.Services.AddDbContext<DatabaseContext>(options =>
+            {
                 options.UseSqlServer(
-                    $"Server={EnvVars.DatabaseHost},{EnvVars.DatabasePort};Database=COYPOS;User Id={EnvVars.DatabaseUser};Password={EnvVars.DatabasePass};encrypt=False"));
+                    $"Server={EnvVars.DatabaseHost},{EnvVars.DatabasePort};Database=COYPOS;User Id={EnvVars.DatabaseUser};Password={EnvVars.DatabasePass};encrypt=False");
+            });
+            
+            builder.Services.AddSingleton<IModelBinderProvider, JsonModelBinderProvider>();
+
+            builder.Services.AddMvc(options =>
+            {
+                options.ModelBinderProviders
+                    .Insert(0, new JsonModelBinderProvider(
+                        builder.Services.BuildServiceProvider().GetService<DatabaseContext>()));
+            });
 
             app = builder.Build();
 
@@ -94,6 +106,8 @@ public class Setup
             // </>
             app.UseMiddleware<LoggingMiddleware>();
             app.UseMiddleware<ApiKeyMiddleware>();
+            app.UseMiddleware<BodyEnricherMiddleware>();
+            
             app.Use(async (context, next) =>
             {
                 Log.Msg($"🔄 Performing {context.Connection.RemoteIpAddress}'s request...", "REST");

@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using CoyposServer.Middleware;
 using CoyposServer.Models;
 using CoyposServer.Models.Sql;
 using CoyposServer.Utils;
@@ -21,20 +22,6 @@ public class ProductController : ControllerBase
     /// </summary>
     [HttpGet]
     [Route("products")]
-    [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
-    public ObjectResult GetProducts(string filter = "AND", int itemsPerPage = 50, int page = 1)
-    {
-        return GetProductsWithFilter(new Product(), filter, itemsPerPage, page);
-    }
-
-
-    /// <summary>
-    /// Returns all products (with filter support)
-    /// </summary>
-    [HttpGet]
-    [Route("products/filter")]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
@@ -70,8 +57,7 @@ public class ProductController : ControllerBase
     {
         try
         {
-            var products = _dbContext.Products.ToList();
-            var categories = products.Select(product => product.Category).ToList().Distinct();
+            var categories = _dbContext.Categories.ToList();
             return StatusCode((int)HttpStatusCode.OK, categories);
         }
         catch (Exception e)
@@ -97,6 +83,7 @@ public class ProductController : ControllerBase
             product.CreateDate = productFromDb.CreateDate;
             product.UpdateDate = DateTime.Now;
             product = ObjectHelpers.CopyNonNullValues(productFromDb, product);
+            //_dbContext.AttachVirtualProperties(productFromDb);
             _dbContext.Entry(productFromDb).CurrentValues.SetValues(product);
             await _dbContext.SaveChangesAsync();
         }
@@ -124,6 +111,7 @@ public class ProductController : ControllerBase
             var productFromDb = _dbContext.Products.FirstOrDefault(p => p.ID == id);
             if (productFromDb is null)
                 throw new Exception("No known product with such ID");
+            _dbContext.AttachVirtualProperties(id);
             _dbContext.Remove(productFromDb);
             await _dbContext.SaveChangesAsync();
         }
@@ -151,10 +139,9 @@ public class ProductController : ControllerBase
         try
         {
             // overwritten values:
-            var max = _dbContext.Products.Max(p => p.ID) ?? 0;
-            product.ID = max + 1;
             product.CreateDate = DateTime.Now;
             product.UpdateDate = DateTime.Now;
+            _dbContext.AttachVirtualProperties(product);
             // </>
 
             result = _dbContext.Products.Add(product);
