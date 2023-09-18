@@ -90,14 +90,14 @@ public class Setup
             app = builder.Build();
 
             // Swagger app
-            if (app.Environment.IsDevelopment())
-            {
+            //if (app.Environment.IsDevelopment())
+            //{
                 Log.Msg("Enabling Swagger...", "Setup - Swagger");
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI();
                 app.UseRewriter(new RewriteOptions().AddRedirect("^$", "swagger"));
-            }
+            //}
 
             app.UseHttpsRedirection();
 
