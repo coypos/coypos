@@ -161,7 +161,6 @@ public class ProductController : ControllerBase
         {
             // overwritten values:
             product.CreateDate = DateTime.Now;
-            product.UpdateDate = DateTime.Now;
             _dbContext.AttachVirtualProperties(product);
             // </>
 
