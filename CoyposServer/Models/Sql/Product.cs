@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using CoyposServer.Utils.Extensions;
 
 namespace CoyposServer.Models.Sql;
 
@@ -11,10 +12,10 @@ public class Product
     [Key] [Column("ID")]
     public int? ID { get; set; }
 
-    [Column("CreateDate")] 
+    [Column("CreateDate")] [Skipped]
     public DateTime? CreateDate { get; set; }
 
-    [Column("UpdateDate")]
+    [Column("UpdateDate")] [Skipped]
     public DateTime? UpdateDate { get; set; }
 
     [Column("Enabled")]

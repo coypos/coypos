@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using CoyposServer.Utils.Extensions;
 
 namespace CoyposServer.Models.Sql;
 
@@ -13,4 +14,10 @@ public class Category
     
     [Column("ParentCategoryID")]
     public virtual Category? ParentCategory { get; set; }
+    
+    [Column("UpdateDate")] [Skipped]
+    public DateTime? UpdateDate { get; set; }
+    
+    [Column("CreateDate")] [Skipped]
+    public DateTime? CreateDate { get; set; }
 }
