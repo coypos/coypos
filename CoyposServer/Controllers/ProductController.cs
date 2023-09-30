@@ -53,11 +53,11 @@ public class ProductController : ControllerBase
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
-    public ObjectResult GetCategories()
+    public ObjectResult GetCategories([FromBody] Category categoryFilter, string filter = "AND", int itemsPerPage = 50, int page = 1)
     {
         try
         {
-            var categories = _dbContext.Categories.ToList();
+            var categories = _dbContext.Categories.ToList().Filter(categoryFilter, filter).Pagefy(itemsPerPage, page);
             return StatusCode((int)HttpStatusCode.OK, categories);
         }
         catch (Exception e)
