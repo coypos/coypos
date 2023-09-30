@@ -18,8 +18,12 @@ public class ProductController : ControllerBase
         _dbContext = dbContext;
 
     /// <summary>
-    /// Returns all products (with filter support)
+    /// Returns products
     /// </summary>
+    /// <param name="productFilter">filter to use</param>
+    /// <param name="filter">filter type to use (AND/OR/NOR)</param>
+    /// <param name="itemsPerPage">number of items per page</param>
+    /// <param name="page">page number</param>
     [HttpGet]
     [Route("products")]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
@@ -46,8 +50,12 @@ public class ProductController : ControllerBase
     }
 
     /// <summary>
-    /// Returns all product categories that are present in the database
+    /// Returns product categories
     /// </summary>
+    /// <param name="categoryFilter">filter to use</param>
+    /// <param name="filter">filter type to use (AND/OR/NOR)</param>
+    /// <param name="itemsPerPage">number of items per page</param>
+    /// <param name="page">page number</param>
     [HttpGet]
     [Route("categories")]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
@@ -66,6 +74,11 @@ public class ProductController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Updates a product
+    /// </summary>
+    /// <param name="product">new product data</param>
+    /// <param name="id">product ID</param>
     [HttpPut]
     [Route("product/{id}")]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
@@ -81,7 +94,6 @@ public class ProductController : ControllerBase
                 throw new Exception("No known product with such ID");
             product.ID = id;
             product.CreateDate = productFromDb.CreateDate;
-            product.UpdateDate = DateTime.Now;
             product = ObjectHelpers.CopyNonNullValues(productFromDb, product);
             //_dbContext.AttachVirtualProperties(productFromDb);
             _dbContext.Entry(productFromDb).CurrentValues.SetValues(product);
@@ -99,6 +111,10 @@ public class ProductController : ControllerBase
         return StatusCode((int)HttpStatusCode.OK, productFromDb);
     }
 
+    /// <summary>
+    /// Deletes a product
+    /// </summary>
+    /// <param name="id">product ID</param>
     [HttpDelete]
     [Route("product/{id}")]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
@@ -127,6 +143,11 @@ public class ProductController : ControllerBase
         return StatusCode((int)HttpStatusCode.OK, $"Product {id} deleted");
     }
 
+    /// <summary>
+    /// Creates a product entry
+    /// </summary>
+    /// <param name="product">new product data</param>
+    /// <returns></returns>
     [HttpPost]
     [Route("product")]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
