@@ -19,4 +19,5 @@ public class DatabaseContext : DbContext
     //public DbSet<Promotion> Transactions { get; set; }
     //public DbSet<TransactionLog> TransactionLogs { get; set; }
     //public DbSet<User> Users { get; set; }
+    public DbSet<Setting> Settings { get; set; }
 }

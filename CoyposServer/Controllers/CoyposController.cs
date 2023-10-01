@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net;
 using CoyposServer.Models;
+using CoyposServer.Utils;
 using Microsoft.AspNetCore.Mvc;
 using NickStrupat;
 
@@ -8,6 +9,11 @@ namespace CoyposServer.Controllers;
 
 public class CoyposController : ControllerBase
 {
+    private DatabaseContext _dbContext;
+    
+    public CoyposController(DatabaseContext dbContext) =>
+        _dbContext = dbContext;
+    
     /// <summary>
     /// Returns system & application info
     /// </summary>
@@ -29,5 +35,12 @@ public class CoyposController : ControllerBase
             DockerContainerId = System.IO.File.ReadAllText("/etc/hostname").ReplaceLineEndings("")
         };
         return StatusCode((int)HttpStatusCode.OK, coypos);
+    }
+
+    [HttpGet]
+    [Route("settings")]
+    public ObjectResult Settings()
+    {
+        return StatusCode((int)HttpStatusCode.OK, _dbContext.Settings.ToList());
     }
 }
