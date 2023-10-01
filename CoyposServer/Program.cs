@@ -12,6 +12,6 @@ class Program
     {
         Log.Msg("🔄 Server starting...");
         Setup.App();
+        Log.Dispose();
     }
-    
 }

@@ -43,4 +43,11 @@ public class CoyposController : ControllerBase
     {
         return StatusCode((int)HttpStatusCode.OK, _dbContext.Settings.ToList());
     }
+
+    [HttpGet]
+    [Route("logs")]
+    public ObjectResult Logs()
+    {
+        return StatusCode((int)HttpStatusCode.OK, Log.LocalCache);
+    }
 }

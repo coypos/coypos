@@ -1,9 +1,12 @@
 ﻿using System.Diagnostics;
+using CoyposServer.Utils.Extensions;
 
 namespace CoyposServer.Utils;
 
 public static class Log
 {
+    public static string LocalCache = "";
+    
     private static string NORMAL      = "\x1b[39m";
     private static string RED         = "\x1b[91m";
     private static string GREEN       = "\x1b[92m";
@@ -45,5 +48,28 @@ public static class Log
             Debug.WriteLine(messageString);
         else 
             Console.WriteLine(messageString);
+        SaveEntry(messageString);
+    }
+
+    private static StreamWriter? _logFileStream = null;
+    private static DateTime _today;
+    private static void SaveEntry(string message)
+    {
+        if (_logFileStream is null || _today != DateTime.Today)
+        {
+            Directory.CreateDirectory("/var/lib/coypos/logs");
+            _logFileStream = new StreamWriter($"/var/lib/coypos/logs/{DateTime.UtcNow:yyyy-MM-dd}.log", true);
+            _today = DateTime.Today;
+        }
+        
+        message = message.RemoveAllOccurrences(NORMAL, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, GREY, BOLD, NOBOLD, UNDERLINE,
+            NOUNDERLINE, REVERSE, NOREVERSE);
+        LocalCache += message += "\n";
+        _logFileStream.WriteLine(message);
+    }
+
+    public static void Dispose()
+    {
+        _logFileStream?.Close();
     }
 }
