@@ -1,11 +1,8 @@
 ﻿using System.Net;
-using CoyposServer.Middleware;
-using CoyposServer.Models;
 using CoyposServer.Models.Sql;
 using CoyposServer.Utils;
 using CoyposServer.Utils.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace CoyposServer.Controllers;
