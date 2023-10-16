@@ -1,9 +1,11 @@
 ﻿using System.Net;
+using CoyposServer.Models;
 using CoyposServer.Models.Sql;
 using CoyposServer.Utils;
 using CoyposServer.Utils.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using NUnit.Framework;
 
 namespace CoyposServer.Controllers;
 
@@ -24,17 +26,23 @@ public class ProductController : ControllerBase
     [HttpGet]
     [Route("products")]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(RichResponse<List<Product>>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
     public ObjectResult GetProductsWithFilter([FromBody] Product productFilter, string filter = "AND", int itemsPerPage = 50, int page = 1)
     {
-        try
-        {
-            if (page <= 0)
-                page = 1;
+        try {
+            var products = _dbContext.Products.ToList();
+            var filteredProducts = products.Filter(productFilter, filter);
+            var pagefiedProducts = filteredProducts.Pagefy(itemsPerPage, page);
             
-            var products = _dbContext.Products.ToList().Filter(productFilter, filter).Pagefy(itemsPerPage, page);
-            return StatusCode((int)HttpStatusCode.OK, products);
+            return StatusCode((int)HttpStatusCode.OK, new RichResponse<List<Product>>(pagefiedProducts)
+            {
+                Page = page,
+                TotalPages = Math.Max(1, (int)Math.Round((double)filteredProducts.Count / (itemsPerPage == 0 ? 1 : itemsPerPage), MidpointRounding.AwayFromZero)),
+                ItemsPerPage = itemsPerPage,
+                TotalItems = products.Count,
+                TotalItemsFiltered = filteredProducts.Count
+            });
         }
         catch (ArgumentOutOfRangeException e)
         {
@@ -56,14 +64,28 @@ public class ProductController : ControllerBase
     [HttpGet]
     [Route("categories")]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(RichResponse<List<Category>>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
     public ObjectResult GetCategories([FromBody] Category categoryFilter, string filter = "AND", int itemsPerPage = 50, int page = 1)
     {
         try
         {
-            var categories = _dbContext.Categories.ToList().Filter(categoryFilter, filter).Pagefy(itemsPerPage, page);
-            return StatusCode((int)HttpStatusCode.OK, categories);
+            var categories = _dbContext.Categories.ToList();
+            var filteredCategories = categories.Filter(categoryFilter, filter);
+            var pagefiedCategories = filteredCategories.Pagefy(itemsPerPage, page);
+            
+            return StatusCode((int)HttpStatusCode.OK, new RichResponse<List<Category>>(pagefiedCategories)
+            {
+                Page = page,
+                TotalPages = Math.Max(1, (int)Math.Round((double)filteredCategories.Count / (itemsPerPage == 0 ? 1 : itemsPerPage), MidpointRounding.AwayFromZero)),
+                ItemsPerPage = itemsPerPage,
+                TotalItems = categories.Count,
+                TotalItemsFiltered = filteredCategories.Count
+            });
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return StatusCode((int)HttpStatusCode.BadRequest, new ProblemDetails() { Title = e.Message });
         }
         catch (Exception e)
         {
