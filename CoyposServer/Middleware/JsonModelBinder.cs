@@ -107,9 +107,15 @@ public class JsonModelBinder : IModelBinder
                                 }
                             }
 
-                            if (!found)
+                            var v = bindingContext.ValueProvider.GetValue("filter");
+                            if (!found && v.FirstValue is not null && v.FirstValue.ToUpper().Equals("ISNULL"))
+                            {
+                                result.GetType().GetProperty(virtualProperty.Name)
+                                    .SetValue(result, Activator.CreateInstance(result.GetType()));
+                            }
+                            else if (!found)
                                 throw new Exception(
-                                    "One of the request properties tried to refer to a non-existent object in the database.");
+                                "One of the request properties tried to refer to a non-existent object in the database.");
                         }
                     }
 

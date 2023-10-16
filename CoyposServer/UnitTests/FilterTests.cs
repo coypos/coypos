@@ -76,6 +76,23 @@ public class FilterTests
     }
 
     [Test]
+    public void FilterISNULL_Results()
+    {
+        var categories = _dbContext.Categories.ToList();
+        var filtered = categories.Filter(new Category() { ParentCategory = new Category() },
+            ListExtensions.FilterType.ISNULL);
+        filtered.Count().Should().Be(1);
+    }
+
+    [Test]
+    public void FilterISNULL_NoResults()
+    {
+        var categories = _dbContext.Categories.ToList();
+        var filtered = categories.Filter(new Category() { Name = "nope!" }, ListExtensions.FilterType.ISNULL);
+        filtered.Count().Should().Be(0);
+    }
+
+    [Test]
     public void Pages()
     {
         var categories = _dbContext.Categories.ToList();

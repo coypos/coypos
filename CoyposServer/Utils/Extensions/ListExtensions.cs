@@ -12,7 +12,9 @@ public static class ListExtensions
         /// <summary> Any of the items need to match the criteria</summary>
         OR,
         /// <summary> None of the items need to match the criteria</summary>
-        NOR
+        NOR,
+        /// <summary> None of the items need to match the criteria</summary>
+        ISNULL
     }
 
     /// <summary>
@@ -61,14 +63,25 @@ public static class ListExtensions
             {
                 object? filterVal;
                 object? listVal;
+                
+                if (filterType == FilterType.ISNULL && propertyInfo.GetValue(filter) != null && propertyInfo.GetValue(item) == null)
+                {
+                    outList.Add(item);
+                    goto finishIteration;
+                }
+                
                 // reference hack: compare IDs instead!
                 var idProperty = propertyInfo.PropertyType.GetProperties().FirstOrDefault(p => p.Name == "ID");
                 if (propertyInfo.PropertyType.AssemblyQualifiedName.Contains(".Sql.") && idProperty is not null)
                 {
                     if (propertyInfo.GetValue(filter) == null || propertyInfo.GetValue(item) == null)
                         continue;
-                    filterVal = idProperty.GetValue(propertyInfo.GetValue(filter));
-                    listVal = idProperty.GetValue(propertyInfo.GetValue(item));
+
+                    var filterInnerVal = propertyInfo.GetValue(filter);
+                    filterVal = idProperty.GetValue(filterInnerVal);
+
+                    var listInnerVal = propertyInfo.GetValue(item);
+                    listVal = idProperty.GetValue(listInnerVal);
                 }
                 // </hack>
                 else
@@ -77,7 +90,11 @@ public static class ListExtensions
                     if (filterVal == null)
                         continue;
                     listVal = propertyInfo.GetValue(item);
+                    
+                    if (filterType != FilterType.ISNULL && filterVal == null)
+                        continue;
                 }
+
                 results.Add(Equals(filterVal, listVal));
             }
 
@@ -92,6 +109,7 @@ public static class ListExtensions
                         outList.Add(item);
                     break;
                 case FilterType.OR:
+                case FilterType.ISNULL:
                     if (results.Any(result => result))
                         outList.Add(item);
                     break;
@@ -100,6 +118,7 @@ public static class ListExtensions
                         outList.Add(item);
                     break;
             }
+            finishIteration: ;
         }
 
         return outList;
