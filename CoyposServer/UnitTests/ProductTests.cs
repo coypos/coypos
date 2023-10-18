@@ -29,8 +29,8 @@ public class ProductTests
     {
         var req = _productController.GetProductsWithFilter(new Product() { }, "AND", _dbContext.Products.Count(), 1);
         req.CheckStatusCode(HttpStatusCode.OK);
-        var result = req.YeldExpectedResult<List<Product>>();
-        result.Count.Should().Be(_dbContext.Products.Count());
+        var result = req.YeldExpectedResult<RichResponse<List<Product>>>();
+        result.Response.Count.Should().Be(_dbContext.Products.Count());
     }
 
     [Test]
@@ -38,7 +38,7 @@ public class ProductTests
     {
         var req = _productController.GetProductsWithFilter(new Product() { Name = _dbContext.Products.First().Name});
         req.CheckStatusCode(HttpStatusCode.OK);
-        var result1 = req.YeldExpectedResult<List<Product>>();
+        var result1 = req.YeldExpectedResult<RichResponse<List<Product>>>().Response;
 
         var result2 = _dbContext.Products.ToList().Filter(new Product() { Name = _dbContext.Products.First().Name },
             ListExtensions.FilterType.AND);
@@ -55,8 +55,8 @@ public class ProductTests
     {
         var req = _productController.GetCategories(new Category(), itemsPerPage: _dbContext.Categories.Count());
         req.CheckStatusCode(HttpStatusCode.OK);
-        var result = req.YeldExpectedResult<List<Category>>();
-        result.Count.Should().Be(_dbContext.Categories.Count());
+        var result = req.YeldExpectedResult<RichResponse<List<Category>>>();
+        result.Response.Count.Should().Be(_dbContext.Categories.Count());
     }
 
     [Test]
