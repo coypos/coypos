@@ -39,7 +39,7 @@ public class SearchTests
         var searchString = _dbContext.Products.First().Name.Split('-')[0];
         var howManyShouldWeHave = _dbContext.Products.Count(_ => _.Name.ToLower().Contains(searchString.ToLower()));
         
-        var req = _searchController.SearchProduct(searchString, _dbContext.Products.Count(), 1);
+        var req = _searchController.SearchProduct(searchString,  -1, _dbContext.Products.Count(), 1);
         req.CheckStatusCode(HttpStatusCode.OK);
         var result = req.YeldExpectedResult<RichResponse<List<Product>>>();
         result.Response.Count.Should().Be(howManyShouldWeHave);
@@ -51,7 +51,7 @@ public class SearchTests
         var searchString = "a";
         var howManyShouldWeHave = _dbContext.Products.Count(_ => _.Name.ToLower().Contains(searchString.ToLower()));
         
-        var req = _searchController.SearchProduct(searchString, _dbContext.Products.Count(), 1);
+        var req = _searchController.SearchProduct(searchString, -1, _dbContext.Products.Count(), 1);
         req.CheckStatusCode(HttpStatusCode.OK);
         var result = req.YeldExpectedResult<RichResponse<List<Product>>>();
         result.Response.Count.Should().Be(howManyShouldWeHave);
@@ -61,7 +61,7 @@ public class SearchTests
     public void SearchNoMatchingQuery()
     {
         var searchString = Guid.NewGuid().ToString();
-        var req = _searchController.SearchProduct(searchString, _dbContext.Products.Count());
+        var req = _searchController.SearchProduct(searchString, -1, _dbContext.Products.Count());
         req.CheckStatusCode(HttpStatusCode.OK);
         var result = req.YeldExpectedResult<RichResponse<List<Product>>>();
         result.Response.Count.Should().Be(0);
@@ -77,7 +77,7 @@ public class SearchTests
                 .Where(c => char.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
                 .ToArray());
             var howManyShouldWeHave = _dbContext.Products.Count(_ => _.Name.ToLower().Contains(searchString.ToLower()));
-            var req = _searchController.SearchProduct(searchString, _dbContext.Products.Count());
+            var req = _searchController.SearchProduct(searchString, -1, _dbContext.Products.Count());
             req.CheckStatusCode(HttpStatusCode.OK);
             var result = req.YeldExpectedResult<RichResponse<List<Product>>>();
             result.Response.Count.Should().Be(howManyShouldWeHave); 
