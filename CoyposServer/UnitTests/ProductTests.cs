@@ -16,12 +16,14 @@ public class ProductTests
 {
     private DatabaseContext _dbContext;
     private ProductController _productController;
+    private CategoryController _categoryController;
     
     [SetUp]
     public async Task Setup()
     {
         _dbContext = await TestHelpers.GenerateDatabaseContext();
         _productController = new ProductController(_dbContext);
+        _categoryController = new CategoryController(_dbContext);
     }
 
     [Test]
@@ -53,7 +55,7 @@ public class ProductTests
     [Test]
     public void GetCategories()
     {
-        var req = _productController.GetCategories(new Category(), itemsPerPage: _dbContext.Categories.Count());
+        var req = _categoryController.GetCategories(new Category(), itemsPerPage: _dbContext.Categories.Count());
         req.CheckStatusCode(HttpStatusCode.OK);
         var result = req.YeldExpectedResult<RichResponse<List<Category>>>();
         result.Response.Count.Should().Be(_dbContext.Categories.Count());
