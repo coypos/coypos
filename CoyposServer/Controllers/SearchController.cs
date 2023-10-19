@@ -16,6 +16,13 @@ public class SearchController : ControllerBase
     public SearchController(DatabaseContext dbContext) =>
         _dbContext = dbContext;
     
+    /// <summary>
+    /// Searches for a product
+    /// </summary>
+    /// <param name="query">search query (not case sensitive, replaces diacritics with standard unicode)</param>
+    /// <param name="categoryId">additional category filter. -1: disabled; 0: return all nulls; anything else: category ID</param>
+    /// <param name="itemsPerPage">number of items per page</param>
+    /// <param name="page">page number</param>
     [HttpGet]
     [Route("search/{query}")]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
