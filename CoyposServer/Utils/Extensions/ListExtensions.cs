@@ -132,8 +132,21 @@ public static class ListExtensions
     /// <param name="pageNumber">Page number to display</param>
     /// <returns>Pagefied list</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when itemsPerPage or pageNumber is 0 or lower</exception>
-    public static List<T>? Pagefy<T>(this List<T>? list, int itemsPerPage, int pageNumber)
+    public static List<T>? Pagefy<T>(this List<T>? list, int itemsPerPage, int pageNumber) =>
+        Pagefy(list, itemsPerPage, pageNumber, out _);
+
+    /// <summary>
+    /// Pagefies a list.
+    /// </summary>
+    /// <param name="list">Input list</param>
+    /// <param name="itemsPerPage">Number of items on each page</param>
+    /// <param name="pageNumber">Page number to display</param>
+    /// <param name="totalPages">(out) total number of pages</param>
+    /// <returns>Pagefied list</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when itemsPerPage or pageNumber is 0 or lower</exception>
+    public static List<T>? Pagefy<T>(this List<T>? list, int itemsPerPage, int pageNumber, out int totalPages)
     {
+        totalPages = 0;
         if (list == null)
             return list;
 
@@ -145,7 +158,8 @@ public static class ListExtensions
         
         int startIndex = (pageNumber - 1) * itemsPerPage;
         int endIndex = Math.Min(startIndex + itemsPerPage, list.Count);
-
+        totalPages = (int)Math.Ceiling((double)list.Count / itemsPerPage);
+        
         // out of range? return empty.
         if (startIndex >= list.Count)
             return new List<T>();

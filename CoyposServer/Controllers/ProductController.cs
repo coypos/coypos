@@ -33,12 +33,12 @@ public class ProductController : ControllerBase
         try {
             var products = _dbContext.Products.ToList();
             var filteredProducts = products.Filter(productFilter, filter);
-            var pagefiedProducts = filteredProducts.Pagefy(itemsPerPage, page);
+            var pagefiedProducts = filteredProducts.Pagefy(itemsPerPage, page, out var totalPages);
             
             return StatusCode((int)HttpStatusCode.OK, new RichResponse<List<Product>>(pagefiedProducts)
             {
                 Page = page,
-                TotalPages = Math.Max(1, (int)Math.Round((double)filteredProducts.Count / (itemsPerPage == 0 ? 1 : itemsPerPage), MidpointRounding.AwayFromZero)),
+                TotalPages = totalPages,
                 ItemsPerPage = itemsPerPage,
                 TotalItems = products.Count,
                 TotalItemsFiltered = filteredProducts.Count
@@ -72,12 +72,12 @@ public class ProductController : ControllerBase
         {
             var categories = _dbContext.Categories.ToList();
             var filteredCategories = categories.Filter(categoryFilter, filter);
-            var pagefiedCategories = filteredCategories.Pagefy(itemsPerPage, page);
+            var pagefiedCategories = filteredCategories.Pagefy(itemsPerPage, page, out var totalPages);
             
             return StatusCode((int)HttpStatusCode.OK, new RichResponse<List<Category>>(pagefiedCategories)
             {
                 Page = page,
-                TotalPages = Math.Max(1, (int)Math.Round((double)filteredCategories.Count / (itemsPerPage == 0 ? 1 : itemsPerPage), MidpointRounding.AwayFromZero)),
+                TotalPages = totalPages,
                 ItemsPerPage = itemsPerPage,
                 TotalItems = categories.Count,
                 TotalItemsFiltered = filteredCategories.Count
