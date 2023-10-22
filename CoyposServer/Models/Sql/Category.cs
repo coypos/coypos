@@ -12,7 +12,7 @@ public class Category
     [Column("Name")]
     public string? Name { get; set; }
 
-    [Column("isVisible")]
+    [Column("IsVisible")]
     public bool? IsVisible { get; set; }
     
     [Column("ParentCategoryID")]
