@@ -13,7 +13,7 @@ public class Category
     public string? Name { get; set; }
 
     [Column("isVisible")]
-    public int? isVisible { get; set; }
+    public bool? IsVisible { get; set; }
     
     [Column("ParentCategoryID")]
     public virtual Category? ParentCategory { get; set; }
