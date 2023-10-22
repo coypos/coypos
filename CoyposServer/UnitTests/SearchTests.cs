@@ -70,17 +70,26 @@ public class SearchTests
     [Test]
     public void SearchDiacritics()
     {
-        var values = new List<string>() { "ą", "ę", "ł", "ż", "ź", "ć", "ń", "ś" };
-        foreach (var value in values)
+        var diacritics = new List<Tuple<char, int>>()
         {
-            var searchString = new string(value.Normalize(NormalizationForm.FormD)
-                .Where(c => char.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
-                .ToArray());
-            var howManyShouldWeHave = _dbContext.Products.Count(_ => _.Name.ToLower().Contains(searchString.ToLower()));
-            var req = _searchController.SearchProduct(searchString, -1, _dbContext.Products.Count());
+            new('ą', 0), new('ę', 0), new('ś', 0), new('ó', 0), new('ł', 0),
+            new('ż', 0), new('ź', 0), new('ć', 0), new('ń', 0)
+        };
+        
+        for (var i = 0; i < diacritics.Count; i++)
+            diacritics[i] = new(diacritics[i].Item1,  _dbContext.Products.Count(_ => _.Name.ToLower().Contains(diacritics[i].Item1.ToString().RemoveDiacritics())));
+        
+        foreach (var product in _dbContext.Products)
+            product.Name = product.Name.AddDiacritics();
+        
+        _dbContext.SaveChanges();
+        
+        foreach (var (item1, howManyShouldWeHave) in diacritics)
+        {
+            var req = _searchController.SearchProduct(item1.ToString(), -1, _dbContext.Products.Count());
             req.CheckStatusCode(HttpStatusCode.OK);
             var result = req.YeldExpectedResult<RichResponse<List<Product>>>();
-            result.Response.Count.Should().Be(howManyShouldWeHave); 
+            result.Response.Count.Should().Be(howManyShouldWeHave);
         }
     }
 }

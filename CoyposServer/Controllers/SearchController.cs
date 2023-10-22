@@ -41,13 +41,9 @@ public class SearchController : ControllerBase
             };
             var filteredProducts = query == "" ? products : products = products.Where(_ =>
             {
-                var name = new string(_.Name.Normalize(NormalizationForm.FormD)
-                    .Where(c => char.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
-                    .ToArray());
-                var q = new string(query.Normalize(NormalizationForm.FormD)
-                    .Where(c => char.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
-                    .ToArray());
-                return name.ToLower().Contains(q.ToLower());
+                var name = _.Name.ToLower().RemoveDiacritics();
+                var q = query.ToLower().RemoveDiacritics();
+                return name.Contains(q);
             }).ToList();
             var pagefiedProducts = filteredProducts.Pagefy(itemsPerPage, page, out var totalPages);
 
