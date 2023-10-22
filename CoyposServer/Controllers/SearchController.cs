@@ -43,7 +43,7 @@ public class SearchController : ControllerBase
             {
                 var name = _.Name.ToLower().RemoveDiacritics();
                 var q = query.ToLower().RemoveDiacritics();
-                return name.Contains(q) || _.Barcode == query;
+                return name.Contains(q) || _.Barcode.Contains(query);
             }).ToList();
             var pagefiedProducts = filteredProducts.Pagefy(itemsPerPage, page, out var totalPages);
 
