@@ -1,0 +1,15 @@
+{
+  "open": "KASSE GEÖFFNET",
+  "welcome": "WIR LADEN EIN!",
+  "info":"SCANNEN SIE EINEN ARTIKEL ODER TIPPEN SIE AUF „START“, UM ZU STARTEN",
+  "start": "START",
+  "bag": "WERBUNG",
+  "help": "HELFEN",
+  "login":"Mitarbeiter-Login",
+  "cardscan": "SCANNEN SIE IHRE KARTE, UM ZU STARTEN",
+  "yourshopping": "IHR EINKAUF",
+  "total": "Summe",
+  "pay": "Beenden und bezahlen",
+  "scaninfo": "Scannen Sie den Produktcode oder wählen Sie Kategorien aus",
+  "payinfo": "Wählen Sie eine Zahlungsmethode"
+}

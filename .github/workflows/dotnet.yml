@@ -34,6 +34,50 @@ jobs:
         GITHUB_ACTOR: ${{ github.actor }}
         GITHUB_JOB_NAME: ${{ github.event.head_commit.message }}
         GITHUB_JOB_STATUS: ${{ job.status }}
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: |
+        cd coyposadmin
+        touch .env
+        echo VUE_APP_I18N_LOCALE=pl >> .env
+        echo VUE_APP_I18N_FALLBACK_LOCALE=en >> .env
+        echo VUE_APP_API_URL=${{ secrets.API_URL }} >> .env
+        echo VUE_APP_TOKEN=${{ secrets.API_SECRET }} >> .env
+        cat .env
+    - name: Run install
+      uses: borales/actions-yarn@v4
+      with:
+        cmd: install # will run `yarn install` command
+        dir: 'coyposadmin'
+    - name: Unit Test run
+      uses: borales/actions-yarn@v4
+      with:
+        cmd: test:unit
+        dir: 'coyposadmin'
+    - name: e2e Test run
+      uses: borales/actions-yarn@v4
+      with:
+        cmd: test:github
+        dir: 'coyposadmin'
+    - name: Send screenshot to discord channel
+      uses: sinshutu/upload-to-discord@master
+      if: failure()
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      with:
+        args: coyposadmin/tests/e2e/screenshots/test.cy.js/*.* coyposadmin/tests/e2e/videos/*
+    - name: Notify discord
+      uses: th0th/notify-discord@v0.4.1
+      if: failure()
+      env:
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK }}
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_JOB_NAME: ${{ github.event.head_commit.message }}
+        GITHUB_JOB_STATUS: ${{ job.status }}
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -55,6 +99,18 @@ jobs:
           echo DB_PASS=${{ secrets.DB_PASS }} >> .env
           echo DB_HOST=${{ secrets.DB_HOST }} >> .env
           echo DB_PORT=${{ secrets.DB_PORT }}  >> .env
+          cd /srv/coypos/coyposadmin
+          rm yarn.lock
+          rm .env
+          git pull origin master
+          git status
+          touch .env
+          echo VUE_APP_I18N_LOCALE=pl >> .env
+          echo VUE_APP_I18N_FALLBACK_LOCALE=en >> .env
+          echo VUE_APP_API_URL=${{ secrets.API_URL }} >> .env
+          echo VUE_APP_TOKEN=${{ secrets.API_SECRET }} >> .env
+          echo BASE_URL=https://smilginp.evolpe.net  >> .env
+          cd /srv/coypos/
           sudo docker-compose kill
           sudo docker-compose rm -f
           sudo docker image prune -af
