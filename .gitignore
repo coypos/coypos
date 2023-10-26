@@ -16,6 +16,8 @@
 # Mono auto generated files
 mono_crash.*
 coyposadmin/node_modules/
+coyposadmin/tests/e2e/videos/
+coyposadmin/tests/e2e/screenshots/
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
