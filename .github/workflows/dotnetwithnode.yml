@@ -110,7 +110,7 @@ jobs:
           echo VUE_APP_I18N_FALLBACK_LOCALE=en >> .env
           echo VUE_APP_API_URL=${{ secrets.API_URL }} >> .env
           echo VUE_APP_TOKEN=${{ secrets.API_SECRET }} >> .env
-          echo BASE_URL=https://smilginp.evolpe.net  >> .env
+          echo BASE_URL=https://adminsmilginp.evolpe.net  >> .env
           cd /srv/coypos/
           sudo docker-compose kill
           sudo docker-compose rm -f
