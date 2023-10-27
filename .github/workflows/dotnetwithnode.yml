@@ -10,10 +10,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
+  build-backend:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
@@ -34,6 +32,9 @@ jobs:
         GITHUB_ACTOR: ${{ github.actor }}
         GITHUB_JOB_NAME: ${{ github.event.head_commit.message }}
         GITHUB_JOB_STATUS: ${{ job.status }}
+  build-admin:
+    runs-on: ubuntu-latest
+    steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
@@ -80,10 +81,10 @@ jobs:
         GITHUB_JOB_NAME: ${{ github.event.head_commit.message }}
         GITHUB_JOB_STATUS: ${{ job.status }}
   deploy:
-    needs: build
+    needs: [build-backend, build-admin]
     runs-on: ubuntu-latest
     steps:
-    - name: Deploy using ssh
+    - name: remove old containers
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
@@ -96,16 +97,31 @@ jobs:
           sudo rm .env
           git pull origin main
           git status
+          cd /srv/coypos/coyposadmin
+          rm yarn.lock
+          rm .env
+          git pull origin master
+          git status
+          cd /srv/coypos/
+          sudo docker-compose kill
+          sudo docker-compose rm -f
+          sudo docker image prune -af
+    - name: create env files
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        port: 2137
+        command_timeout: 200m
+        script: |
+          cd /srv/coypos
           touch .env
           echo DB_USER=${{ secrets.DB_USER }} >> .env
           echo DB_PASS=${{ secrets.DB_PASS }} >> .env
           echo DB_HOST=${{ secrets.DB_HOST }} >> .env
           echo DB_PORT=${{ secrets.DB_PORT }}  >> .env
           cd /srv/coypos/coyposadmin
-          rm yarn.lock
-          rm .env
-          git pull origin master
-          git status
           touch .env
           echo VUE_APP_I18N_LOCALE=pl >> .env
           echo VUE_APP_I18N_FALLBACK_LOCALE=en >> .env
@@ -113,9 +129,16 @@ jobs:
           echo VUE_APP_TOKEN=${{ secrets.API_SECRET }} >> .env
           echo BASE_URL=https://adminsmilginp.evolpe.net  >> .env
           cd /srv/coypos/
-          sudo docker-compose kill
-          sudo docker-compose rm -f
-          sudo docker image prune -af
+    - name: build new containers
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        port: 2137
+        command_timeout: 200m
+        script: |
+          cd /srv/coypos
           sudo docker-compose up -d
     - name: Notify discord
       uses: th0th/notify-discord@v0.4.1
