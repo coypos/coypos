@@ -1,6 +1,6 @@
 <template>
   <sidebar-component></sidebar-component>
-  <div class="content">
+  <div id="content">
     <header-component></header-component>
     <router-view />
   </div>
@@ -11,7 +11,9 @@
   color: #fdfdfd;
   background-color: #1f1f1f;
 }
-.content {
+#content {
+  transition: 0.5s;
+
   margin-left: 20%;
 }
 #app {
@@ -23,7 +25,38 @@
   text-align: left;
 }
 </style>
-<script setup lang="ts">
+<script lang="ts">
 import HeaderComponent from "@/components/layout/HeaderComponent.vue";
 import SidebarComponent from "@/components/layout/SidebarComponent.vue";
+import { defineComponent, ref } from "vue";
+export default defineComponent({
+  name: "App",
+  components: {
+    HeaderComponent,
+    SidebarComponent,
+  },
+  methods: {
+    async openNav() {
+      const sidebar = document.getElementById("content");
+      if (sidebar) {
+        sidebar.style.marginLeft = "20%";
+      }
+    },
+    async closeNav() {
+      const content = document.getElementById("content");
+      if (content) {
+        content.style.marginLeft = "4%";
+      }
+    },
+  },
+  mounted() {
+    setInterval(() => {
+      if (this.$storage.getStorageSync("hidden")) {
+        this.closeNav();
+      } else {
+        this.openNav();
+      }
+    }, 100);
+  },
+});
 </script>
