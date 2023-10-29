@@ -118,12 +118,14 @@ export default defineComponent({
   #sidebar-header {
     border-bottom: 3px solid #2c2c2c;
     .sidebar-buttons {
+      height: 72px;
+
       width: 100%;
       display: block;
       border-bottom: 3px solid #2c2c2c;
       text-align: center;
       min-height: 70px;
-      line-height: 67px;
+      line-height: 72px;
 
       .closebtn {
         display: inline-block;

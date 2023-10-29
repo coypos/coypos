@@ -12,7 +12,7 @@
   background-color: #1f1f1f;
 }
 #content {
-  transition: 0.5s;
+  transition: 0.4s;
 
   margin-left: 20%;
 }
@@ -45,7 +45,7 @@ export default defineComponent({
     async closeNav() {
       const content = document.getElementById("content");
       if (content) {
-        content.style.marginLeft = "4%";
+        content.style.marginLeft = "100px";
       }
     },
   },
