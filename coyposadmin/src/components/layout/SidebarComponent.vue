@@ -26,15 +26,48 @@
             <div class="icon">
               <i class="fa-solid fa-house fa-xl"></i>
             </div>
-            <span v-show="!this.hidden">Home</span>
+            <span v-show="!this.hidden">Dashboard</span>
           </router-link>
         </div>
         <div class="nav-block">
-          <router-link to="/about"
+          <router-link to="/products?page=1&itemsPerPage=10"
             ><div class="icon">
               <i class="fa-solid fa-barcode fa-xl"></i>
             </div>
-            <span v-show="!this.hidden">About</span>
+            <span v-show="!this.hidden">Produkty</span>
+          </router-link>
+        </div>
+        <div class="nav-block">
+          <router-link to="/categories"
+            ><div class="icon">
+              <i class="fa-solid fa-barcode fa-xl"></i>
+            </div>
+            <span v-show="!this.hidden">Kategorie</span>
+          </router-link>
+        </div>
+        <div class="nav-block">
+          <router-link to="/promotions"
+            ><div class="icon">
+              <i class="fa-solid fa-barcode fa-xl"></i>
+            </div>
+            <span v-show="!this.hidden">Promocje</span>
+          </router-link>
+        </div>
+
+        <div class="nav-block">
+          <router-link to="/store_users"
+            ><div class="icon">
+              <i class="fa-solid fa-barcode fa-xl"></i>
+            </div>
+            <span v-show="!this.hidden">Pracownicy</span>
+          </router-link>
+        </div>
+        <div class="nav-block">
+          <router-link to="/settings"
+            ><div class="icon">
+              <i class="fa-solid fa-barcode fa-xl"></i>
+            </div>
+            <span v-show="!this.hidden">Ustawienia Kas</span>
           </router-link>
         </div>
       </nav>

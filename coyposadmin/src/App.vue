@@ -29,6 +29,13 @@
 import HeaderComponent from "@/components/layout/HeaderComponent.vue";
 import SidebarComponent from "@/components/layout/SidebarComponent.vue";
 import { defineComponent, ref } from "vue";
+import type { AxiosInstance } from "axios";
+declare module "@vue/runtime-core" {
+  interface ComponentCustomProperties {
+    $axios: AxiosInstance;
+    catTags: string[];
+  }
+}
 export default defineComponent({
   name: "App",
   components: {
