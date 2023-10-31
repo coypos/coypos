@@ -25,6 +25,7 @@ public class Setup
             var origins = new string[]
             {
                 "https://smilginp.evolpe.net",
+                "https://adminsmilginp.evolpe.net",
                 "http://localhost:8080",
                 "http://localhost:5016",
                 "https://localhost:7091"
