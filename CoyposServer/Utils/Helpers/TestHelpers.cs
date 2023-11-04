@@ -45,6 +45,17 @@ public static class TestHelpers
             await databaseContext.SaveChangesAsync();
         }
 
+        for (int i = 0; i < 50; i++)
+        {
+            databaseContext.Settings.Add(new Setting()
+            {
+                ID = i,
+                Key = Guid.NewGuid().ToString(),
+                Value = Guid.NewGuid().ToString()
+            });
+            await databaseContext.SaveChangesAsync();
+        }
+
         return databaseContext;
     }
 }

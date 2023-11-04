@@ -38,13 +38,6 @@ public class CoyposController : ControllerBase
     }
 
     [HttpGet]
-    [Route("settings")]
-    public ObjectResult Settings()
-    {
-        return StatusCode((int)HttpStatusCode.OK, _dbContext.Settings.ToList());
-    }
-
-    [HttpGet]
     [Route("logs")]
     public ObjectResult Logs()
     {
