@@ -131,4 +131,35 @@ public class CategoryController : ControllerBase
         
         return StatusCode((int)HttpStatusCode.OK, categoryFromDb);
     }
+    
+    /// <summary>
+    /// Deletes a category
+    /// </summary>
+    /// <param name="id">category ID</param>
+    [HttpDelete]
+    [Route("category/{id:int}")]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(Category), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
+    public async Task<ObjectResult> DeleteCategory(int id)
+    {
+        try
+        {
+            var categoryFromDb = _dbContext.Categories.FirstOrDefault(p => p.ID == id);
+            if (categoryFromDb is null)
+                throw new Exception("No known category with such ID");
+            _dbContext.Remove(categoryFromDb);
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            var message = e.InnerException is not null ? e.InnerException.Message : e.Message;
+            var response = e.InnerException is not null
+                ? HttpStatusCode.BadRequest
+                : HttpStatusCode.InternalServerError;
+            return StatusCode((int)response, new ProblemDetails() { Title = message });
+        }
+
+        return StatusCode((int)HttpStatusCode.OK, $"Category {id} deleted");
+    }
 }

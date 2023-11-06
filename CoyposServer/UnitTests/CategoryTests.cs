@@ -50,4 +50,13 @@ public class CategoryTests
 		result.Name.Should().Be("Snowflake");
 		_dbContext.Categories.First().Name.Should().Be("Snowflake");
 	}
+
+	[Test]
+	public async Task DeleteCategory()
+	{
+		var cachedName = _dbContext.Categories.First().Name;
+		var req = await _categoryController.DeleteCategory(0);
+		req.CheckStatusCode(HttpStatusCode.OK);
+		_dbContext.Categories.Count(_ => _.Name == cachedName).Should().Be(0);
+	}
 }
