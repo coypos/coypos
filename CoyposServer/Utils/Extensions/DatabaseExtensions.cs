@@ -32,6 +32,10 @@ public static class DatabaseExtensions
 
     public static async Task ForceSaveChangesAsync(this DatabaseContext? dbContext, string tableName)
     {
+        // temp fix:
+        await dbContext.SaveChangesAsync();
+        return;
+        
         if (!dbContext.IsRealDatabase())
         {
             await dbContext.SaveChangesAsync();
