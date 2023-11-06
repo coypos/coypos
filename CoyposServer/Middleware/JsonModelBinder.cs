@@ -23,8 +23,14 @@ public class JsonModelBinder : IModelBinder
     
     public async Task BindModelAsync(ModelBindingContext bindingContext)
     {
+        var maxAttempts = 10;
+        start:
         try
         {
+            maxAttempts--;
+            if (maxAttempts < 0)
+                throw new Exception("Get a lottery ticket.");
+            
             if (bindingContext == null)
             {
                 throw new ArgumentNullException(nameof(bindingContext));
@@ -126,6 +132,14 @@ public class JsonModelBinder : IModelBinder
         }
         catch (Exception e)
         {
+            // hotfix for
+            // https://learn.microsoft.com/en-gb/ef/core/dbcontext-configuration/#avoiding-dbcontext-threading-issues
+            if (e.Message.Contains("2097913"))
+            {
+                Log.Msg("Repeating request due to 2097913...");
+                goto start;
+            }
+
             Log.Wrn("⚠️ Aborting the request in the model binder.");
             Log.Wrn("⚠️ This will throw an exception right about... now!");
             bindingContext.HttpContext.Response.StatusCode = (int) HttpStatusCode.BadRequest;
