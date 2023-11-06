@@ -23,7 +23,7 @@ public class JsonModelBinder : IModelBinder
     
     public async Task BindModelAsync(ModelBindingContext bindingContext)
     {
-        var maxAttempts = 10;
+        var maxAttempts = 50;
         start:
         try
         {
