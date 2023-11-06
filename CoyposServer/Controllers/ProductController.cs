@@ -4,6 +4,7 @@ using CoyposServer.Models.Sql;
 using CoyposServer.Utils;
 using CoyposServer.Utils.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NUnit.Framework;
 
@@ -77,7 +78,8 @@ public class ProductController : ControllerBase
             product = ObjectHelpers.CopyNonNullValues(productFromDb, product);
             //_dbContext.AttachVirtualProperties(productFromDb);
             _dbContext.Entry(productFromDb).CurrentValues.SetValues(product);
-            await _dbContext.SaveChangesAsync();
+            
+            await _dbContext.ForceSaveChangesAsync("Products");
         }
         catch (Exception e)
         {
@@ -141,11 +143,13 @@ public class ProductController : ControllerBase
         {
             // overwritten values:
             product.CreateDate = DateTime.Now;
+            product.UpdateDate = DateTime.Now;
             _dbContext.AttachVirtualProperties(product);
             // </>
 
             result = _dbContext.Products.Add(product);
-            await _dbContext.SaveChangesAsync();
+            
+            await _dbContext.ForceSaveChangesAsync("Products");
         }
         catch (Exception e)
         {

@@ -20,6 +20,7 @@ public static class TestHelpers
                 ID = i,
                 Name = Guid.NewGuid().ToString(),
                 ParentCategory = databaseContext.Categories.FirstOrDefault(),
+                IsVisible = true,
                 UpdateDate = DateTime.Now,
                 CreateDate = DateTime.Now
             });

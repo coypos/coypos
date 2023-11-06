@@ -18,9 +18,9 @@ public class Category
     [Column("ParentCategoryID")]
     public virtual Category? ParentCategory { get; set; }
     
-    [Column("UpdateDate")] [Skipped]
+    [Column("UpdateDate")]
     public DateTime? UpdateDate { get; set; }
     
-    [Column("CreateDate")] [Skipped]
+    [Column("CreateDate")]
     public DateTime? CreateDate { get; set; }
 }
