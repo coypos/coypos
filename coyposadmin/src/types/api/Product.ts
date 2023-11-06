@@ -9,11 +9,11 @@ export interface ProductModel {
 
   enabled: boolean | null;
 
-  name: string;
+  name: string | null;
 
   barcode: string | null;
 
-  price: number;
+  price: number | null;
 
   isLoose: boolean | null;
 

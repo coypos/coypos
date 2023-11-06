@@ -1,15 +1,13 @@
 <template>
-  <div :id="'product' + index" class="row product">
-    <div class="col-3">{{ product.name }}</div>
-    <div class="col-3">{{ product.category.name }}</div>
-    <div class="col-2">{{ product.barcode }}</div>
-    <div class="col-2">{{ product.price }}</div>
+  <div :id="'setting' + index" class="row setting">
+    <div class="col-4">{{ setting.key }}</div>
+    <div class="col-4">{{ setting.value }}</div>
 
     <div class="col-1">
-      <div class="btn btn-warning" @click="editproduct()">EDYTUJ</div>
+      <div class="btn btn-warning" @click="editsetting()">EDYTUJ</div>
     </div>
     <div class="col-1">
-      <div class="btn btn-danger" @click="deleteproduct()">USUŃ</div>
+      <div class="btn btn-danger" @click="deletesetting()">USUŃ</div>
     </div>
   </div>
 </template>
@@ -21,7 +19,7 @@ import { DeleteItemModel } from "@/types/DeleteItem";
 export default defineComponent({
   name: "OneLineComponent",
   props: {
-    product: Object,
+    setting: Object,
     index: Number,
   },
   setup() {
@@ -30,17 +28,17 @@ export default defineComponent({
     return { edit, item };
   },
   methods: {
-    async editproduct() {
+    async editsetting() {
       showModal();
-      this.$emit("getproductedited", this.product);
+      this.$emit("getsettingedited", this.setting);
     },
-    async deleteproduct() {
-      if (this.product) {
-        this.item.id = this.product.id;
-        this.item.what = "product";
-        this.item.name = this.product.name;
+    async deletesetting() {
+      if (this.setting) {
+        this.item.id = this.setting.id;
+        this.item.what = "setting";
+        this.item.name = this.setting.key;
         showDeleteModal();
-        this.$emit("getproductdeleted", this.item);
+        this.$emit("getsettingdeleted", this.item);
       }
     },
     showModal,
@@ -49,7 +47,7 @@ export default defineComponent({
       if (this.index) {
         if (this.index % 2 == 1) {
           let elem = document.getElementById(
-            "product" + this.index
+            "setting" + this.index
           ) as HTMLElement;
           elem.style.backgroundColor = "#2c2c2c";
         }
@@ -62,7 +60,7 @@ export default defineComponent({
 });
 </script>
 <style scoped lang="scss">
-.product {
+.setting {
   min-height: 50px;
   line-height: 50px;
 }

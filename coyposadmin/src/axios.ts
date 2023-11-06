@@ -1,6 +1,6 @@
 import Axios from "axios";
 import type { App } from "vue";
-import { setupCache, buildWebStorage } from "axios-cache-interceptor";
+import { setupCache } from "axios-cache-interceptor";
 interface AxiosOptions {
   baseUrl?: string;
   token?: string;
@@ -17,7 +17,9 @@ export default {
           XApiKey: process.env.VUE_APP_TOKEN,
         },
       }),
-      { storage: buildWebStorage(localStorage, "axios-cache:") }
+      {
+        //storage: buildWebStorage(localStorage, "axios-cache:"),
+      }
     );
   },
 };
