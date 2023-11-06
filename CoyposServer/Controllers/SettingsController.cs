@@ -25,7 +25,7 @@ public class SettingsController : ControllerBase
 	/// <param name="page">page number</param>
 	[HttpGet]
 	[Route("settings")]
-	[ProducesResponseType(typeof(List<Setting>), (int)HttpStatusCode.OK)]
+	[ProducesResponseType(typeof(RichResponse<List<Setting>>), (int)HttpStatusCode.OK)]
 	[ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
 	public ObjectResult Settings([FromBody] Setting settingFilter, string filter = "AND", int itemsPerPage = 50, int page = 1)
 	{
