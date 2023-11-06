@@ -28,7 +28,7 @@
 <script lang="ts">
 import HeaderComponent from "@/components/layout/HeaderComponent.vue";
 import SidebarComponent from "@/components/layout/SidebarComponent.vue";
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 import type { AxiosInstance } from "axios";
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
