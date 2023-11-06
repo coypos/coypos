@@ -23,12 +23,21 @@ public class SettingsTests
 	}
     
 	[Test]
-	public void ListSettings()
+	public void ListSettingsWithoutFilter()
 	{
-		var req = _settingsController.Settings();
+		var req = _settingsController.Settings(new Setting() { }, "AND", _dbContext.Products.Count(), 1);
 		req.CheckStatusCode(HttpStatusCode.OK);
-		var result = req.YeldExpectedResult<List<Setting>>();
-		result.Count.Should().Be(_dbContext.Settings.Count());
+		var result = req.YeldExpectedResult<RichResponse<List<Setting>>>();
+		result.Response.Count.Should().Be(_dbContext.Settings.Count());
+	}
+	
+	[Test]
+	public void ListSettingsWithFilter()
+	{
+		var req = _settingsController.Settings(new Setting() { Key = _dbContext.Settings.First().Key}, "AND", _dbContext.Products.Count(), 1);
+		req.CheckStatusCode(HttpStatusCode.OK);
+		var result = req.YeldExpectedResult<RichResponse<List<Setting>>>();
+		result.Response.Count.Should().Be(1);
 	}
 
 	[Test]

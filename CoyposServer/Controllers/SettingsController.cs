@@ -2,6 +2,7 @@
 using CoyposServer.Models;
 using CoyposServer.Models.Sql;
 using CoyposServer.Utils;
+using CoyposServer.Utils.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoyposServer.Controllers;
@@ -18,15 +19,29 @@ public class SettingsController : ControllerBase
 	/// <summary>
 	/// Returns all settings
 	/// </summary>
+	/// <param name="settingFilter">filter to use</param>
+	/// <param name="filter">filter type to use (AND/OR/NOR)</param>
+	/// <param name="itemsPerPage">number of items per page</param>
+	/// <param name="page">page number</param>
 	[HttpGet]
 	[Route("settings")]
 	[ProducesResponseType(typeof(List<Setting>), (int)HttpStatusCode.OK)]
 	[ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
-	public ObjectResult Settings()
+	public ObjectResult Settings([FromBody] Setting settingFilter, string filter = "AND", int itemsPerPage = 50, int page = 1)
 	{
 		try
 		{
-			return StatusCode((int)HttpStatusCode.OK, _dbContext.Settings.ToList());
+			var settings = _dbContext.Settings.ToList();
+			var filteredSettings = settings.Filter(settingFilter, filter);
+			var pagefiedSettings = filteredSettings.Pagefy(itemsPerPage, page, out var totalPages).ToList();
+			return StatusCode((int)HttpStatusCode.OK, new RichResponse<List<Setting>>(pagefiedSettings)
+			{
+				Page = page,
+				TotalPages = totalPages,
+				ItemsPerPage = itemsPerPage,
+				TotalItems = settings.Count,
+				TotalItemsFiltered = filteredSettings.Count
+			});
 		}
 		catch (Exception e)
 		{
