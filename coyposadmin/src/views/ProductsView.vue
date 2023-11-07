@@ -17,7 +17,7 @@
   <product-component
     v-for="(product, index) in products"
     :key="index"
-    :index="index"
+    :index="index as Number"
     :product="product"
     @getproductedited="getproductedited"
     @getproductdeleted="getproductdeleted"
@@ -29,10 +29,11 @@
   ></pagination-component
   ><product-modal
     @canceladd="canceladd"
+    @refreshproducts="refreshproducts"
     :create="create"
     :product="product"
   ></product-modal>
-  <delete-modal :item="item"></delete-modal>
+  <delete-modal @refresh="refreshproducts" :item="item"></delete-modal>
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
@@ -81,6 +82,10 @@ export default defineComponent({
     async getproductdeleted(value: DeleteItemModel) {
       this.item = value;
     },
+    async refreshproducts(value: boolean) {
+      console.log("refreshproducts", value);
+      await this.getProducts();
+    },
     async canceladd(value: boolean) {
       this.create = value;
       this.product = {
@@ -122,6 +127,7 @@ export default defineComponent({
     showModal,
     async getProducts() {
       try {
+        this.products = [];
         await this.$axios
           .get(
             `/products?filter=AND&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
@@ -129,6 +135,7 @@ export default defineComponent({
           .then((response) => {
             const resp: ResponseModel = response.data;
             this.products = resp.response;
+
             this.totalPages = resp.totalPages;
           });
       } catch (e) {

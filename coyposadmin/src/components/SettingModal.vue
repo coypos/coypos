@@ -112,6 +112,7 @@ export default defineComponent({
         key: null,
         value: null,
       };
+      this.$emit("refreshsettings", true);
     },
 
     async canceladd() {

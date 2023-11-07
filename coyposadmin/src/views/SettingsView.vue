@@ -27,8 +27,9 @@
     @canceladd="canceladd"
     :create="create"
     :setting="setting"
+    @refreshsettings="refreshsettings"
   ></setting-modal>
-  <delete-modal :item="item"></delete-modal>
+  <delete-modal @refresh="refreshsettings" :item="item"></delete-modal>
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
@@ -76,6 +77,10 @@ export default defineComponent({
     },
     async getsettingdeleted(value: DeleteItemModel) {
       this.item = value;
+    },
+    async refreshsettings(value: boolean) {
+      console.log("refreshproducts", value);
+      await this.getSettings();
     },
     async canceladd(value: boolean) {
       this.create = value;

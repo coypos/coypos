@@ -1,6 +1,6 @@
-import Axios from "axios";
+import axios from "axios";
 import type { App } from "vue";
-import { setupCache } from "axios-cache-interceptor";
+
 interface AxiosOptions {
   baseUrl?: string;
   token?: string;
@@ -8,18 +8,13 @@ interface AxiosOptions {
 
 export default {
   install: (app: App, options: AxiosOptions) => {
-    app.config.globalProperties.$axios = setupCache(
-      Axios.create({
-        baseURL: options.baseUrl,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: options.token ? `Bearer ${options.token}` : "",
-          XApiKey: process.env.VUE_APP_TOKEN,
-        },
-      }),
-      {
-        //storage: buildWebStorage(localStorage, "axios-cache:"),
-      }
-    );
+    app.config.globalProperties.$axios = axios.create({
+      baseURL: options.baseUrl,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: options.token ? `Bearer ${options.token}` : "",
+        XApiKey: process.env.VUE_APP_TOKEN,
+      },
+    });
   },
 };

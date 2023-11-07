@@ -59,7 +59,11 @@ export default defineComponent({
     async deleteitem() {
       try {
         if (this.item) {
-          await this.$axios.delete(`/${this.item.what}/${this.item.id}`);
+          await this.$axios
+            .delete(`/${this.item.what}/${this.item.id}`)
+            .then(() => {
+              this.$emit("refresh", true);
+            });
         }
       } catch (e) {
         console.log(e);

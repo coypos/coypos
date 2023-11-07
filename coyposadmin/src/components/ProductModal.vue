@@ -253,6 +253,8 @@ export default defineComponent({
         },
         image: null,
       };
+
+      this.$emit("refreshproducts", true);
     },
     async getCategories() {
       try {
