@@ -81,6 +81,7 @@ export default defineComponent({
   name: "SidebarComponent",
   setup() {
     let hidden = ref<boolean>(false);
+
     return { hidden };
   },
   methods: {
@@ -159,16 +160,25 @@ export default defineComponent({
       text-align: center;
       min-height: 70px;
       line-height: 72px;
-
+      position: relative;
       .closebtn {
+        position: absolute;
+        top: 0;
+        right: 15px;
         display: inline-block;
         color: #fdfdfd;
         margin: auto;
+        height: 70px;
       }
       #name {
-        width: 75%;
+        position: absolute;
+        top: 0;
+        left: 5px;
+        width: 80%;
         font-size: 1.3em;
         display: inline-block;
+        overflow: clip;
+        height: 70px;
         margin: auto;
       }
     }
