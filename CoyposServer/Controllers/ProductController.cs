@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text;
 using CoyposServer.Models;
 using CoyposServer.Models.Sql;
 using CoyposServer.Utils;
@@ -29,12 +30,28 @@ public class ProductController : ControllerBase
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(RichResponse<List<Product>>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
-    public ObjectResult GetProductsWithFilter([FromBody] Product productFilter, string filter = "AND", int itemsPerPage = 50, int page = 1)
+    public ObjectResult GetProductsWithFilter([FromBody] Product productFilter, string filter = "AND", int itemsPerPage = 50, int page = 1, string language = "", bool loadImages = false)
     {
-        try {
+        try
+        {
+            var images = loadImages ? _dbContext.Images.ToList() : new List<Image>();
             var products = _dbContext.Products.ToList();
+            
+            for (var i = 0; i < products.Count; i++)
+                if (!products[i].Name.IsNullOrEmpty())
+                    products[i].Name = LanguageHelpers.Translate(products[i].Name, language);
+
             var filteredProducts = products.Filter(productFilter, filter);
             var pagefiedProducts = filteredProducts.Pagefy(itemsPerPage, page, out var totalPages);
+            
+            for (var i = 0; i < pagefiedProducts.Count; i++)
+            {
+                if (!pagefiedProducts[i].Image.IsNullOrEmpty() && loadImages)
+                    pagefiedProducts[i].Image =
+                        images.FirstOrDefault(_ => _.ID.ToString() == pagefiedProducts[i].Image).Img;
+                else
+                    pagefiedProducts[i].Image = null;
+            }
             
             return StatusCode((int)HttpStatusCode.OK, new RichResponse<List<Product>>(pagefiedProducts)
             {
@@ -70,6 +87,17 @@ public class ProductController : ControllerBase
         Product? productFromDb;
         try
         {
+            if (!product.Image.IsNullOrEmpty())
+            {
+                var imageSize = Encoding.UTF8.GetBytes(product.Image).Length;
+                if (imageSize > 25*1024)
+                    throw new Exception(
+                        $"Provided image is too large ({imageSize} bytes). Maximum image size: {25*1024} bytes.");
+                var imageResult = _dbContext.Images.Add(new Image() { Img = product.Image });
+                await _dbContext.ForceSaveChangesAsync("Images");
+                product.Image = imageResult.Entity.ID.ToString();
+            }
+            
             productFromDb = _dbContext.Products.FirstOrDefault(p => p.ID == id);
             if (productFromDb is null)
                 throw new Exception("No known product with such ID");
@@ -141,6 +169,17 @@ public class ProductController : ControllerBase
 
         try
         {
+            if (!product.Image.IsNullOrEmpty())
+            {
+                var imageSize = Encoding.UTF8.GetBytes(product.Image).Length;
+                if (imageSize > 25*1024)
+                    throw new Exception(
+                        $"Provided image is too large ({imageSize} bytes). Maximum image size: {25*1024} bytes.");
+                var imageResult = _dbContext.Images.Add(new Image() { Img = product.Image });
+                await _dbContext.ForceSaveChangesAsync("Images");
+                product.Image = imageResult.Entity.ID.ToString();
+            }
+            
             // overwritten values:
             product.CreateDate = DateTime.Now;
             product.UpdateDate = DateTime.Now;

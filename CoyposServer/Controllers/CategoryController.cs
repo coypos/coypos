@@ -29,11 +29,14 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(RichResponse<List<Category>>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
-    public ObjectResult GetCategories([FromBody] Category categoryFilter, string filter = "AND", int itemsPerPage = 50, int page = 1)
+    public ObjectResult GetCategories([FromBody] Category categoryFilter, string filter = "AND", int itemsPerPage = 50, int page = 1, string language = "")
     {
         try
         {
             var categories = _dbContext.Categories.ToList();
+            for (var i = 0; i < categories.Count; i++)
+                if (!categories[i].Name.IsNullOrEmpty())
+                    categories[i].Name = LanguageHelpers.Translate(categories[i].Name, language);
             var filteredCategories = categories.Filter(categoryFilter, filter);
             var pagefiedCategories = filteredCategories.Pagefy(itemsPerPage, page, out var totalPages);
             

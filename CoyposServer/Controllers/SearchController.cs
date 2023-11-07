@@ -28,11 +28,15 @@ public class SearchController : ControllerBase
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(RichResponse<List<Product>>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
-    public ObjectResult SearchProduct(string query = "", int categoryId = -1, int itemsPerPage = 50, int page = 1)
+    public ObjectResult SearchProduct(string query = "", int categoryId = -1, int itemsPerPage = 50, int page = 1, string language = "")
     {
         try
         {
             var products = _dbContext.Products.ToList();
+            for (var i = 0; i < products.Count; i++)
+                if (!products[i].Name.IsNullOrEmpty())
+                    products[i].Name = LanguageHelpers.Translate(products[i].Name, language);
+            
             products = categoryId switch
             {
                 -1 => products,
