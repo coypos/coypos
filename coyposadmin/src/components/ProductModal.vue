@@ -97,15 +97,25 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-12">
+            <div class="col-6">
               <div class="form-group">
                 <label for="image">Zdjęcie</label>
                 <input
-                  :v-model="editproduct.image"
+                  type="file"
+                  ref="photo"
+                  accept="image/*"
+                  @change="encodeImageFileAsURL()"
                   class="form-control"
                   id="image"
                 />
               </div>
+            </div>
+            <div class="col-6">
+              <img
+                style="display: block; width: 150px; height: 150px"
+                id="base64image"
+                :src="editproduct.image"
+              />
             </div>
           </div>
           <div class="row">
@@ -200,6 +210,17 @@ export default defineComponent({
   },
 
   methods: {
+    async encodeImageFileAsURL() {
+      const element: HTMLInputElement = this.$refs.photo as HTMLInputElement;
+      if (element.files) {
+        const file = element.files[0];
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          this.editproduct.image = reader.result as string;
+        };
+        reader.readAsDataURL(file);
+      }
+    },
     async updateProduct() {
       let result: CategoryModel[] = this.categories.filter(
         (obj: CategoryModel) => {
@@ -253,7 +274,8 @@ export default defineComponent({
         },
         image: null,
       };
-
+      let photo = this.$refs.photo as HTMLInputElement;
+      if (photo) photo.value = "";
       this.$emit("refreshproducts", true);
     },
     async getCategories() {
@@ -289,7 +311,8 @@ export default defineComponent({
         },
         image: null,
       };
-
+      let photo = this.$refs.photo as HTMLInputElement;
+      if (photo) photo.value = "";
       this.$emit("canceladd", false);
     },
   },
