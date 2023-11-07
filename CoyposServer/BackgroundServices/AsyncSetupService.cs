@@ -1,4 +1,5 @@
-﻿using CoyposServer.Utils;
+﻿using System.Globalization;
+using CoyposServer.Utils;
 using CoyposServer.Utils.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,18 +16,14 @@ public class AsyncSetupService : BackgroundService
 	
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
-		SetupDefaultLanguage();
+		var lang = SetupDefaultLanguage();
+		Log.Msg($"Language set to: {new CultureInfo(lang).DisplayName} ({lang})");
 	}
 
-	private void SetupDefaultLanguage()
+	private string SetupDefaultLanguage()
 	{
 		var databaseLanguage = _dbContext.Settings.FirstOrDefault(_ => _.Key == "language");
-		if (databaseLanguage is null)
-		{
-			LanguageHelpers.DefaultLanguage = "pl";
-			return;
-		}
-
-		LanguageHelpers.DefaultLanguage = databaseLanguage.Value;
+		LanguageHelpers.DefaultLanguage = databaseLanguage is null ? "pl" : databaseLanguage.Value;
+		return LanguageHelpers.DefaultLanguage;
 	}
 }

@@ -5,6 +5,7 @@ using CoyposServer.Utils;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.OpenApi.Models;
 using System.Web;
+using CoyposServer.BackgroundServices;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 
@@ -87,6 +88,8 @@ public class Setup
                     .Insert(0, new JsonModelBinderProvider(
                         builder.Services.BuildServiceProvider().GetService<DatabaseContext>()));
             });
+
+            builder.Services.AddHostedService<AsyncSetupService>();
 
             app = builder.Build();
 
