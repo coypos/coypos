@@ -130,7 +130,7 @@ export default defineComponent({
         this.products = [];
         await this.$axios
           .get(
-            `/products?filter=AND&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
+            `/products?filter=AND&loadImages=true&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
           )
           .then((response) => {
             const resp: ResponseModel = response.data;
