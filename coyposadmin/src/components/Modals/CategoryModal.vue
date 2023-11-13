@@ -70,7 +70,7 @@
             <div class="col-6">
               <img
                 id="base64image"
-                :src="'data:image/jpeg;base64,' + editcategory.image"
+                :src="'data:image/png;base64,' + editcategory.image"
               />
             </div>
           </div>
@@ -206,6 +206,17 @@ export default defineComponent({
         }
       }
       console.log(result, this.editcategory.parentCategory);
+      if (!result[0]) {
+        result.push({
+          name: null,
+          isVisible: null,
+          id: null,
+          image: null,
+          parentCategory: null,
+          createDate: null,
+          updateDate: null,
+        });
+      }
       let data = {
         name: this.editcategory.name,
         parentCategory: result[0].id,
