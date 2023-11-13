@@ -11,6 +11,9 @@ public class Category
     
     [Column("Name")]
     public string? Name { get; set; }
+    
+    [Column("Image")]
+    public string? Image { get; set; }
 
     [Column("IsVisible")]
     public bool? IsVisible { get; set; }

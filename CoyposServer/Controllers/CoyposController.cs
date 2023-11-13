@@ -43,4 +43,26 @@ public class CoyposController : ControllerBase
     {
         return StatusCode((int)HttpStatusCode.OK, Log.LocalCache);
     }
+
+    [HttpGet]
+    [Route("clear_images")]
+    public async Task<ObjectResult> ClearImages()
+    {
+        var deleted = await ClearUnknownImages();
+        return StatusCode((int)HttpStatusCode.OK, $"Deleted {deleted} unlinked images from the database.");
+    }
+    
+    private async Task<int> ClearUnknownImages()
+    {
+        var counter = 0;
+        foreach (var image in _dbContext.Images)
+            if (_dbContext.Products.FirstOrDefault(_ => _.Image == image.ID.ToString()) is null)
+            {
+                _dbContext.Images.Remove(image);
+            }
+
+        if (counter > 0)
+            await _dbContext.SaveChangesAsync();
+        return counter;
+    }
 }

@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Text;
+using CoyposServer.Models.Sql;
 using CoyposServer.Utils.Extensions;
 
 namespace CoyposServer.Utils;
@@ -55,17 +57,21 @@ public static class Log
     private static DateTime _today;
     private static void SaveEntry(string message)
     {
-        if (_logFileStream is null || _today != DateTime.Today)
+        try
         {
-            Directory.CreateDirectory("/var/lib/coypos/logs");
-            _logFileStream = new StreamWriter($"/var/lib/coypos/logs/{DateTime.UtcNow:yyyy-MM-dd}.log", true);
-            _today = DateTime.Today;
-        }
-        
-        message = message.RemoveAllOccurrences(NORMAL, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, GREY, BOLD, NOBOLD, UNDERLINE,
-            NOUNDERLINE, REVERSE, NOREVERSE);
-        LocalCache += message += "\n";
-        _logFileStream.WriteLine(message);
+            if (_logFileStream is null || _today != DateTime.Today)
+            {
+                Directory.CreateDirectory("/var/lib/coypos/logs");
+                _logFileStream = new StreamWriter($"/var/lib/coypos/logs/{DateTime.UtcNow:yyyy-MM-dd}.log", true);
+                _today = DateTime.Today;
+            }
+
+            message = message.RemoveAllOccurrences(NORMAL, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, GREY, BOLD, NOBOLD,
+                UNDERLINE,
+                NOUNDERLINE, REVERSE, NOREVERSE);
+            LocalCache += message += "\n";
+            _logFileStream.WriteLine(message);
+        } catch (EncoderFallbackException) {}
     }
 
     public static void Dispose()

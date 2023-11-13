@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text;
 using CoyposServer.Models;
 using CoyposServer.Models.Sql;
 using CoyposServer.Utils;
@@ -29,16 +30,27 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(RichResponse<List<Category>>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
-    public ObjectResult GetCategories([FromBody] Category categoryFilter, string filter = "AND", int itemsPerPage = 50, int page = 1, string language = "")
+    public ObjectResult GetCategories([FromBody] Category categoryFilter, string filter = "AND", int itemsPerPage = 50, int page = 1, string language = "", bool loadImages = false)
     {
         try
         {
+            var images = loadImages ? _dbContext.Images.ToList() : new List<Image>();
             var categories = _dbContext.Categories.ToList();
             for (var i = 0; i < categories.Count; i++)
                 if (!categories[i].Name.IsNullOrEmpty())
                     categories[i].Name = LanguageHelpers.Translate(categories[i].Name, language);
+            
             var filteredCategories = categories.Filter(categoryFilter, filter);
             var pagefiedCategories = filteredCategories.Pagefy(itemsPerPage, page, out var totalPages);
+            
+            for (var i = 0; i < pagefiedCategories.Count; i++)
+            {
+                if (!pagefiedCategories[i].Image.IsNullOrEmpty() && loadImages)
+                    pagefiedCategories[i].Image =
+                        images.FirstOrDefault(_ => _.ID.ToString() == pagefiedCategories[i].Image).Img;
+                else
+                    pagefiedCategories[i].Image = null;
+            }
             
             return StatusCode((int)HttpStatusCode.OK, new RichResponse<List<Category>>(pagefiedCategories)
             {
@@ -74,6 +86,17 @@ public class CategoryController : ControllerBase
 
         try
         {
+            if (!category.Image.IsNullOrEmpty())
+            {
+                var imageSize = Encoding.UTF8.GetBytes(category.Image).Length;
+                if (imageSize > 25*1024)
+                    throw new Exception(
+                        $"Provided image is too large ({imageSize} bytes). Maximum image size: {25*1024} bytes.");
+                var imageResult = _dbContext.Images.Add(new Image() { Img = category.Image });
+                await _dbContext.ForceSaveChangesAsync("Images");
+                category.Image = imageResult.Entity.ID.ToString();
+            }
+            
             // overwritten values:
             category.UpdateDate = DateTime.Now;
             category.CreateDate = DateTime.Now;
@@ -111,6 +134,17 @@ public class CategoryController : ControllerBase
         Category? categoryFromDb;
         try
         {
+            if (!category.Image.IsNullOrEmpty())
+            {
+                var imageSize = Encoding.UTF8.GetBytes(category.Image).Length;
+                if (imageSize > 25*1024)
+                    throw new Exception(
+                        $"Provided image is too large ({imageSize} bytes). Maximum image size: {25*1024} bytes.");
+                var imageResult = _dbContext.Images.Add(new Image() { Img = category.Image });
+                await _dbContext.ForceSaveChangesAsync("Images");
+                category.Image = imageResult.Entity.ID.ToString();
+            }
+            
             categoryFromDb = _dbContext.Categories.FirstOrDefault(p => p.ID == id);
             if (categoryFromDb is null)
                 throw new Exception("No known category with such ID");
