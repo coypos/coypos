@@ -4,8 +4,10 @@ export interface CategoryModel {
   name: string | null;
 
   parentCategory: CategoryModel | null;
+  image: string | null;
+  isVisible: boolean | null;
 
-  UpdateDate: Date | string | null;
+  updateDate: Date | string | null;
 
-  CreateDate: Date | string | null;
+  createDate: Date | string | null;
 }

@@ -38,7 +38,7 @@
           </router-link>
         </div>
         <div class="nav-block">
-          <router-link to="/categories"
+          <router-link to="/categories?page=1&itemsPerPage=10"
             ><div class="icon">
               <i class="fa-solid fa-barcode fa-xl"></i>
             </div>
@@ -46,7 +46,7 @@
           </router-link>
         </div>
         <div class="nav-block">
-          <router-link to="/promotions"
+          <router-link to="/promotions?page=1&itemsPerPage=10"
             ><div class="icon">
               <i class="fa-solid fa-barcode fa-xl"></i>
             </div>
@@ -55,7 +55,7 @@
         </div>
 
         <div class="nav-block">
-          <router-link to="/store_users"
+          <router-link to="/store_users?page=1&itemsPerPage=10"
             ><div class="icon">
               <i class="fa-solid fa-barcode fa-xl"></i>
             </div>

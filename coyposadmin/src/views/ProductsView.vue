@@ -39,10 +39,10 @@
 import { defineComponent, ref } from "vue";
 import { ProductModel } from "@/types/api/Product";
 import { ResponseModel } from "@/types/Response";
-import ProductComponent from "@/components/ProductComponent.vue";
+import ProductComponent from "@/components/ProductsComponent.vue";
 import PaginationComponent from "@/components/PaginationComponent.vue";
-import ProductModal from "@/components/ProductModal.vue";
-import DeleteModal from "@/components/DeleteModal.vue";
+import ProductModal from "@/components/Modals/ProductModal.vue";
+import DeleteModal from "@/components/Modals/DeleteModal.vue";
 import { showModal } from "@/functions";
 import { DeleteItemModel } from "@/types/DeleteItem";
 
@@ -112,9 +112,11 @@ export default defineComponent({
         category: {
           name: null,
           id: 0,
+          isVisible: null,
+          image: null,
           parentCategory: null,
-          UpdateDate: null,
-          CreateDate: null,
+          updateDate: null,
+          createDate: null,
         },
 
         image: null,
