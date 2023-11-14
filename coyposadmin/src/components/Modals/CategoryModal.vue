@@ -129,7 +129,7 @@
 import { defineComponent, ref } from "vue";
 import { CategoryModel } from "@/types/api/Category";
 import { ResponseModel } from "@/types/Response";
-import { compressImage } from "@/functions";
+import { compressImage, resizePNG } from "@/functions";
 
 export default defineComponent({
   props: {
@@ -169,19 +169,28 @@ export default defineComponent({
       const element: HTMLInputElement = this.$refs.photo as HTMLInputElement;
       if (element.files) {
         const file = element.files[0];
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-          const originalImageBase64 = reader.result as string;
-          const maxSizeInBytes = 1024 * 10;
-          const maxWidth = 720;
-          this.editcategory.image = await compressImage(
-            originalImageBase64,
-            maxSizeInBytes,
-            maxWidth
-          );
+        if (file) {
+          if (file.type == "image/png") {
+            const targetSizeInKB = 20;
+            this.editcategory.image = (
+              await resizePNG(file, targetSizeInKB)
+            ).substring("data:image/png;base64,".length);
+          } else {
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+              const originalImageBase64 = reader.result as string;
+              const maxSizeInBytes = 1024 * 10;
+              const maxWidth = 720;
+              this.editcategory.image = await compressImage(
+                originalImageBase64,
+                maxSizeInBytes,
+                maxWidth
+              );
+            };
+            reader.readAsDataURL(file);
+          }
           this.buttondisabled = false;
-        };
-        reader.readAsDataURL(file);
+        }
       }
     },
 
