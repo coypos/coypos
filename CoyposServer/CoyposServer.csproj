@@ -17,6 +17,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="Coderful.EntityFramework.Testing" Version="1.5.1" />
         <PackageReference Include="ComputerInfo" Version="0.2.0" />
         <PackageReference Include="FluentAssertions" Version="6.11.0" />

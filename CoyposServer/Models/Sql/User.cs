@@ -1,26 +1,45 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class User
 {
-    [Key]
-    public int ID { get; set; }
+    [Key] [Column("ID")]
+    public int? ID { get; set; }
 
-    [Required]
-    public DateTime CreatedDate { get; set; }
+    [Column("CreateDate")]
+    public DateTime? CreateDate { get; set; }
 
-    [Required]
-    public DateTime UpdatedDate { get; set; }
+    [Column("UpdateDate")]
+    public DateTime? UpdateDate { get; set; }
 
-    [MaxLength(255)]
-    public string Name { get; set; }
+    [Column("Name")]
+    public string? Name { get; set; }
 
-    [MaxLength(50)]
-    public string Role { get; set; }
+    [Column("Role")]
+    public string? Role { get; set; }
 
-    [MaxLength(20)]
-    public string CardNumber { get; set; }
+    [Column("CardNumber")]
+    public string? CardNumber { get; set; }
 
-    [MaxLength(15)]
-    public string PhoneNumber { get; set; }
+    [Column("PhoneNumber")]
+    public string? PhoneNumber { get; set; }
+    
+    [Column("Points")]
+    public int? Points { get; set; }
+    
+    [Column("Email")]
+    public string? Email { get; set; }
+    
+    [Column("Password")]
+    public string? Password { get; set; }
+    
+    [Column("Salt")]
+    public string? Salt { get; set; }
+    
+    [Column("LoginToken")]
+    public string? LoginToken { get; set; }
+
+    [Column("LoginTokenValidDate")]
+    public DateTime? LoginTokenValidDate { get; set; }
 }

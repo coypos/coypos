@@ -1,10 +1,13 @@
 ﻿using CoyposServer.Models.Sql;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace CoyposServer.Utils.Extensions;
 
 public static class TestHelpers
 {
+    public static string FirstUserPassword = "";
+    
     public static async Task<DatabaseContext> GenerateDatabaseContext()
     {
         var options = new DbContextOptionsBuilder<DatabaseContext>()
@@ -54,6 +57,39 @@ public static class TestHelpers
                 Key = Guid.NewGuid().ToString(),
                 Value = Guid.NewGuid().ToString()
             });
+            await databaseContext.SaveChangesAsync();
+        }
+
+        for (int i = 0; i < 2; i++)
+        {
+            var rawPassword = Guid.NewGuid().ToString();
+            var salt = BCrypt.Net.BCrypt.GenerateSalt();
+            var password = BCrypt.Net.BCrypt.HashPassword(rawPassword, salt);
+            if (i == 0)
+             FirstUserPassword = rawPassword;
+            var random = new Random();
+            var minValue = 100000000000; // 10^11
+            var maxValue = 999999999999; // 10^12 - 1
+
+            var cardNumber =  random.Next((int)(minValue / 1000000), (int)(maxValue / 1000000 + 1)) * 1000000 + random.Next(1000000);
+            var user = new User()
+            {
+                ID = i,
+                CreateDate = DateTime.Now,
+                UpdateDate = DateTime.Now,
+                Name = Guid.NewGuid().ToString(),
+                Role = "",
+                CardNumber = cardNumber.ToString(),
+                PhoneNumber = string.Concat("+", cardNumber.ToString().AsSpan(0, cardNumber.ToString().Length - 1)),
+                Points = random.Next(0, 1001),
+                Email = Guid.NewGuid().ToString().Replace("-", "") + "@gmail.com",
+                Password = password,
+                Salt = salt,
+                LoginToken = Guid.NewGuid().ToString(),
+                LoginTokenValidDate = DateTime.Now
+            };
+
+            databaseContext.Users.Add(user);
             await databaseContext.SaveChangesAsync();
         }
 
