@@ -5,23 +5,24 @@ using CoyposServer.Models.Sql;
 
 public class Promotion
 {
-    [Key]
-    public int ID { get; set; }
+    [Column("ID")] [Key]
+    public int? ID { get; set; }
 
-    [Required]
-    public DateTime CreatedDate { get; set; }
+    [Column("IDs")]
+    public string? Ids { get; set; }
 
-    [Required]
-    public DateTime UpdatedDate { get; set; }
+    [Column("DiscountPercentage")] 
+    public int? DiscountPercentage { get; set; }
 
-    [ForeignKey("Product")]
-    public int ProductID { get; set; }
+    [Column("StartDate")] 
+    public DateTime? StartDate { get; set; }
 
-    public virtual Product Product { get; set; } 
+    [Column("EndDate")] 
+    public DateTime? EndDate { get; set; }
+    
+    [Column("CreateDate")]
+    public DateTime? CreateDate { get; set; }
 
-    public decimal DiscountPercentage { get; set; }
-
-    public DateTime StartDate { get; set; }
-
-    public DateTime EndDate { get; set; }
+    [Column("UpdateDate")]
+    public DateTime? UpdateDate { get; set; }
 }

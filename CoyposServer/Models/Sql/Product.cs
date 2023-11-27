@@ -45,4 +45,10 @@ public class Product
     [MaxLength(255)]
     [Column("Image")]
     public string? Image { get; set; }
+    
+    [NotMapped]
+    public decimal? DiscountedPrice;
+    
+    [NotMapped]
+    public Promotion? AppliedPromotion;
 }

@@ -52,6 +52,28 @@ public class ProductController : ControllerBase
                 else
                     pagefiedProducts[i].Image = null;
             }
+
+            var promotions = _dbContext.Promotions.ToList();
+
+            for (var i = 0; i < pagefiedProducts.Count; i++)
+            {
+                var promotionsWithThisItem = promotions.Where(_ =>
+                {
+                    var id = pagefiedProducts[i].ID.ToString();
+                    return _.Ids is not null 
+                           && _.Ids.Split(',').Any(v => v == id);
+                }).ToList();
+                var activePromotions =
+                    promotionsWithThisItem.Where(_ => _.StartDate < DateTime.Now && _.EndDate > DateTime.Now).ToList();
+                var bestPromotion = activePromotions.MinBy(_ => _.DiscountPercentage);
+                if (bestPromotion is null)
+                    continue;
+                pagefiedProducts[i].AppliedPromotion = bestPromotion;
+#pragma warning disable CS8629
+                var pr = (decimal)(pagefiedProducts[i].Price - pagefiedProducts[i].Price * bestPromotion.DiscountPercentage / 100);
+#pragma warning restore CS8629
+                pagefiedProducts[i].DiscountedPrice = Math.Round(pr, 2);
+            }
             
             return StatusCode((int)HttpStatusCode.OK, new RichResponse<List<Product>>(pagefiedProducts)
             {
@@ -59,7 +81,7 @@ public class ProductController : ControllerBase
                 TotalPages = totalPages,
                 ItemsPerPage = itemsPerPage,
                 TotalItems = products.Count,
-                TotalItemsFiltered = filteredProducts.Count
+                TotalItemsFiltered = pagefiedProducts.Count
             });
         }
         catch (ArgumentOutOfRangeException e)
