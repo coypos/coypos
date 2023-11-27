@@ -15,7 +15,7 @@ public class PromotionController : ControllerBase
 	{
 		_dbContext = dbContext;
 	}
-	
+
 	/// <summary>
 	/// Returns promotions
 	/// </summary>
@@ -33,6 +33,11 @@ public class PromotionController : ControllerBase
 		try
 		{
 			var promotions = _dbContext.Promotions.ToList();
+			if (!promotionFilter.Ids.IsNullOrEmpty())
+				promotions = promotions
+					.Where(_ => promotionFilter.Ids.Split(',').All(i => _.Ids.Split(',').Contains(i))).ToList();
+
+			promotionFilter.Ids = null;
 			var filteredPromotions = promotions.Filter(promotionFilter, filter);
 			var pagefiedPromotions = filteredPromotions.Pagefy(itemsPerPage, page, out var totalPages);
 
