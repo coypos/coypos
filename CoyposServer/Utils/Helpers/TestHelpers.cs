@@ -93,6 +93,23 @@ public static class TestHelpers
             await databaseContext.SaveChangesAsync();
         }
 
+        for (int i = 0; i < 2; i++)
+        {
+            var random = new Random();
+            
+            databaseContext.Promotions.Add(new Promotion()
+            {
+                ID = i,
+                Ids = i.ToString(),
+                DiscountPercentage = random.Next(1, 99),
+                StartDate = DateTime.Now - TimeSpan.FromDays(1),
+                EndDate = DateTime.Now + TimeSpan.FromDays(1),
+                CreateDate = DateTime.Now,
+                UpdateDate = DateTime.Now,
+            });
+            await databaseContext.SaveChangesAsync();
+        }
+
         return databaseContext;
     }
 }
