@@ -1,17 +1,17 @@
 import { UserModel } from "@/types/api/User";
 
 export interface LoyaltyCardModel {
-  ID: number;
+  id: number;
 
-  CreatedDate: Date | string;
+  createdDate: Date | string;
 
-  UpdatedDate: Date | string;
+  updatedDate: Date | string;
 
-  UserID: number;
+  userID: number;
 
-  User: UserModel;
+  user: UserModel;
 
-  CardNumber: string;
+  cardNumber: string;
 
-  Points: number;
+  points: number;
 }

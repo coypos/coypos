@@ -198,15 +198,17 @@ export default defineComponent({
       weight: null,
       description: null,
       category: {
+        isVisible: null,
+        image: null,
         name: "",
         id: 0,
         parentCategory: null,
         updateDate: null,
-        isVisible: null,
-        image: null,
         createDate: null,
       },
       image: null,
+      discountedPrice: null,
+      appliedPromotion: null,
     });
     let buttondisabled = ref<boolean>(false);
     return { keys, editproduct, categories, buttondisabled };
@@ -279,15 +281,17 @@ export default defineComponent({
         weight: null,
         description: null,
         category: {
-          name: "",
-          id: 0,
           isVisible: null,
           image: null,
+          name: "",
+          id: 0,
           parentCategory: null,
           updateDate: null,
           createDate: null,
         },
         image: null,
+        discountedPrice: null,
+        appliedPromotion: null,
       };
       let photo = this.$refs.photo as HTMLInputElement;
       if (photo) photo.value = "";
@@ -327,6 +331,8 @@ export default defineComponent({
           createDate: null,
         },
         image: null,
+        discountedPrice: null,
+        appliedPromotion: null,
       };
       let photo = this.$refs.photo as HTMLInputElement;
       if (photo) photo.value = "";

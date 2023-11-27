@@ -2,23 +2,22 @@ import { UserModel } from "@/types/api/User";
 import { ProductModel } from "@/types/api/Product";
 
 export interface TransactionModel {
-  ID: number;
+  id: number;
 
-  CreatedDate: Date | string;
+  createdDate: Date | string;
 
-  UpdatedDate: Date | string;
+  updatedDate: Date | string;
 
-  UserID: number;
+  userID: number;
 
-  User: UserModel;
+  user: UserModel;
 
-  ProductID: number;
+  productID: number;
+  product: ProductModel;
 
-  Product: ProductModel;
+  quantity: number;
 
-  Quantity: number;
+  totalPrice: number;
 
-  TotalPrice: number;
-
-  TransactionTime: Date | string;
+  transactionTime: Date | string;
 }
