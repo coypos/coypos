@@ -28,10 +28,12 @@ public class PromotionController : ControllerBase
 	[ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
 	[ProducesResponseType(typeof(RichResponse<List<Promotion>>), (int)HttpStatusCode.OK)]
 	[ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
-	public ObjectResult GetPromotionsWithFilter([FromBody] Promotion promotionFilter, string filter = "AND", int itemsPerPage = 50, int page = 1)
+	public ObjectResult GetPromotionsWithFilter([FromBody] Promotion? promotionFilter, string filter = "AND", int itemsPerPage = 50, int page = 1)
 	{
 		try
 		{
+			if (promotionFilter is null)
+				promotionFilter = new Promotion();
 			var promotions = _dbContext.Promotions.ToList();
 			if (!promotionFilter.Ids.IsNullOrEmpty())
 				promotions = promotions

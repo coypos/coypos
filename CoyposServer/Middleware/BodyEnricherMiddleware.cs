@@ -30,6 +30,12 @@ public class BodyEnricherMiddleware
         var hasBody = context.Request.ContentLength.HasValue && context.Request.ContentLength.Value > 0;
         var requiresBody = actionDescriptor is not null && (actionDescriptor.MethodInfo.GetCustomAttributes()
             .Any(a => a.GetType() == typeof(HttpGetAttribute)));
+
+        if (!hasBodyArgument && !hasBody && requiresBody)
+        {
+            context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(""));
+            context.Request.ContentType = "application/json";
+        }
         
         if (hasBodyArgument && !hasBody && requiresBody)
         {
