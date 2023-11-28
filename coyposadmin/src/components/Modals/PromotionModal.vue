@@ -22,45 +22,64 @@
         <div v-if="editpromotion" class="modal-body">
           <div class="row">
             <div class="col-12">
+              <div v-for="name in names" :key="name">
+                <div>{{ name.name }}</div>
+                <button class="btn btn-danger" @click="deleteProduct(name.id)">
+                  Usuń
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
               <div class="form-group">
-                <label for="name">Lista promocyjnych przedmiotów</label>
+                <label for="product">Dodaj produkt do promocji</label>
+                <select
+                  class="form-control selectpicker"
+                  id="product"
+                  data-live-search="true"
+                  v-model="productToAdd"
+                >
+                  <option
+                    :key="product.id"
+                    v-for="product in products"
+                    :data-tokens="product.name"
+                    :value="product.id"
+                  >
+                    {{ product.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div>&nbsp;</div>
+              <div class="btn btn-success" @click="addProduct()">DODAJ</div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-2">
+              <div class="form-group">
+                <label for="value">Procent</label>
                 <input
-                  v-model="editpromotion.ids"
+                  v-model="editpromotion.discountPercentage"
                   class="form-control"
-                  id="name"
+                  id="value"
                 />
               </div>
             </div>
-            <div class="row">
-              <div class="col-2">
-                <div class="form-group">
-                  <label for="value">Procent</label>
-                  <input
-                    v-model="editpromotion.discountPercentage"
-                    class="form-control"
-                    id="value"
-                  />
-                </div>
+            <div class="col-3">
+              <div class="form-group">
+                <label for="value">Początek Promocji</label>
+                <VueDatePicker
+                  v-model="editpromotion.startDate"
+                ></VueDatePicker>
               </div>
-              <div class="col-3">
-                <div class="form-group">
-                  <label for="value">Początek Promocji</label>
-                  <input
-                    v-model="editpromotion.startDate"
-                    class="form-control"
-                    id="value"
-                  />
-                </div>
-              </div>
-              <div class="col-3">
-                <div class="form-group">
-                  <label for="value">Koniec Promocji</label>
-                  <input
-                    v-model="editpromotion.endDate"
-                    class="form-control"
-                    id="value"
-                  />
-                </div>
+            </div>
+            <div class="col-3">
+              <div class="form-group">
+                <label for="value">Koniec Promocji</label>
+                <VueDatePicker v-model="editpromotion.endDate"></VueDatePicker>
               </div>
             </div>
           </div>
@@ -91,12 +110,16 @@
 import { defineComponent, ref } from "vue";
 
 import { PromotionModel } from "@/types/api/Promotion";
-
+import { ResponseModel } from "@/types/Response";
+import { ProductModel } from "@/types/api/Product";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
 export default defineComponent({
   props: {
     promotion: Object,
     create: Boolean,
   },
+  components: { VueDatePicker },
   expose: ["showModal"],
   name: "PromotionModal",
   setup() {
@@ -110,11 +133,79 @@ export default defineComponent({
       createDate: null,
       updateDate: null,
     });
+    let names = ref<object[]>([]);
+    let productToAdd = ref<ProductModel>();
+    let products = ref<ProductModel[]>([]);
 
-    return { keys, editpromotion };
+    return { products, productToAdd, names, keys, editpromotion };
   },
 
   methods: {
+    async addProduct() {
+      if (this.productToAdd) {
+        this.editpromotion.ids += `,${this.productToAdd}`;
+        await this.getItemsNames();
+      }
+    },
+    async deleteProduct(id: number) {
+      if (this.editpromotion.ids) {
+        console.log(id);
+        this.editpromotion.ids = this.editpromotion.ids.replace(`${id}`, "");
+        this.editpromotion.ids = this.editpromotion.ids.replace(`,,`, ",");
+        if (this.editpromotion.ids.endsWith(",")) {
+          this.editpromotion.ids = this.editpromotion.ids.slice(0, -1);
+        }
+        console.log(this.editpromotion.ids);
+        await this.getItemsNames();
+      }
+    },
+    async getProducts() {
+      try {
+        await this.$axios
+          .get(`/products?filter=AND&itemsPerPage=999999&page=1`)
+          .then((response) => {
+            const resp: ResponseModel = response.data;
+            this.products = resp.response;
+          });
+      } catch (e) {
+        console.log(e as string);
+      }
+    },
+    async getItemsNames() {
+      this.names = [];
+      if (this.promotion) {
+        let list = [];
+        if (this.promotion.ids) {
+          list = this.promotion.ids.split(",");
+          console.log(list);
+          list.forEach((item: string) => {
+            try {
+              const data = {
+                id: item,
+              };
+
+              const jsonString = JSON.stringify(data);
+              const encodedJsonString = encodeURIComponent(jsonString);
+
+              this.$axios
+                .get(
+                  `/products?filter=AND&loadImages=false&itemsPerPage=1&page=1&body=${encodedJsonString}`
+                )
+                .then((response) => {
+                  const resp: ResponseModel = response.data;
+                  this.names.push({
+                    name: resp.response[0].name,
+                    id: resp.response[0].id,
+                  });
+                });
+            } catch (e) {
+              console.log(e as string);
+            }
+          });
+        }
+      }
+    },
+
     async updatePromotion() {
       let data = {
         ids: this.editpromotion.ids,
@@ -161,11 +252,15 @@ export default defineComponent({
       this.$emit("canceladd", false);
     },
   },
+  mounted() {
+    this.getProducts();
+  },
 
   watch: {
     // whenever question changes, this function will run
     promotion(value, newvalue) {
       this.editpromotion = this.promotion as PromotionModel;
+      this.getItemsNames();
     },
   },
 });

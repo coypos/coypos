@@ -37,28 +37,32 @@ export default defineComponent({
     },
     async getItemsNames() {
       if (this.promotion) {
-        const list = this.promotion.ids.split(",");
-        list.forEach((item: string) => {
-          try {
-            const data = {
-              id: item,
-            };
+        let list = [];
+        if (this.promotion.ids) {
+          list = this.promotion.ids.split(",");
 
-            const jsonString = JSON.stringify(data);
-            const encodedJsonString = encodeURIComponent(jsonString);
+          list.forEach((item: string) => {
+            try {
+              const data = {
+                id: item,
+              };
 
-            this.$axios
-              .get(
-                `/products?filter=AND&loadImages=true&itemsPerPage=1&page=1&body=${encodedJsonString}`
-              )
-              .then((response) => {
-                const resp: ResponseModel = response.data;
-                this.names += resp.response[0].name + ", ";
-              });
-          } catch (e) {
-            console.log(e as string);
-          }
-        });
+              const jsonString = JSON.stringify(data);
+              const encodedJsonString = encodeURIComponent(jsonString);
+
+              this.$axios
+                .get(
+                  `/products?filter=AND&loadImages=true&itemsPerPage=1&page=1&body=${encodedJsonString}`
+                )
+                .then((response) => {
+                  const resp: ResponseModel = response.data;
+                  this.names += resp.response[0].name + ", ";
+                });
+            } catch (e) {
+              console.log(e as string);
+            }
+          });
+        }
       }
     },
     async deletepromotion() {

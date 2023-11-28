@@ -37,7 +37,7 @@
                 />
               </div>
             </div>
-            <div class="col-3">
+            <div v-if="!create" class="col-3">
               <div class="form-group">
                 <label for="value">Numer Karty</label>
                 <input
