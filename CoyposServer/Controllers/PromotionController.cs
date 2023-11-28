@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using CoyposServer.Models;
+using CoyposServer.Models.Sql;
 using CoyposServer.Utils;
 using CoyposServer.Utils.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +43,14 @@ public class PromotionController : ControllerBase
 			promotionFilter.Ids = null;
 			var filteredPromotions = promotions.Filter(promotionFilter, filter);
 			var pagefiedPromotions = filteredPromotions.Pagefy(itemsPerPage, page, out var totalPages);
+			
+			for (var i = 0; i < pagefiedPromotions.Count; i++)
+			{
+				pagefiedPromotions[i].AffectedProducts = new List<Product>();
+				foreach (var s in pagefiedPromotions[i].Ids.Split(','))
+					foreach (var product in _dbContext.Products.Where(_ => _.ID.ToString() == s).ToList())
+						pagefiedPromotions[i].AffectedProducts.Add(product);
+			}
 
 			return StatusCode((int)HttpStatusCode.OK, new RichResponse<List<Promotion>>(pagefiedPromotions)
 			{

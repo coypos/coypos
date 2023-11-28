@@ -74,7 +74,7 @@ public class ProductController : ControllerBase
 #pragma warning restore CS8629
                 pagefiedProducts[i].DiscountedPrice = Math.Round(pr, 2);
             }
-            
+
             return StatusCode((int)HttpStatusCode.OK, new RichResponse<List<Product>>(pagefiedProducts)
             {
                 Page = page,

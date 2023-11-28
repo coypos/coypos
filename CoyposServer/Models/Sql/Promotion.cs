@@ -25,4 +25,7 @@ public class Promotion
 
     [Column("UpdateDate")]
     public DateTime? UpdateDate { get; set; }
+    
+    [NotMapped]
+    public List<Product> AffectedProducts { get; set; }
 }
