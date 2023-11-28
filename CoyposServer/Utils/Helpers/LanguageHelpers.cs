@@ -6,6 +6,8 @@ public class LanguageHelpers
 
 	public static string Translate(string str, string language)
 	{
+		if (language == "all")
+			return str;
 		if (language.IsNullOrEmpty())
 			language = DefaultLanguage;
 		var locales = str.Split('|');
