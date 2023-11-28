@@ -72,6 +72,7 @@ public static class Log
             LocalCache += message += "\n";
             _logFileStream.WriteLine(message);
         } catch (EncoderFallbackException) {}
+        catch (OverflowException) {}
     }
 
     public static void Dispose()
