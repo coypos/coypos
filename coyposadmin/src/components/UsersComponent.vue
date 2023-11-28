@@ -1,11 +1,15 @@
 <template>
   <div :id="'user' + index" class="row user">
     <div class="col-2">{{ user.name }}</div>
-    <div class="col-1">{{ user.role }}</div>
     <div class="col-2">{{ user.cardNumber }}</div>
     <div class="col-2">{{ user.phoneNumber }}</div>
     <div class="col-2">{{ user.email }}</div>
-    <div class="col-1">{{ user.points }}</div>
+    <div class="col-1">
+      <div class="btn btn-info" @click="banuser()">BAN</div>
+    </div>
+    <div class="col-1">
+      <div class="btn btn-primary" @click="unbanuser()">UNBAN</div>
+    </div>
     <div class="col-1">
       <div class="btn btn-warning" @click="edituser()">EDYTUJ</div>
     </div>
@@ -44,6 +48,17 @@ export default defineComponent({
         this.$emit("getuserdeleted", this.item);
       }
     },
+    async banuser() {
+      if (this.user) {
+        await this.$axios.post(`/user/${this.user.id}/ban`);
+      }
+    },
+    async unbanuser() {
+      if (this.user) {
+        await this.$axios.post(`/user/${this.user.id}/unban`);
+      }
+    },
+
     showModal,
     showDeleteModal,
     async colorBackground() {

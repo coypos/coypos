@@ -90,16 +90,6 @@
                 />
               </div>
             </div>
-            <div class="col-3">
-              <div class="form-group">
-                <label for="value">salt</label>
-                <input
-                  v-model="edituser.salt"
-                  class="form-control"
-                  id="value"
-                />
-              </div>
-            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -167,7 +157,6 @@ export default defineComponent({
         points: this.edituser.points,
         email: this.edituser.email,
         password: this.edituser.password,
-        salt: this.edituser.salt,
       };
       if (this.create) {
         try {

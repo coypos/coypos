@@ -7,11 +7,9 @@
   </div>
   <div class="row header">
     <div class="col-2">Nazwa</div>
-    <div class="col-1">Rola</div>
     <div class="col-2">Numer Karty</div>
     <div class="col-2">Numer Telefonu</div>
     <div class="col-2">Email</div>
-    <div class="col-1">Punkty</div>
   </div>
 
   <user-component
