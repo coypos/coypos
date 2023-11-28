@@ -1,15 +1,27 @@
 export interface UserModel {
-  ID: number;
+  id: number | null;
 
-  CreatedDate: Date | string;
+  createDate: Date | string | null;
 
-  UpdatedDate: Date | string;
+  updateDate: Date | string | null;
 
-  Name: string;
+  name: string | null;
 
-  Role: string;
+  role: string | null;
 
-  CardNumber: string;
+  cardNumber: string | null;
 
-  PhoneNumber: string;
+  phoneNumber: string | null;
+
+  points: number | null;
+
+  email: string | null;
+
+  password: string | null;
+
+  salt: string | null;
+
+  loginToken: string | null;
+
+  loginTokenValidDate: Date | string | null;
 }

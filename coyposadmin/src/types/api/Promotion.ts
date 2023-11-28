@@ -1,19 +1,15 @@
-import { ProductModel } from "@/types/api/Product";
-
 export interface PromotionModel {
-  ID: number;
+  id: number | null;
 
-  CreatedDate: Date | string;
+  ids: string | null;
 
-  UpdatedDate: Date | string;
+  discountPercentage: number | null;
 
-  ProductID: number;
+  startDate: Date | string | null;
 
-  Product: ProductModel;
+  endDate: Date | string | null;
 
-  DiscountPercentage: number;
+  createDate: Date | string | null;
 
-  StartDate: Date | string;
-
-  EndDate: Date | string;
+  updateDate: Date | string | null;
 }

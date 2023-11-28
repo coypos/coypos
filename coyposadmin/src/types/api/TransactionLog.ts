@@ -1,17 +1,17 @@
 import { UserModel } from "@/types/api/User";
 
 export interface TransactionLog {
-  ID: number;
+  id: number;
 
-  CreatedDate: Date | string;
+  createdDate: Date | string;
 
-  UpdatedDate: Date | string;
+  updatedDate: Date | string;
 
-  UserID: number;
+  userID: number;
 
-  User: UserModel;
+  user: UserModel;
 
-  Action: string;
+  action: string;
 
-  Timestamp: Date | string;
+  timestamp: Date | string;
 }
