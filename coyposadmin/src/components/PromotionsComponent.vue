@@ -1,6 +1,10 @@
 <template>
   <div :id="'promotion' + index" class="row promotion">
-    <div class="col-4">{{ names.slice(0, -2) }}</div>
+    <div class="col-4">
+      <span v-for="(name, index2) in names" :key="index2"
+        >{{ name }}<span v-if="index2 != names.length - 1">, </span></span
+      >
+    </div>
     <div class="col-2">{{ promotion.discountPercentage }}</div>
     <div class="col-2">{{ promotion.startDate }}</div>
     <div class="col-2">{{ promotion.endDate }}</div>
@@ -16,7 +20,6 @@
 import { defineComponent, ref } from "vue";
 import { showModal, showDeleteModal } from "@/functions";
 import { DeleteItemModel } from "@/types/DeleteItem";
-import { ResponseModel } from "@/types/Response";
 
 export default defineComponent({
   name: "OneLineComponent",
@@ -27,7 +30,7 @@ export default defineComponent({
   setup() {
     let edit = ref<boolean>(false);
     let item = ref<DeleteItemModel>({ id: 0, what: "test", name: "test" });
-    let names = ref<string>("");
+    let names = ref<string[]>([]);
     return { names, edit, item };
   },
   methods: {
@@ -37,31 +40,10 @@ export default defineComponent({
     },
     async getItemsNames() {
       if (this.promotion) {
-        let list = [];
-        if (this.promotion.ids) {
-          list = this.promotion.ids.split(",");
-
-          list.forEach((item: string) => {
-            try {
-              const data = {
-                id: item,
-              };
-
-              const jsonString = JSON.stringify(data);
-              const encodedJsonString = encodeURIComponent(jsonString);
-
-              this.$axios
-                .get(
-                  `/products?filter=AND&loadImages=true&itemsPerPage=1&page=1&body=${encodedJsonString}`
-                )
-                .then((response) => {
-                  const resp: ResponseModel = response.data;
-                  this.names += resp.response[0].name + ", ";
-                });
-            } catch (e) {
-              console.log(e as string);
-            }
-          });
+        if (this.promotion.affectedProducts) {
+          for (let i = 0; this.promotion.affectedProducts.length > i; i++) {
+            this.names.push(this.promotion.affectedProducts[i].name);
+          }
         }
       }
     },

@@ -1,3 +1,5 @@
+import { ProductModel } from "@/types/api/Product";
+
 export interface PromotionModel {
   id: number | null;
 
@@ -12,4 +14,5 @@ export interface PromotionModel {
   createDate: Date | string | null;
 
   updateDate: Date | string | null;
+  affectedProducts: ProductModel[] | null;
 }

@@ -24,7 +24,10 @@
             <div class="col-12">
               <div v-for="name in names" :key="name">
                 <div>{{ name.name }}</div>
-                <button class="btn btn-danger" @click="deleteProduct(name.id)">
+                <button
+                  class="btn btn-danger"
+                  @click="deleteProduct(name.id, name.name)"
+                >
                   Usuń
                 </button>
               </div>
@@ -44,7 +47,7 @@
                     :key="product.id"
                     v-for="product in products"
                     :data-tokens="product.name"
-                    :value="product.id"
+                    :value="{ id: product.id, name: product.name }"
                   >
                     {{ product.name }}
                   </option>
@@ -114,6 +117,7 @@ import { ResponseModel } from "@/types/Response";
 import { ProductModel } from "@/types/api/Product";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
+import { DeleteItemModel } from "@/types/DeleteItem";
 export default defineComponent({
   props: {
     promotion: Object,
@@ -132,6 +136,7 @@ export default defineComponent({
       endDate: null,
       createDate: null,
       updateDate: null,
+      affectedProducts: [],
     });
     let names = ref<object[]>([]);
     let productToAdd = ref<ProductModel>();
@@ -143,20 +148,18 @@ export default defineComponent({
   methods: {
     async addProduct() {
       if (this.productToAdd) {
-        this.editpromotion.ids += `,${this.productToAdd}`;
-        await this.getItemsNames();
+        this.editpromotion.ids += `,${this.productToAdd.id}`;
+        this.names.push(this.productToAdd);
       }
     },
-    async deleteProduct(id: number) {
+    async deleteProduct(id: number, name: string) {
       if (this.editpromotion.ids) {
-        console.log(id);
         this.editpromotion.ids = this.editpromotion.ids.replace(`${id}`, "");
         this.editpromotion.ids = this.editpromotion.ids.replace(`,,`, ",");
         if (this.editpromotion.ids.endsWith(",")) {
           this.editpromotion.ids = this.editpromotion.ids.slice(0, -1);
         }
-        console.log(this.editpromotion.ids);
-        await this.getItemsNames();
+        this.names = this.names.filter((name2: any) => name2.name != name);
       }
     },
     async getProducts() {
@@ -174,34 +177,13 @@ export default defineComponent({
     async getItemsNames() {
       this.names = [];
       if (this.promotion) {
-        let list = [];
-        if (this.promotion.ids) {
-          list = this.promotion.ids.split(",");
-          console.log(list);
-          list.forEach((item: string) => {
-            try {
-              const data = {
-                id: item,
-              };
-
-              const jsonString = JSON.stringify(data);
-              const encodedJsonString = encodeURIComponent(jsonString);
-
-              this.$axios
-                .get(
-                  `/products?filter=AND&loadImages=false&itemsPerPage=1&page=1&body=${encodedJsonString}`
-                )
-                .then((response) => {
-                  const resp: ResponseModel = response.data;
-                  this.names.push({
-                    name: resp.response[0].name,
-                    id: resp.response[0].id,
-                  });
-                });
-            } catch (e) {
-              console.log(e as string);
-            }
-          });
+        if (this.promotion.affectedProducts) {
+          for (let i = 0; this.promotion.affectedProducts.length > i; i++) {
+            this.names.push({
+              name: this.promotion.affectedProducts[i].name,
+              id: this.promotion.affectedProducts[i].id,
+            });
+          }
         }
       }
     },
@@ -234,6 +216,7 @@ export default defineComponent({
         endDate: null,
         createDate: null,
         updateDate: null,
+        affectedProducts: [],
       };
       this.$emit("refreshpromotions", true);
     },
@@ -247,6 +230,7 @@ export default defineComponent({
         endDate: null,
         createDate: null,
         updateDate: null,
+        affectedProducts: [],
       };
 
       this.$emit("canceladd", false);

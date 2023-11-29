@@ -1,116 +1,121 @@
 <template>
   <div class="row">
-    <div class="col-10">Promocje</div>
+    <div class="col-10">Użytkownicy</div>
     <div class="col-2">
-      <div class="btn btn-success" @click="addPromotion()">DODAJ</div>
+      <div class="btn btn-success" @click="addUser()">DODAJ</div>
     </div>
   </div>
   <div class="row header">
-    <div class="col-4">Przedmioty promocji</div>
-    <div class="col-2">Procent Promocji</div>
-    <div class="col-2">Początek Promocji</div>
-    <div class="col-2">Koniec Promocji</div>
+    <div class="col-2">Nazwa</div>
+    <div class="col-2">Numer Karty</div>
+    <div class="col-2">Numer Telefonu</div>
+    <div class="col-2">Email</div>
   </div>
 
-  <promotion-component
-    v-for="(promotion, index) in promotions"
+  <user-component
+    v-for="(user, index) in users"
     :key="index"
     :index="index"
-    :promotion="promotion"
-    @getpromotionedited="getpromotionedited"
-    @getpromotiondeleted="getpromotiondeleted"
-  ></promotion-component
+    :user="user"
+    @getuseredited="getuseredited"
+    @getuserdeleted="getuserdeleted"
+  ></user-component
   ><pagination-component
     :page="page"
     :itemsPerPage="itemsPerPage"
     :totalPages="totalPages"
   ></pagination-component
-  ><promotion-modal
+  ><user-modal
     @canceladd="canceladd"
     :create="create"
-    :promotion="promotion"
-    @refreshpromotions="refreshpromotions"
-  ></promotion-modal>
-  <delete-modal @refresh="refreshpromotions" :item="item"></delete-modal>
+    :user="user"
+    @refreshusers="refreshusers"
+  ></user-modal>
+  <delete-modal @refresh="refreshusers" :item="item"></delete-modal>
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { ResponseModel } from "@/types/Response";
-import PromotionComponent from "@/components/PromotionsComponent.vue";
+import UserComponent from "@/components/UsersComponent.vue";
 import PaginationComponent from "@/components/PaginationComponent.vue";
 import DeleteModal from "@/components/Modals/DeleteModal.vue";
 import { showModal } from "@/functions";
 import { DeleteItemModel } from "@/types/DeleteItem";
-import { PromotionModel } from "@/types/api/Promotion";
-import PromotionModal from "@/components/Modals/PromotionModal.vue";
+import { UserModel } from "@/types/api/User";
+import UserModal from "@/components/Modals/UserModal.vue";
 
 export default defineComponent({
-  name: "PromotionView",
+  name: "UserView",
   components: {
-    PromotionModal,
+    UserModal,
     PaginationComponent,
-    PromotionComponent,
+    UserComponent,
     DeleteModal,
   },
   setup() {
-    let promotions = ref<PromotionModel[]>([]);
+    let users = ref<UserModel[]>([]);
     let column = ref<number>(0);
     let itemsPerPage = ref<number>(50);
     let page = ref<number>(1);
     let totalPages = ref<number>(1);
-    let promotion = ref<PromotionModel>();
+    let user = ref<UserModel>();
     let item = ref<DeleteItemModel>();
 
     let create = ref<boolean>(false);
     return {
       create,
       item,
-      promotion,
+      user,
       totalPages,
-      promotions,
+      users,
       column,
       itemsPerPage,
       page,
     };
   },
   methods: {
-    async getpromotionedited(value: PromotionModel) {
-      this.promotion = value;
+    async getuseredited(value: UserModel) {
+      this.user = value;
     },
-    async getpromotiondeleted(value: DeleteItemModel) {
+    async getuserdeleted(value: DeleteItemModel) {
       this.item = value;
     },
-    async refreshpromotions(value: boolean) {
-      console.log("refreshproducts", value);
-      await this.getPromotions();
+    async refreshusers(value: boolean) {
+      console.log("refreshusers", value);
+      await this.getUsers();
     },
     async canceladd(value: boolean) {
       this.create = value;
-      this.promotion = {
+      this.user = {
         id: null,
-        ids: null,
-        discountPercentage: null,
-        startDate: null,
-        endDate: null,
+        name: null,
+        role: null,
+        cardNumber: null,
+        phoneNumber: null,
+        points: null,
+        email: null,
+        password: null,
+        salt: null,
+        loginToken: null,
+        loginTokenValidDate: null,
         createDate: null,
         updateDate: null,
-        affectedProducts: [],
       };
     },
-    async addPromotion() {
+    async addUser() {
       this.create = true;
       showModal();
     },
     showModal,
-    async getPromotions() {
+    async getUsers() {
       try {
         await this.$axios
           .get(
-            `/promotions?filter=AND&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
+            `/users?filter=AND&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
           )
           .then((response) => {
             const resp: ResponseModel = response.data;
-            this.promotions = resp.response;
+            this.users = resp.response;
             this.totalPages = resp.totalPages;
           });
       } catch (e) {
@@ -123,7 +128,7 @@ export default defineComponent({
     this.itemsPerPage = parseInt(
       this.$router.currentRoute.value.query.itemsPerPage as string
     );
-    this.getPromotions();
+    this.getUsers();
   },
   updated() {
     if (
@@ -138,7 +143,7 @@ export default defineComponent({
       this.itemsPerPage = parseInt(
         this.$router.currentRoute.value.query.itemsPerPage as string
       );
-      this.getPromotions();
+      this.getUsers();
     }
   },
 });
