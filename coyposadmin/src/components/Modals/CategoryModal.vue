@@ -395,7 +395,7 @@ export default defineComponent({
           for (let i = 0; lang.length > i; i++) {
             this.names.push({
               name: lang[i].split(":")[1] as string,
-              lang: lang[i].split(":")[0] as string,
+              lang: (lang[i].split(":")[0] as string).toLowerCase(),
             });
           }
         }

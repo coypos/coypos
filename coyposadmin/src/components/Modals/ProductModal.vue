@@ -46,23 +46,6 @@
           <div class="row">
             <div class="col-6">
               <div class="form-group">
-                <label for="name">Nazwa produktu</label>
-                <input
-                  v-model="editproduct.name"
-                  class="form-control"
-                  id="name"
-                />
-                <div
-                  class="input-errors"
-                  v-for="error of v$.editproduct.name.$errors"
-                  :key="error.$uid"
-                >
-                  <div class="error-msg">{{ error.$message }}</div>
-                </div>
-              </div>
-            </div>
-            <div class="col-6">
-              <div class="form-group">
                 <label for="category">Kategoria</label>
                 <select
                   class="form-control selectpicker"
@@ -306,7 +289,7 @@ export default defineComponent({
           for (let i = 0; lang.length > i; i++) {
             this.names.push({
               name: lang[i].split(":")[1] as string,
-              lang: lang[i].split(":")[0] as string,
+              lang: (lang[i].split(":")[0] as string).toLowerCase(),
             });
           }
         }

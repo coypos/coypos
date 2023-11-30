@@ -1,7 +1,7 @@
 <template>
   <div :id="'product' + index" class="row product">
-    <div class="col-3">{{ product.name }}</div>
-    <div class="col-3">{{ product.category.name.split("|").toString() }}</div>
+    <div class="col-3">{{ product.name.split("|").toString() }}</div>
+    <div class="col-3">{{ product.category.name }}</div>
     <div class="col-2">{{ product.barcode }}</div>
     <div class="col-2">{{ product.price }}</div>
 
