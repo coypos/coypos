@@ -21,6 +21,29 @@
         </div>
         <div v-if="editproduct" class="modal-body">
           <div class="row">
+            <div class="col-8">
+              <div class="row">
+                <div class="col-4">Język</div>
+                <div class="col-4">Nazwa</div>
+              </div>
+              <div class="row" v-for="name in names" :key="name">
+                <div class="col-4">
+                  <input v-model="name.lang" />
+                </div>
+                <div class="col-4"><input v-model="name.name" /></div>
+                <div class="col-4">
+                  <button
+                    class="btn btn-danger"
+                    @click="deleteName(name.lang, name.name)"
+                  >
+                    Usuń
+                  </button>
+                </div>
+              </div>
+              <button class="btn-success btn" @click="addName()">Dodaj</button>
+            </div>
+          </div>
+          <div class="row">
             <div class="col-6">
               <div class="form-group">
                 <label for="name">Nazwa produktu</label>
@@ -220,6 +243,7 @@ import { compressImage } from "@/functions";
 import { POSITION, useToast } from "vue-toastification";
 import { useVuelidate } from "@vuelidate/core";
 import { required, numeric } from "@vuelidate/validators";
+import { LanguageNamesModal } from "@/types/LanguageNames";
 export default defineComponent({
   props: {
     product: Object,
@@ -256,8 +280,10 @@ export default defineComponent({
     });
     const toast = useToast();
     const v$ = useVuelidate();
+    let names = ref<LanguageNamesModal[]>([]);
+
     let buttondisabled = ref<boolean>(false);
-    return { keys, editproduct, categories, buttondisabled, toast, v$ };
+    return { names, keys, editproduct, categories, buttondisabled, toast, v$ };
   },
   validations() {
     return {
@@ -272,6 +298,28 @@ export default defineComponent({
     };
   },
   methods: {
+    async getNames() {
+      this.names = [];
+      if (this.product) {
+        if (this.product.name) {
+          let lang = this.product.name.split("|");
+          for (let i = 0; lang.length > i; i++) {
+            this.names.push({
+              name: lang[i].split(":")[1] as string,
+              lang: lang[i].split(":")[0] as string,
+            });
+          }
+        }
+      }
+    },
+    async deleteName(lang: string, name: string) {
+      this.names = this.names.filter((name2) => {
+        return name2.name !== name;
+      });
+    },
+    async addName() {
+      this.names.push({ name: "", lang: "" });
+    },
     async encodeImageFileAsURL() {
       this.buttondisabled = true;
       const element: HTMLInputElement = this.$refs.photo as HTMLInputElement;
@@ -294,6 +342,13 @@ export default defineComponent({
     },
 
     async updateProduct() {
+      let tempname = "";
+      for (let i = 0; this.names.length > i; i++) {
+        if (this.names[i]) {
+          tempname += `${this.names[i].lang}:${this.names[i].name}|`;
+        }
+      }
+      tempname = tempname.slice(0, -1);
       let result: CategoryModel[] = this.categories.filter(
         (obj: CategoryModel) => {
           if (this.editproduct.category)
@@ -302,7 +357,7 @@ export default defineComponent({
       );
 
       let data = {
-        name: this.editproduct.name,
+        name: tempname,
 
         category: result[0].id,
         barcode: this.editproduct.barcode,
@@ -349,7 +404,7 @@ export default defineComponent({
       } else {
         try {
           await this.$axios.put(`/product/${this.editproduct.id}`, data);
-          this.toast.error("Zedytowano produkt", {
+          this.toast.success("Zedytowano produkt", {
             position: "top-right" as POSITION,
             timeout: 5000,
             closeOnClick: true,
@@ -464,12 +519,14 @@ export default defineComponent({
     },
   },
   mounted() {
+    this.getNames();
     this.getCategories();
     this.v$.$validate();
   },
   watch: {
     // whenever question changes, this function will run
     product(value, newvalue) {
+      this.getNames();
       this.getCategories();
       this.editproduct = this.product as ProductModel;
     },

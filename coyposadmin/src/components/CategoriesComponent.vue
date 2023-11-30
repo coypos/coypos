@@ -1,6 +1,6 @@
 <template>
   <div :id="'category' + index" class="row category">
-    <div class="col-3">{{ category.name }}</div>
+    <div class="col-3">{{ category.name.split("|").toString() }}</div>
     <div v-if="category.parentCategory" class="col-3">
       {{ category.parentCategory.name }}
     </div>

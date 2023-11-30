@@ -116,7 +116,7 @@ export default defineComponent({
         this.categories = [];
         await this.$axios
           .get(
-            `/categories?filter=AND&loadImages=true&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
+            `/categories?filter=AND&language=all&loadImages=true&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
           )
           .then((response) => {
             const resp: ResponseModel = response.data;

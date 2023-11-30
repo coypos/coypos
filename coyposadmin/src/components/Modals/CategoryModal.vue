@@ -21,23 +21,30 @@
         </div>
         <div v-if="editcategory" class="modal-body">
           <div class="row">
-            <div class="col-6">
-              <div class="form-group">
-                <label for="name">Nazwa Kategori</label>
-                <input
-                  v-model="editcategory.name"
-                  class="form-control"
-                  id="name"
-                />
-                <div
-                  class="input-errors"
-                  v-for="error of v$.editcategory.name.$errors"
-                  :key="error.$uid"
-                >
-                  <div class="error-msg">{{ error.$message }}</div>
+            <div class="col-8">
+              <div class="row">
+                <div class="col-4">Język</div>
+                <div class="col-4">Nazwa</div>
+              </div>
+              <div class="row" v-for="name in names" :key="name">
+                <div class="col-4">
+                  <input v-model="name.lang" />
+                </div>
+                <div class="col-4"><input v-model="name.name" /></div>
+                <div class="col-4">
+                  <button
+                    class="btn btn-danger"
+                    @click="deleteName(name.lang, name.name)"
+                  >
+                    Usuń
+                  </button>
                 </div>
               </div>
+              <button class="btn-success btn" @click="addName()">Dodaj</button>
             </div>
+          </div>
+
+          <div class="row">
             <div class="col-6">
               <div class="form-group">
                 <label for="category">Kategoria nadrzedna</label>
@@ -147,6 +154,7 @@ import { compressImage, resizePNG } from "@/functions";
 import { POSITION, useToast } from "vue-toastification";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
+import { LanguageNamesModal } from "@/types/LanguageNames";
 export default defineComponent({
   props: {
     category: Object,
@@ -176,9 +184,10 @@ export default defineComponent({
       image: null,
     });
     let buttondisabled = ref<boolean>(false);
+    let names = ref<LanguageNamesModal[]>([]);
     const toast = useToast();
     const v$ = useVuelidate();
-    return { categories, keys, editcategory, buttondisabled, toast, v$ };
+    return { names, categories, keys, editcategory, buttondisabled, toast, v$ };
   },
   validations() {
     return {
@@ -220,6 +229,14 @@ export default defineComponent({
     },
 
     async updateCategory() {
+      let tempname = "";
+      for (let i = 0; this.names.length > i; i++) {
+        if (this.names[i]) {
+          tempname += `${this.names[i].lang}:${this.names[i].name}|`;
+        }
+      }
+      tempname = tempname.slice(0, -1);
+      console.log(tempname);
       let result: CategoryModel[] = [];
       if (this.editcategory.parentCategory) {
         if (this.editcategory.parentCategory.name == "Brak") {
@@ -251,7 +268,7 @@ export default defineComponent({
         });
       }
       let data = {
-        name: this.editcategory.name,
+        name: tempname,
         parentCategory: result[0].id,
         isVisible: this.editcategory.isVisible,
         image: this.editcategory.image,
@@ -370,6 +387,28 @@ export default defineComponent({
         });
       }
     },
+    async getNames() {
+      this.names = [];
+      if (this.category) {
+        if (this.category.name) {
+          let lang = this.category.name.split("|");
+          for (let i = 0; lang.length > i; i++) {
+            this.names.push({
+              name: lang[i].split(":")[1] as string,
+              lang: lang[i].split(":")[0] as string,
+            });
+          }
+        }
+      }
+    },
+    async deleteName(lang: string, name: string) {
+      this.names = this.names.filter((name2) => {
+        return name2.name !== name;
+      });
+    },
+    async addName() {
+      this.names.push({ name: "", lang: "" });
+    },
     async canceladd() {
       this.editcategory = {
         id: null,
@@ -394,6 +433,7 @@ export default defineComponent({
     },
   },
   mounted() {
+    this.getNames();
     this.getCategories();
     this.v$.$validate();
   },
@@ -401,6 +441,8 @@ export default defineComponent({
     // whenever question changes, this function will run
     category(value, newvalue) {
       this.getCategories();
+      this.getNames();
+
       this.editcategory = this.category as CategoryModel;
       if (this.editcategory.parentCategory == null) {
         this.editcategory.parentCategory = {
