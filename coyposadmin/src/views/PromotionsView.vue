@@ -43,6 +43,7 @@ import { showModal } from "@/functions";
 import { DeleteItemModel } from "@/types/DeleteItem";
 import { PromotionModel } from "@/types/api/Promotion";
 import PromotionModal from "@/components/Modals/PromotionModal.vue";
+import { POSITION, useToast } from "vue-toastification";
 
 export default defineComponent({
   name: "PromotionView",
@@ -60,6 +61,7 @@ export default defineComponent({
     let totalPages = ref<number>(1);
     let promotion = ref<PromotionModel>();
     let item = ref<DeleteItemModel>();
+    const toast = useToast();
 
     let create = ref<boolean>(false);
     return {
@@ -71,6 +73,7 @@ export default defineComponent({
       column,
       itemsPerPage,
       page,
+      toast,
     };
   },
   methods: {
@@ -113,8 +116,21 @@ export default defineComponent({
             this.promotions = resp.response;
             this.totalPages = resp.totalPages;
           });
-      } catch (e) {
-        console.log(e as string);
+      } catch (e: any) {
+        this.toast.error(e.code, {
+          position: "top-right" as POSITION,
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
+          rtl: false,
+        });
       }
     },
   },

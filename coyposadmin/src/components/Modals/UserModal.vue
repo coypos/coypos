@@ -358,7 +358,9 @@ export default defineComponent({
       this.$emit("canceladd", false);
     },
   },
-
+  mounted() {
+    this.v$.$validate();
+  },
   watch: {
     // whenever question changes, this function will run
     user(value, newvalue) {

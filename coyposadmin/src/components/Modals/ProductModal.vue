@@ -29,6 +29,13 @@
                   class="form-control"
                   id="name"
                 />
+                <div
+                  class="input-errors"
+                  v-for="error of v$.editproduct.name.$errors"
+                  :key="error.$uid"
+                >
+                  <div class="error-msg">{{ error.$message }}</div>
+                </div>
               </div>
             </div>
             <div class="col-6">
@@ -48,6 +55,13 @@
                     {{ category.name }}
                   </option>
                 </select>
+                <div
+                  class="input-errors"
+                  v-for="error of v$.editproduct.category.$errors"
+                  :key="error.$uid"
+                >
+                  <div class="error-msg">{{ error.$message }}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -61,6 +75,13 @@
                   class="form-control"
                   id="barcode"
                 />
+                <div
+                  class="input-errors"
+                  v-for="error of v$.editproduct.barcode.$errors"
+                  :key="error.$uid"
+                >
+                  <div class="error-msg">{{ error.$message }}</div>
+                </div>
               </div>
             </div>
             <div class="col-3">
@@ -71,6 +92,13 @@
                   class="form-control"
                   id="price"
                 />
+                <div
+                  class="input-errors"
+                  v-for="error of v$.editproduct.price.$errors"
+                  :key="error.$uid"
+                >
+                  <div class="error-msg">{{ error.$message }}</div>
+                </div>
               </div>
             </div>
             <div class="col-3">
@@ -81,6 +109,13 @@
                   class="form-control"
                   id="weight"
                 />
+              </div>
+              <div
+                class="input-errors"
+                v-for="error of v$.editproduct.weight.$errors"
+                :key="error.$uid"
+              >
+                <div class="error-msg">{{ error.$message }}</div>
               </div>
             </div>
           </div>
@@ -108,6 +143,13 @@
                   class="form-control"
                   id="image"
                 />
+                <div
+                  class="input-errors"
+                  v-for="error of v$.editproduct.image.$errors"
+                  :key="error.$uid"
+                >
+                  <div class="error-msg">{{ error.$message }}</div>
+                </div>
               </div>
             </div>
             <div class="col-6">
@@ -160,7 +202,7 @@
             :class="'btn btn-success'"
             data-bs-dismiss="modal"
             @click="updateProduct()"
-            :disabled="buttondisabled"
+            :disabled="buttondisabled || v$.editproduct.$errors.length"
           >
             ZAPISZ
           </button>
@@ -175,7 +217,9 @@ import { ProductModel } from "@/types/api/Product";
 import { CategoryModel } from "@/types/api/Category";
 import { ResponseModel } from "@/types/Response";
 import { compressImage } from "@/functions";
-
+import { POSITION, useToast } from "vue-toastification";
+import { useVuelidate } from "@vuelidate/core";
+import { required, numeric } from "@vuelidate/validators";
 export default defineComponent({
   props: {
     product: Object,
@@ -210,10 +254,23 @@ export default defineComponent({
       discountedPrice: null,
       appliedPromotion: null,
     });
+    const toast = useToast();
+    const v$ = useVuelidate();
     let buttondisabled = ref<boolean>(false);
-    return { keys, editproduct, categories, buttondisabled };
+    return { keys, editproduct, categories, buttondisabled, toast, v$ };
   },
-
+  validations() {
+    return {
+      editproduct: {
+        name: { required, $autoDirty: true },
+        category: { name: { required, $autoDirty: true } },
+        barcode: { required, numeric, $autoDirty: true },
+        price: { required, numeric, $autoDirty: true },
+        weight: { required, numeric, $autoDirty: true },
+        image: { required, $autoDirty: true },
+      },
+    };
+  },
   methods: {
     async encodeImageFileAsURL() {
       this.buttondisabled = true;
@@ -259,14 +316,68 @@ export default defineComponent({
       if (this.create) {
         try {
           await this.$axios.post(`/product`, data);
-        } catch (e) {
-          console.log(e);
+          this.toast.success("Utworzono produkt", {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
+        } catch (e: any) {
+          this.toast.error(e.code, {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
         }
       } else {
         try {
           await this.$axios.put(`/product/${this.editproduct.id}`, data);
-        } catch (e) {
-          console.log(e);
+          this.toast.error("Zedytowano produkt", {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
+        } catch (e: any) {
+          this.toast.error(e.code, {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
         }
       }
       this.editproduct = {
@@ -305,8 +416,21 @@ export default defineComponent({
             const resp: ResponseModel = response.data;
             this.categories = resp.response;
           });
-      } catch (e) {
-        console.log(e as string);
+      } catch (e: any) {
+        this.toast.error(e.code, {
+          position: "top-right" as POSITION,
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
+          rtl: false,
+        });
       }
     },
     async canceladd() {
@@ -341,6 +465,7 @@ export default defineComponent({
   },
   mounted() {
     this.getCategories();
+    this.v$.$validate();
   },
   watch: {
     // whenever question changes, this function will run
@@ -361,6 +486,10 @@ export default defineComponent({
     .modal-body {
       font-size: 17px;
       padding: 50px 10px;
+      .input-errors {
+        color: red;
+        font-size: 0.7em;
+      }
       #base64image {
         margin: 20px;
         display: block;

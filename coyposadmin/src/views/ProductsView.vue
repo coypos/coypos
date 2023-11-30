@@ -45,6 +45,7 @@ import ProductModal from "@/components/Modals/ProductModal.vue";
 import DeleteModal from "@/components/Modals/DeleteModal.vue";
 import { showModal } from "@/functions";
 import { DeleteItemModel } from "@/types/DeleteItem";
+import { POSITION, useToast } from "vue-toastification";
 
 export default defineComponent({
   name: "ProductsView",
@@ -62,6 +63,7 @@ export default defineComponent({
     let totalPages = ref<number>(1);
     let product = ref<ProductModel>();
     let item = ref<DeleteItemModel>();
+    const toast = useToast();
 
     let create = ref<boolean>(false);
     return {
@@ -73,6 +75,7 @@ export default defineComponent({
       column,
       itemsPerPage,
       page,
+      toast,
     };
   },
   methods: {
@@ -131,8 +134,21 @@ export default defineComponent({
 
             this.totalPages = resp.totalPages;
           });
-      } catch (e) {
-        console.log(e as string);
+      } catch (e: any) {
+        this.toast.error(e.code, {
+          position: "top-right" as POSITION,
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
+          rtl: false,
+        });
       }
     },
   },

@@ -36,6 +36,13 @@
           <div class="row">
             <div class="col-4">
               <div class="form-group">
+                <div
+                  class="input-errors"
+                  v-for="error of v$.editpromotion.ids.$errors"
+                  :key="error.$uid"
+                >
+                  <div class="error-msg">{{ error.$message }}</div>
+                </div>
                 <label for="product">Dodaj produkt do promocji</label>
                 <select
                   class="form-control selectpicker"
@@ -69,6 +76,13 @@
                   class="form-control"
                   id="value"
                 />
+                <div
+                  class="input-errors"
+                  v-for="error of v$.editpromotion.discountPercentage.$errors"
+                  :key="error.$uid"
+                >
+                  <div class="error-msg">{{ error.$message }}</div>
+                </div>
               </div>
             </div>
             <div class="col-3">
@@ -77,12 +91,26 @@
                 <VueDatePicker
                   v-model="editpromotion.startDate"
                 ></VueDatePicker>
+                <div
+                  class="input-errors"
+                  v-for="error of v$.editpromotion.startDate.$errors"
+                  :key="error.$uid"
+                >
+                  <div class="error-msg">{{ error.$message }}</div>
+                </div>
               </div>
             </div>
             <div class="col-3">
               <div class="form-group">
                 <label for="value">Koniec Promocji</label>
                 <VueDatePicker v-model="editpromotion.endDate"></VueDatePicker>
+                <div
+                  class="input-errors"
+                  v-for="error of v$.editpromotion.endDate.$errors"
+                  :key="error.$uid"
+                >
+                  <div class="error-msg">{{ error.$message }}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -97,6 +125,7 @@
             ANULUJ
           </button>
           <button
+            :disabled="v$.editpromotion.$errors.length"
             type="button"
             :class="'btn btn-success'"
             data-bs-dismiss="modal"
@@ -117,7 +146,9 @@ import { ResponseModel } from "@/types/Response";
 import { ProductModel } from "@/types/api/Product";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
-import { DeleteItemModel } from "@/types/DeleteItem";
+import { POSITION, useToast } from "vue-toastification";
+import { useVuelidate } from "@vuelidate/core";
+import { required, numeric } from "@vuelidate/validators";
 export default defineComponent({
   props: {
     promotion: Object,
@@ -141,10 +172,20 @@ export default defineComponent({
     let names = ref<object[]>([]);
     let productToAdd = ref<ProductModel>();
     let products = ref<ProductModel[]>([]);
-
-    return { products, productToAdd, names, keys, editpromotion };
+    const toast = useToast();
+    const v$ = useVuelidate();
+    return { products, productToAdd, names, keys, editpromotion, toast, v$ };
   },
-
+  validations() {
+    return {
+      editpromotion: {
+        ids: { required, $autoDirty: true },
+        discountPercentage: { required, numeric, $autoDirty: true },
+        startDate: { required, $autoDirty: true },
+        endDate: { required, $autoDirty: true },
+      },
+    };
+  },
   methods: {
     async addProduct() {
       if (this.productToAdd) {
@@ -170,8 +211,21 @@ export default defineComponent({
             const resp: ResponseModel = response.data;
             this.products = resp.response;
           });
-      } catch (e) {
-        console.log(e as string);
+      } catch (e: any) {
+        this.toast.error(e.code, {
+          position: "top-right" as POSITION,
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
+          rtl: false,
+        });
       }
     },
     async getItemsNames() {
@@ -198,14 +252,68 @@ export default defineComponent({
       if (this.create) {
         try {
           await this.$axios.post(`/promotion`, data);
-        } catch (e) {
-          console.log(e);
+          this.toast.success("Utworzono promocje", {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
+        } catch (e: any) {
+          this.toast.error(e.code, {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
         }
       } else {
         try {
           await this.$axios.put(`/promotion/${this.editpromotion.id}`, data);
-        } catch (e) {
-          console.log(e);
+          this.toast.success("Zedytowano promocje", {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
+        } catch (e: any) {
+          this.toast.error(e.code, {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
         }
       }
       this.editpromotion = {
@@ -238,6 +346,7 @@ export default defineComponent({
   },
   mounted() {
     this.getProducts();
+    this.v$.$validate();
   },
 
   watch: {
@@ -259,6 +368,10 @@ export default defineComponent({
     .modal-body {
       font-size: 17px;
       padding: 50px 10px;
+      .input-errors {
+        color: red;
+        font-size: 0.7em;
+      }
     }
     .modal-footer {
       font-size: 20px;

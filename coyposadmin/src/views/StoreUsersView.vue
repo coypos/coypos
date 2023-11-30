@@ -1,125 +1,128 @@
 <template>
   <div class="row">
-    <div class="col-10">Użytkownicy</div>
+    <div class="col-10">Ustawienia</div>
     <div class="col-2">
-      <div class="btn btn-success" @click="addUser()">DODAJ</div>
+      <div class="btn btn-success" @click="addSetting()">DODAJ</div>
     </div>
   </div>
   <div class="row header">
-    <div class="col-2">Nazwa</div>
-    <div class="col-2">Numer Karty</div>
-    <div class="col-2">Numer Telefonu</div>
-    <div class="col-2">Email</div>
+    <div class="col-4">Nazwa</div>
+    <div class="col-4">Wartość</div>
   </div>
 
-  <user-component
-    v-for="(user, index) in users"
+  <setting-component
+    v-for="(setting, index) in settings"
     :key="index"
     :index="index"
-    :user="user"
-    @getuseredited="getuseredited"
-    @getuserdeleted="getuserdeleted"
-  ></user-component
+    :setting="setting"
+    @getsettingedited="getsettingedited"
+    @getsettingdeleted="getsettingdeleted"
+  ></setting-component
   ><pagination-component
     :page="page"
     :itemsPerPage="itemsPerPage"
     :totalPages="totalPages"
   ></pagination-component
-  ><user-modal
+  ><setting-modal
     @canceladd="canceladd"
     :create="create"
-    :user="user"
-    @refreshusers="refreshusers"
-  ></user-modal>
-  <delete-modal @refresh="refreshusers" :item="item"></delete-modal>
+    :setting="setting"
+    @refreshsettings="refreshsettings"
+  ></setting-modal>
+  <delete-modal @refresh="refreshsettings" :item="item"></delete-modal>
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { ResponseModel } from "@/types/Response";
-import UserComponent from "@/components/UsersComponent.vue";
+import SettingComponent from "@/components/SettingsComponent.vue";
 import PaginationComponent from "@/components/PaginationComponent.vue";
 import DeleteModal from "@/components/Modals/DeleteModal.vue";
 import { showModal } from "@/functions";
 import { DeleteItemModel } from "@/types/DeleteItem";
-import { UserModel } from "@/types/api/User";
-import UserModal from "@/components/Modals/UserModal.vue";
+import { SettingModel } from "@/types/api/Setting";
+import SettingModal from "@/components/Modals/SettingModal.vue";
+import { POSITION, useToast } from "vue-toastification";
 
 export default defineComponent({
-  name: "UserView",
+  name: "SettingView",
   components: {
-    UserModal,
+    SettingModal,
     PaginationComponent,
-    UserComponent,
+    SettingComponent,
     DeleteModal,
   },
   setup() {
-    let users = ref<UserModel[]>([]);
+    let settings = ref<SettingModel[]>([]);
     let column = ref<number>(0);
     let itemsPerPage = ref<number>(50);
     let page = ref<number>(1);
     let totalPages = ref<number>(1);
-    let user = ref<UserModel>();
+    let setting = ref<SettingModel>();
     let item = ref<DeleteItemModel>();
+    const toast = useToast();
 
     let create = ref<boolean>(false);
     return {
       create,
       item,
-      user,
+      setting,
       totalPages,
-      users,
+      settings,
       column,
       itemsPerPage,
       page,
+      toast,
     };
   },
   methods: {
-    async getuseredited(value: UserModel) {
-      this.user = value;
+    async getsettingedited(value: SettingModel) {
+      this.setting = value;
     },
-    async getuserdeleted(value: DeleteItemModel) {
+    async getsettingdeleted(value: DeleteItemModel) {
       this.item = value;
     },
-    async refreshusers(value: boolean) {
-      console.log("refreshusers", value);
-      await this.getUsers();
+    async refreshsettings(value: boolean) {
+      await this.getSettings();
     },
     async canceladd(value: boolean) {
       this.create = value;
-      this.user = {
+      this.setting = {
         id: null,
-        name: null,
-        role: null,
-        cardNumber: null,
-        phoneNumber: null,
-        points: null,
-        email: null,
-        password: null,
-        salt: null,
-        loginToken: null,
-        loginTokenValidDate: null,
-        createDate: null,
-        updateDate: null,
+        key: null,
+        value: null,
       };
     },
-    async addUser() {
+    async addSetting() {
       this.create = true;
       showModal();
     },
     showModal,
-    async getUsers() {
+    async getSettings() {
       try {
         await this.$axios
           .get(
-            `/users?filter=AND&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
+            `/settings?filter=AND&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
           )
           .then((response) => {
             const resp: ResponseModel = response.data;
-            this.users = resp.response;
+            this.settings = resp.response;
             this.totalPages = resp.totalPages;
           });
-      } catch (e) {
-        console.log(e as string);
+      } catch (e: any) {
+        this.toast.error(e.code, {
+          position: "top-right" as POSITION,
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
+          rtl: false,
+        });
       }
     },
   },
@@ -128,7 +131,7 @@ export default defineComponent({
     this.itemsPerPage = parseInt(
       this.$router.currentRoute.value.query.itemsPerPage as string
     );
-    this.getUsers();
+    this.getSettings();
   },
   updated() {
     if (
@@ -143,7 +146,7 @@ export default defineComponent({
       this.itemsPerPage = parseInt(
         this.$router.currentRoute.value.query.itemsPerPage as string
       );
-      this.getUsers();
+      this.getSettings();
     }
   },
 });

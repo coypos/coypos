@@ -29,6 +29,13 @@
                   class="form-control"
                   id="name"
                 />
+                <div
+                  class="input-errors"
+                  v-for="error of v$.editcategory.name.$errors"
+                  :key="error.$uid"
+                >
+                  <div class="error-msg">{{ error.$message }}</div>
+                </div>
               </div>
             </div>
             <div class="col-6">
@@ -65,6 +72,13 @@
                   class="form-control"
                   id="image"
                 />
+                <div
+                  class="input-errors"
+                  v-for="error of v$.editcategory.image.$errors"
+                  :key="error.$uid"
+                >
+                  <div class="error-msg">{{ error.$message }}</div>
+                </div>
               </div>
             </div>
             <div class="col-6">
@@ -116,7 +130,7 @@
             :class="'btn btn-success'"
             data-bs-dismiss="modal"
             @click="updateCategory()"
-            :disabled="buttondisabled"
+            :disabled="buttondisabled || v$.editcategory.$errors.length"
           >
             ZAPISZ
           </button>
@@ -130,7 +144,9 @@ import { defineComponent, ref } from "vue";
 import { CategoryModel } from "@/types/api/Category";
 import { ResponseModel } from "@/types/Response";
 import { compressImage, resizePNG } from "@/functions";
-
+import { POSITION, useToast } from "vue-toastification";
+import { useVuelidate } from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
 export default defineComponent({
   props: {
     category: Object,
@@ -160,9 +176,18 @@ export default defineComponent({
       image: null,
     });
     let buttondisabled = ref<boolean>(false);
-    return { categories, keys, editcategory, buttondisabled };
+    const toast = useToast();
+    const v$ = useVuelidate();
+    return { categories, keys, editcategory, buttondisabled, toast, v$ };
   },
-
+  validations() {
+    return {
+      editcategory: {
+        name: { required, $autoDirty: true },
+        image: { required, $autoDirty: true },
+      },
+    };
+  },
   methods: {
     async encodeImageFileAsURL() {
       this.buttondisabled = true;
@@ -214,7 +239,6 @@ export default defineComponent({
           });
         }
       }
-      console.log(result, this.editcategory.parentCategory);
       if (!result[0]) {
         result.push({
           name: null,
@@ -236,15 +260,68 @@ export default defineComponent({
       if (this.create) {
         try {
           await this.$axios.post(`/category`, data);
-        } catch (e) {
-          console.log(e);
+          this.toast.success("Utworzono Kategorie", {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
+        } catch (e: any) {
+          this.toast.error(e.code, {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
         }
       } else {
         try {
-          console.log(this.editcategory);
           await this.$axios.put(`/category/${this.editcategory.id}`, data);
-        } catch (e) {
-          console.log(e);
+          this.toast.success("Zedytowano kategorie", {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
+        } catch (e: any) {
+          this.toast.error(e.code, {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
         }
       }
       this.editcategory = {
@@ -276,8 +353,21 @@ export default defineComponent({
             const resp: ResponseModel = response.data;
             this.categories = resp.response;
           });
-      } catch (e) {
-        console.log(e as string);
+      } catch (e: any) {
+        this.toast.error(e.code, {
+          position: "top-right" as POSITION,
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
+          rtl: false,
+        });
       }
     },
     async canceladd() {
@@ -305,6 +395,7 @@ export default defineComponent({
   },
   mounted() {
     this.getCategories();
+    this.v$.$validate();
   },
   watch: {
     // whenever question changes, this function will run
@@ -336,6 +427,10 @@ export default defineComponent({
     .modal-body {
       font-size: 17px;
       padding: 50px 10px;
+      .input-errors {
+        color: red;
+        font-size: 0.7em;
+      }
       #base64image {
         margin: 20px;
         display: block;

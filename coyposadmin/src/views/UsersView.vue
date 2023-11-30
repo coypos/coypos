@@ -135,8 +135,6 @@ export default defineComponent({
           icon: true,
           rtl: false,
         });
-
-        console.log(e as string);
       }
     },
   },

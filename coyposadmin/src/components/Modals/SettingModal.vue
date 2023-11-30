@@ -23,22 +23,44 @@
           <div class="row">
             <div class="col-6">
               <div class="form-group">
-                <label for="name">Nazwa ustawienia</label>
-                <input
-                  v-model="editsetting.key"
-                  class="form-control"
-                  id="name"
-                />
+                <label for="value">Nazwa ustawienia</label>
+
+                <div :class="{ error: v$.editsetting.key.$errors.length }">
+                  <input
+                    v-model="editsetting.key"
+                    type="text"
+                    class="form-control"
+                    id="value"
+                  />
+                  <div
+                    class="input-errors"
+                    v-for="error of v$.editsetting.key.$errors"
+                    :key="error.$uid"
+                  >
+                    <div class="error-msg">{{ error.$message }}</div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="col-6">
               <div class="form-group">
                 <label for="value">Wartosc</label>
-                <input
-                  v-model="editsetting.value"
-                  class="form-control"
-                  id="value"
-                />
+
+                <div :class="{ error: v$.editsetting.value.$errors.length }">
+                  <input
+                    v-model="editsetting.value"
+                    type="text"
+                    class="form-control"
+                    id="value"
+                  />
+                  <div
+                    class="input-errors"
+                    v-for="error of v$.editsetting.value.$errors"
+                    :key="error.$uid"
+                  >
+                    <div class="error-msg">{{ error.$message }}</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -53,6 +75,7 @@
             ANULUJ
           </button>
           <button
+            :disabled="v$.editsetting.$errors.length"
             type="button"
             :class="'btn btn-success'"
             data-bs-dismiss="modal"
@@ -69,7 +92,9 @@
 import { defineComponent, ref } from "vue";
 
 import { SettingModel } from "@/types/api/Setting";
-
+import { POSITION, useToast } from "vue-toastification";
+import { required, minLength } from "@vuelidate/validators";
+import { useVuelidate } from "@vuelidate/core";
 export default defineComponent({
   props: {
     setting: Object,
@@ -84,10 +109,19 @@ export default defineComponent({
       key: null,
       value: null,
     });
+    const toast = useToast();
+    const v$ = useVuelidate();
 
-    return { keys, editsetting };
+    return { keys, editsetting, toast, v$ };
   },
-
+  validations() {
+    return {
+      editsetting: {
+        key: { required, minLength: minLength(3), $autoDirty: true },
+        value: { required, $autoDirty: true },
+      },
+    };
+  },
   methods: {
     async updateSetting() {
       let data = {
@@ -97,14 +131,68 @@ export default defineComponent({
       if (this.create) {
         try {
           await this.$axios.post(`/setting`, data);
-        } catch (e) {
-          console.log(e);
+          this.toast.success("Utworzono ustawienie", {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
+        } catch (e: any) {
+          this.toast.error(e.code, {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
         }
       } else {
         try {
           await this.$axios.put(`/setting/${this.editsetting.id}`, data);
-        } catch (e) {
-          console.log(e);
+          this.toast.success("Zedytowano ustawienie", {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
+        } catch (e: any) {
+          this.toast.error(e.code, {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
         }
       }
       this.editsetting = {
@@ -125,7 +213,9 @@ export default defineComponent({
       this.$emit("canceladd", false);
     },
   },
-
+  mounted() {
+    this.v$.$validate();
+  },
   watch: {
     // whenever question changes, this function will run
     setting(value, newvalue) {
@@ -144,6 +234,10 @@ export default defineComponent({
     .modal-body {
       font-size: 17px;
       padding: 50px 10px;
+      .input-errors {
+        color: red;
+        font-size: 0.7em;
+      }
     }
     .modal-footer {
       font-size: 20px;

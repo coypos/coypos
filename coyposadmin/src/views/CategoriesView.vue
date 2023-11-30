@@ -44,6 +44,7 @@ import { DeleteItemModel } from "@/types/DeleteItem";
 import CategoryModal from "@/components/Modals/CategoryModal.vue";
 import CategoriesComponent from "@/components/CategoriesComponent.vue";
 import { CategoryModel } from "@/types/api/Category";
+import { POSITION, useToast } from "vue-toastification";
 export default defineComponent({
   name: "CategoriesView",
   components: {
@@ -60,6 +61,7 @@ export default defineComponent({
     let totalPages = ref<number>(1);
     let category = ref<CategoryModel>();
     let item = ref<DeleteItemModel>();
+    const toast = useToast();
 
     let create = ref<boolean>(false);
     return {
@@ -71,6 +73,7 @@ export default defineComponent({
       column,
       itemsPerPage,
       page,
+      toast,
     };
   },
   methods: {
@@ -81,7 +84,6 @@ export default defineComponent({
       this.item = value;
     },
     async refreshcategories(value: boolean) {
-      console.log("refreshcategories", value);
       await this.getCategories();
     },
     async canceladd(value: boolean) {
@@ -122,8 +124,21 @@ export default defineComponent({
 
             this.totalPages = resp.totalPages;
           });
-      } catch (e) {
-        console.log(e as string);
+      } catch (e: any) {
+        this.toast.error(e.code, {
+          position: "top-right" as POSITION,
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
+          rtl: false,
+        });
       }
     },
   },
