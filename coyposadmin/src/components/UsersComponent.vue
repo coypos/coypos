@@ -22,6 +22,7 @@
 import { defineComponent, ref } from "vue";
 import { showModal, showDeleteModal } from "@/functions";
 import { DeleteItemModel } from "@/types/DeleteItem";
+import { POSITION, useToast } from "vue-toastification";
 
 export default defineComponent({
   name: "OneLineComponent",
@@ -32,7 +33,9 @@ export default defineComponent({
   setup() {
     let edit = ref<boolean>(false);
     let item = ref<DeleteItemModel>({ id: 0, what: "test", name: "test" });
-    return { edit, item };
+    const toast = useToast();
+
+    return { edit, item, toast };
   },
   methods: {
     async edituser() {
@@ -50,12 +53,74 @@ export default defineComponent({
     },
     async banuser() {
       if (this.user) {
-        await this.$axios.post(`/user/${this.user.id}/ban`);
+        try {
+          await this.$axios.post(`/user/${this.user.id}/ban`);
+          this.toast.success("Użytkownik zbanowany", {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
+        } catch (e: any) {
+          this.toast.error(e.code, {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
+        }
       }
     },
     async unbanuser() {
       if (this.user) {
-        await this.$axios.post(`/user/${this.user.id}/unban`);
+        try {
+          await this.$axios.post(`/user/${this.user.id}/unban`);
+          this.toast.success("Użytkownik odbanowany", {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
+        } catch (e: any) {
+          this.toast.error(e.code, {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
+        }
       }
     },
 

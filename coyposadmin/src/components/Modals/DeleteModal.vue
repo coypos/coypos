@@ -42,6 +42,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
+import { POSITION, useToast } from "vue-toastification";
 
 export default defineComponent({
   props: {
@@ -51,8 +52,9 @@ export default defineComponent({
   name: "DeleteModal",
   setup() {
     let keys = ref<string[]>();
+    const toast = useToast();
 
-    return { keys };
+    return { toast, keys };
   },
 
   methods: {
@@ -64,9 +66,37 @@ export default defineComponent({
             .then(() => {
               this.$emit("refresh", true);
             });
+
+          this.toast.success("Usunięto", {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
         }
-      } catch (e) {
-        console.log(e);
+      } catch (e: any) {
+        this.toast.error(e.code, {
+          position: "top-right" as POSITION,
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
+          rtl: false,
+        });
       }
     },
   },

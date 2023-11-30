@@ -23,8 +23,22 @@
           <div class="row">
             <div class="col-3">
               <div class="form-group">
-                <label for="name">Nazwa</label>
-                <input v-model="edituser.name" class="form-control" id="name" />
+                <label for="value">Nazwa</label>
+
+                <div :class="{ error: v$.edituser.name.$errors.length }">
+                  <input
+                    v-model="edituser.name"
+                    class="form-control"
+                    id="value"
+                  />
+                  <div
+                    class="input-errors"
+                    v-for="error of v$.edituser.name.$errors"
+                    :key="error.$uid"
+                  >
+                    <div class="error-msg">{{ error.$message }}</div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="col-3">
@@ -39,22 +53,42 @@
             </div>
             <div v-if="!create" class="col-3">
               <div class="form-group">
-                <label for="value">Numer Karty</label>
-                <input
-                  v-model="edituser.cardNumber"
-                  class="form-control"
-                  id="value"
-                />
+                <label for="value">Numer karty</label>
+
+                <div :class="{ error: v$.edituser.cardNumber.$errors.length }">
+                  <input
+                    v-model="edituser.cardNumber"
+                    class="form-control"
+                    id="value"
+                  />
+                  <div
+                    class="input-errors"
+                    v-for="error of v$.edituser.cardNumber.$errors"
+                    :key="error.$uid"
+                  >
+                    <div class="error-msg">{{ error.$message }}</div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="col-3">
               <div class="form-group">
-                <label for="value">Numer Telefonu</label>
-                <input
-                  v-model="edituser.phoneNumber"
-                  class="form-control"
-                  id="value"
-                />
+                <label for="value">Numer telefonu</label>
+
+                <div :class="{ error: v$.edituser.phoneNumber.$errors.length }">
+                  <input
+                    v-model="edituser.phoneNumber"
+                    class="form-control"
+                    id="value"
+                  />
+                  <div
+                    class="input-errors"
+                    v-for="error of v$.edituser.phoneNumber.$errors"
+                    :key="error.$uid"
+                  >
+                    <div class="error-msg">{{ error.$message }}</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -62,32 +96,63 @@
           <div class="row">
             <div class="col-3">
               <div class="form-group">
-                <label for="name">Punkty</label>
-                <input
-                  v-model="edituser.points"
-                  class="form-control"
-                  id="name"
-                />
+                <label for="value">Punkty</label>
+
+                <div :class="{ error: v$.edituser.points.$errors.length }">
+                  <input
+                    v-model="edituser.points"
+                    class="form-control"
+                    id="value"
+                  />
+                  <div
+                    class="input-errors"
+                    v-for="error of v$.edituser.points.$errors"
+                    :key="error.$uid"
+                  >
+                    <div class="error-msg">{{ error.$message }}</div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="col-3">
               <div class="form-group">
                 <label for="value">Email</label>
-                <input
-                  v-model="edituser.email"
-                  class="form-control"
-                  id="value"
-                />
+
+                <div :class="{ error: v$.edituser.email.$errors.length }">
+                  <input
+                    v-model="edituser.email"
+                    class="form-control"
+                    id="value"
+                  />
+                  <div
+                    class="input-errors"
+                    v-for="error of v$.edituser.email.$errors"
+                    :key="error.$uid"
+                  >
+                    <div class="error-msg">{{ error.$message }}</div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="col-3">
               <div class="form-group">
                 <label for="value">Hasło</label>
-                <input
-                  v-model="edituser.password"
-                  class="form-control"
-                  id="value"
-                />
+
+                <div :class="{ error: v$.edituser.password.$errors.length }">
+                  <input
+                    v-model="edituser.password"
+                    type="password"
+                    class="form-control"
+                    id="value"
+                  />
+                  <div
+                    class="input-errors"
+                    v-for="error of v$.edituser.password.$errors"
+                    :key="error.$uid"
+                  >
+                    <div class="error-msg">{{ error.$message }}</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -102,6 +167,7 @@
             ANULUJ
           </button>
           <button
+            :disabled="v$.edituser.$errors.length"
             type="button"
             :class="'btn btn-success'"
             data-bs-dismiss="modal"
@@ -115,18 +181,29 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-
+import { defineComponent, ref, reactive } from "vue";
 import { UserModel } from "@/types/api/User";
+import { useVuelidate } from "@vuelidate/core";
+import { useToast, POSITION } from "vue-toastification";
+import {
+  required,
+  email,
+  minLength,
+  numeric,
+  helpers,
+} from "@vuelidate/validators";
 
+const phoneNumber = helpers.regex(/^(?:[+]{0,1})(?:\d{9,12})?$/);
 export default defineComponent({
   props: {
     user: Object,
     create: Boolean,
   },
+
   expose: ["showModal"],
   name: "UserModal",
   setup() {
+    const toast = useToast();
     let keys = ref<string[]>();
     let edituser = ref<UserModel>({
       id: null,
@@ -144,9 +221,27 @@ export default defineComponent({
       updateDate: null,
     });
 
-    return { keys, edituser };
+    const v$ = useVuelidate();
+    return { toast, v$, keys, edituser };
   },
-
+  validations() {
+    return {
+      edituser: {
+        name: { required, minLength: minLength(3), $autoDirty: true },
+        cardNumber: { numeric, $autoDirty: true },
+        phoneNumber: {
+          phoneNumber: helpers.withMessage(
+            "This is not valid number",
+            phoneNumber
+          ),
+          $autoDirty: true,
+        },
+        points: { numeric, $autoDirty: true },
+        email: { required, email, $autoDirty: true },
+        password: { minLength: minLength(8), $autoDirty: true },
+      },
+    };
+  },
   methods: {
     async updateUser() {
       let data = {
@@ -161,14 +256,68 @@ export default defineComponent({
       if (this.create) {
         try {
           await this.$axios.post(`/user`, data);
-        } catch (e) {
-          console.log(e);
+          this.toast.success("Utworzono użytkownika", {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
+        } catch (e: any) {
+          this.toast.error(e.code, {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
         }
       } else {
         try {
           await this.$axios.put(`/user/${this.edituser.id}`, data);
-        } catch (e) {
-          console.log(e);
+          this.toast.success("Zedytowano użytkownika", {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
+        } catch (e: any) {
+          this.toast.error(e.code, {
+            position: "top-right" as POSITION,
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: false,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: true,
+            rtl: false,
+          });
         }
       }
       this.edituser = {
@@ -228,6 +377,10 @@ export default defineComponent({
     .modal-body {
       font-size: 17px;
       padding: 50px 10px;
+      .input-errors {
+        color: red;
+        font-size: 0.7em;
+      }
     }
     .modal-footer {
       font-size: 20px;

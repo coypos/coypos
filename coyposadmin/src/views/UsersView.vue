@@ -43,6 +43,7 @@ import { showModal } from "@/functions";
 import { DeleteItemModel } from "@/types/DeleteItem";
 import { UserModel } from "@/types/api/User";
 import UserModal from "@/components/Modals/UserModal.vue";
+import { POSITION, useToast } from "vue-toastification";
 
 export default defineComponent({
   name: "UserView",
@@ -60,9 +61,11 @@ export default defineComponent({
     let totalPages = ref<number>(1);
     let user = ref<UserModel>();
     let item = ref<DeleteItemModel>();
+    const toast = useToast();
 
     let create = ref<boolean>(false);
     return {
+      toast,
       create,
       item,
       user,
@@ -81,7 +84,6 @@ export default defineComponent({
       this.item = value;
     },
     async refreshusers(value: boolean) {
-      console.log("refreshusers", value);
       await this.getUsers();
     },
     async canceladd(value: boolean) {
@@ -118,7 +120,22 @@ export default defineComponent({
             this.users = resp.response;
             this.totalPages = resp.totalPages;
           });
-      } catch (e) {
+      } catch (e: any) {
+        this.toast.error(e.code, {
+          position: "top-right" as POSITION,
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
+          rtl: false,
+        });
+
         console.log(e as string);
       }
     },
