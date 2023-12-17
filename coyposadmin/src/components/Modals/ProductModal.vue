@@ -449,7 +449,7 @@ export default defineComponent({
     async getCategories() {
       try {
         await this.$axios
-          .get(`/categories?filter=AND&itemsPerPage=999999&page=1`)
+          .get(`/categories?filter=AND&language=all&itemsPerPage=999999&page=1`)
           .then((response) => {
             const resp: ResponseModel = response.data;
             this.categories = resp.response;

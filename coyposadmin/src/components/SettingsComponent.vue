@@ -1,7 +1,7 @@
 <template>
   <div :id="'setting' + index" class="row setting">
     <div class="col-4">{{ setting.key }}</div>
-    <div class="col-4">{{ setting.value }}</div>
+    <div class="col-4">{{ setting.value.substring(0, 50) }}</div>
 
     <div class="col-1">
       <div class="btn btn-warning" @click="editsetting()">EDYTUJ</div>
