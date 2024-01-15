@@ -100,6 +100,19 @@ public class SettingsController : ControllerBase
 			return StatusCode((int)HttpStatusCode.InternalServerError, new ProblemDetails() { Title = e.Message });
 		}
 	}
+
+	/// <summary>
+	/// (overload) Adds a new setting or updates an existing one
+	/// </summary>
+	/// <param name="setting">key/value setting</param>
+	[HttpPut]
+	[Route("setting")]
+	[ProducesResponseType(typeof(Setting), (int)HttpStatusCode.OK)]
+	[ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
+	public ObjectResult PutSetting([FromBody] SettingRequestModel setting)
+	{
+		return AddSetting(setting);
+	}
 	
 	/// <summary>
 	/// Deletes a specific setting
