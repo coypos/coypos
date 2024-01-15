@@ -108,6 +108,7 @@ public class Setup
             // <> UseCors must be placed after UseRouting and before UseAuthorization. This is to ensure that CORS headers are included in the response for both authorized and unauthorized calls.
             app.UseCors();
             // </>
+            app.UseRouting();
             app.UseMiddleware<LoggingMiddleware>();
             app.UseMiddleware<ApiKeyMiddleware>();
             app.UseMiddleware<BodyEnricherMiddleware>();

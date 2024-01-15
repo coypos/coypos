@@ -1,6 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Net;
+using CoyposServer.Models;
+using CoyposServer.Models.Sql;
 using CoyposServer.Utils;
+using CoyposServer.Utils.Attributes;
 using CoyposServer.Utils.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,6 +33,7 @@ public class AppController : ControllerBase
 	[ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
 	[ProducesResponseType(typeof(string), (int)HttpStatusCode.Locked)]
 	[ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
+	[NoApiKey]
 	public async Task<ObjectResult> Login(string email, string password)
 	{
 		try
@@ -85,6 +89,7 @@ public class AppController : ControllerBase
 	[ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
 	[ProducesResponseType(typeof(string), (int)HttpStatusCode.Locked)]
 	[ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
+	[NoApiKey]
 	public async Task<ObjectResult> Logout(string token)
 	{
 		try
@@ -100,6 +105,66 @@ public class AppController : ControllerBase
 			user.LoginTokenValidDate = null;
 			await _dbContext.ForceSaveChangesAsync("Users");
 			return StatusCode((int)HttpStatusCode.OK, "Logged out");
+		}
+		catch (Exception e)
+		{
+			return StatusCode((int)HttpStatusCode.InternalServerError, new ProblemDetails() { Title = e.Message });
+		}
+	}
+	
+	
+	/// <summary>
+	/// Get active promotions
+	/// </summary>
+	/// <param name="token">Token</param>
+	/// <returns>a list of active promotions (after start date but before end date)</returns>
+	[HttpGet]
+	[Route("app/promotions")]
+	[ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(string), (int)HttpStatusCode.Locked)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
+	[NoApiKey]
+	public async Task<ObjectResult> Promotions(string token, int itemsPerPage = 50, int page = 1, string language = "", bool loadImages = false)
+	{
+		try
+		{
+			if (token.IsNullOrEmpty() || _dbContext.Users.FirstOrDefault(_ => _.LoginToken == token) is null)
+				return StatusCode((int)HttpStatusCode.Unauthorized, "");
+			
+			var images = loadImages ? _dbContext.Images.ToList() : new List<Image>();
+
+			var promotions = _dbContext.Promotions.ToList();
+			promotions = promotions.Where(_ => _.StartDate < DateTime.Now && _.EndDate > DateTime.Now).ToList();
+			
+			var pagefiedPromotions = promotions.Pagefy(itemsPerPage, page, out var totalPages);
+			
+			for (var i = 0; i < pagefiedPromotions.Count; i++)
+			{
+				pagefiedPromotions[i].AffectedProducts = new List<Product>();
+				foreach (var s in pagefiedPromotions[i].Ids.Split(','))
+					foreach (var product in _dbContext.Products.Where(_ => _.ID.ToString() == s).ToList())
+						pagefiedPromotions[i].AffectedProducts.Add(product);
+				
+				foreach (var affectedProduct in pagefiedPromotions[i].AffectedProducts)
+				{
+					if (!affectedProduct.Image.IsNullOrEmpty() && loadImages)
+						affectedProduct.Image = images.FirstOrDefault(_ => _.ID.ToString() == affectedProduct.Image)!.Img;
+					else
+						affectedProduct.Image = null;
+
+					affectedProduct.Name = LanguageHelpers.Translate(affectedProduct.Name, language);
+				}
+			}
+
+			return StatusCode((int)HttpStatusCode.OK, new RichResponse<List<Promotion>>(pagefiedPromotions)
+			{
+				Page = page,
+				TotalPages = totalPages,
+				ItemsPerPage = itemsPerPage,
+				TotalItems = promotions.Count,
+				TotalItemsFiltered = promotions.Count
+			});
 		}
 		catch (Exception e)
 		{

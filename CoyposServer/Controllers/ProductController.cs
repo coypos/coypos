@@ -48,7 +48,7 @@ public class ProductController : ControllerBase
             {
                 if (!pagefiedProducts[i].Image.IsNullOrEmpty() && loadImages)
                     pagefiedProducts[i].Image =
-                        images.FirstOrDefault(_ => _.ID.ToString() == pagefiedProducts[i].Image).Img;
+                        images.FirstOrDefault(_ => _.ID.ToString() == pagefiedProducts[i].Image)!.Img;
                 else
                     pagefiedProducts[i].Image = null;
             }

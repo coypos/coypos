@@ -63,7 +63,7 @@ public class UserController : ControllerBase
             return StatusCode((int)HttpStatusCode.InternalServerError, new ProblemDetails() { Title = e.Message });
         }
     }
-    
+
     /// <summary>
     /// Updates the user
     /// </summary>
