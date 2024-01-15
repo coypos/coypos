@@ -75,7 +75,7 @@ public class SettingsController : ControllerBase
 	}
 
 	/// <summary>
-	/// Adds a new setting or update an existing one
+	/// Adds a new setting or updates an existing one
 	/// </summary>
 	/// <param name="setting">key/value setting</param>
 	[HttpPost]
