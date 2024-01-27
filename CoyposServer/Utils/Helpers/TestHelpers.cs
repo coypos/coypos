@@ -44,6 +44,7 @@ public static class TestHelpers
                 Price = (decimal) Math.Round(random.NextDouble() * random.Next(1, 10), 2),
                 IsLoose = false,
                 Weight = random.Next(10, 1000),
+                AgeRestricted = random.Next() > (int.MaxValue / 2),
                 Category = databaseContext.Categories.ToList()[random.Next(0, databaseContext.Categories.Count() - 1)],
             });
             await databaseContext.SaveChangesAsync();

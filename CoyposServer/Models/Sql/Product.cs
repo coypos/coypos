@@ -46,6 +46,9 @@ public class Product
     [Column("Image")]
     public string? Image { get; set; }
     
+    [Column]
+    public bool? AgeRestricted { get; set; }
+    
     [NotMapped]
     public decimal? DiscountedPrice;
     
