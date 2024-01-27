@@ -22,4 +22,8 @@ public class DatabaseContext : DbContext
     
     public DbSet<Image> Images { get; set; }
     public DbSet<Setting> Settings { get; set; }
+    
+    public DbSet<Receipt> Receipts { get; set; }
+    
+    public DbSet<Transaction> Transactions { get; set; }
 }

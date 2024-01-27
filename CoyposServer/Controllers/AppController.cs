@@ -121,7 +121,7 @@ public class AppController : ControllerBase
 	[HttpGet]
 	[Route("app/promotions")]
 	[ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(List<Promotion>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Locked)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
 	[NoApiKey]
@@ -171,4 +171,69 @@ public class AppController : ControllerBase
 			return StatusCode((int)HttpStatusCode.InternalServerError, new ProblemDetails() { Title = e.Message });
 		}
 	}
+
+	/// <summary>
+	/// Get user receipts
+	/// </summary>
+	/// <param name="token">Token</param>
+	/// <returns>a list of receipts</returns>
+	[HttpGet]
+	[Route("app/receipts")]
+	[ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
+	[ProducesResponseType(typeof(List<Receipt>), (int)HttpStatusCode.OK)]
+	[ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
+	[NoApiKey]
+	public async Task<ObjectResult> Receipts(string token, int itemsPerPage = 50, int page = 1, string language = "",
+		bool loadImages = false)
+	{
+		try
+		{
+			if (token.IsNullOrEmpty() || _dbContext.Users.FirstOrDefault(_ => _.LoginToken == token) is null)
+				return StatusCode((int)HttpStatusCode.Unauthorized, "");
+
+			var found = _dbContext.Users.First(_ => _.LoginToken == token);
+
+			return new ReceiptController(_dbContext).GetReceipts(new Receipt() { User = found }, "AND", itemsPerPage,
+				page,
+				language, loadImages);
+		}
+		catch (Exception e)
+		{
+			return StatusCode((int)HttpStatusCode.InternalServerError, new ProblemDetails() { Title = e.Message });
+		}
+	}
+	
+	
+	/// <summary>
+	/// Get user data
+	/// </summary>
+	/// <param name="token">Token</param>
+	/// <returns>user data</returns>
+	[HttpGet]
+	[Route("app/user")]
+	[ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
+	[ProducesResponseType(typeof(User), (int)HttpStatusCode.OK)]
+	[ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
+	[NoApiKey]
+	public async Task<ObjectResult> User(string token)
+	{
+		try
+		{
+			if (token.IsNullOrEmpty() || _dbContext.Users.FirstOrDefault(_ => _.LoginToken == token) is null)
+				return StatusCode((int)HttpStatusCode.Unauthorized, "");
+
+			var found = _dbContext.Users.First(_ => _.LoginToken == token);
+
+			found.Password = null;
+			found.Salt = null;
+			found.LoginToken = null;
+			
+			return StatusCode((int)HttpStatusCode.OK, found);
+		}
+		catch (Exception e)
+		{
+			return StatusCode((int)HttpStatusCode.InternalServerError, new ProblemDetails() { Title = e.Message });
+		}
+	}
+	
 }
