@@ -28,10 +28,11 @@ public class SearchController : ControllerBase
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(RichResponse<List<Product>>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
-    public ObjectResult SearchProduct(string query = "", int categoryId = -1, int itemsPerPage = 50, int page = 1, string language = "")
+    public ObjectResult SearchProduct(string query = "", int categoryId = -1, int itemsPerPage = 50, int page = 1, string language = "", bool loadImages = false)
     {
         try
         {
+            var images = loadImages ? _dbContext.Images.ToList() : new List<Image>();
             var products = _dbContext.Products.ToList();
             for (var i = 0; i < products.Count; i++)
                 if (!products[i].Name.IsNullOrEmpty())
@@ -50,6 +51,15 @@ public class SearchController : ControllerBase
                 return name.Contains(q) || _.Barcode.Contains(query);
             }).ToList();
             var pagefiedProducts = filteredProducts.Pagefy(itemsPerPage, page, out var totalPages);
+            
+            for (var i = 0; i < pagefiedProducts.Count; i++)
+            {
+                if (!pagefiedProducts[i].Image.IsNullOrEmpty() && loadImages)
+                    pagefiedProducts[i].Image =
+                        images.FirstOrDefault(_ => _.ID.ToString() == pagefiedProducts[i].Image)!.Img;
+                else
+                    pagefiedProducts[i].Image = null;
+            }
 
             return StatusCode((int)HttpStatusCode.OK, new RichResponse<List<Product>>(pagefiedProducts)
             {
