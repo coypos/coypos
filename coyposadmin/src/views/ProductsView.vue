@@ -114,6 +114,7 @@ export default defineComponent({
         image: null,
         discountedPrice: null,
         appliedPromotion: null,
+        ageRestricted: null,
       };
     },
     async addProduct() {

@@ -192,6 +192,21 @@
                 >
               </div>
             </div>
+            <div class="row">
+              <div class="col-6">
+                <div class="form-check">
+                  <input
+                    v-model="editproduct.ageRestricted"
+                    type="checkbox"
+                    class="form-check-input"
+                    id="enabled"
+                  />
+                  <label class="form-check-label" for="exampleCheck1"
+                    >18+?</label
+                  >
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -260,6 +275,7 @@ export default defineComponent({
       image: null,
       discountedPrice: null,
       appliedPromotion: null,
+      ageRestricted: null,
     });
     const toast = useToast();
     const v$ = useVuelidate();
@@ -350,6 +366,7 @@ export default defineComponent({
         weight: this.editproduct.weight,
         description: this.editproduct.description,
         image: this.editproduct.image,
+        ageRestricted: this.editproduct.ageRestricted,
       };
       if (this.create) {
         try {
@@ -441,6 +458,7 @@ export default defineComponent({
         image: null,
         discountedPrice: null,
         appliedPromotion: null,
+        ageRestricted: null,
       };
       let photo = this.$refs.photo as HTMLInputElement;
       if (photo) photo.value = "";
@@ -495,6 +513,7 @@ export default defineComponent({
         image: null,
         discountedPrice: null,
         appliedPromotion: null,
+        ageRestricted: null,
       };
       let photo = this.$refs.photo as HTMLInputElement;
       if (photo) photo.value = "";
