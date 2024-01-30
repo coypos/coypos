@@ -29,4 +29,5 @@ export interface ProductModel {
   discountedPrice: number | null;
 
   appliedPromotion: PromotionModel | null;
+  ageRestricted: boolean | null;
 }
