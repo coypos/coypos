@@ -12,17 +12,17 @@
         />
       </div>
       <div class="password form-group">
-        <label for="password">Password</label>
+        <label for="password">Hasło</label>
         <input
           v-model="password"
           type="password"
           class="form-control"
           id="passwordinput"
-          placeholder="Password"
+          placeholder="Hasło"
         />
       </div>
       <div class="buttons">
-        <div @click="loginCheck" class="btn btn-success">Login</div>
+        <div @click="loginCheck" class="btn btn-success">Loguj</div>
       </div>
     </div>
   </div>

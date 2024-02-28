@@ -1,13 +1,13 @@
 <template>
   <div :id="'user' + index" class="row user">
-    <div class="col-2">{{ user.name }}</div>
+    <div class="col-3">{{ user.name }}</div>
     <div class="col-2">{{ user.cardNumber }}</div>
     <div class="col-2">{{ user.phoneNumber }}</div>
     <div class="col-2">{{ user.email }}</div>
-    <div class="col-1">
+    <div v-if="banned" class="col-1">
       <div class="btn btn-info" @click="banuser()">BAN</div>
     </div>
-    <div class="col-1">
+    <div v-else class="col-1">
       <div class="btn btn-primary" @click="unbanuser()">UNBAN</div>
     </div>
     <div class="col-1">
