@@ -4,7 +4,7 @@
     <div class="col-2">{{ user.cardNumber }}</div>
     <div class="col-2">{{ user.phoneNumber }}</div>
     <div class="col-2">{{ user.email }}</div>
-    <div v-if="banned" class="col-1">
+    <div v-if="user.role != 'Banned'" class="col-1">
       <div class="btn btn-info" @click="banuser()">BAN</div>
     </div>
     <div v-else class="col-1">
@@ -55,6 +55,7 @@ export default defineComponent({
       if (this.user) {
         try {
           await this.$axios.post(`/user/${this.user.id}/ban`);
+
           this.toast.success("Użytkownik zbanowany", {
             position: "top-right" as POSITION,
             timeout: 5000,
