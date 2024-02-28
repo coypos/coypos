@@ -149,10 +149,21 @@ public class AppController : ControllerBase
 				foreach (var affectedProduct in pagefiedPromotions[i].AffectedProducts)
 				{
 					if (!affectedProduct.Image.IsNullOrEmpty() && loadImages)
-						affectedProduct.Image = images.FirstOrDefault(_ => _.ID.ToString() == affectedProduct.Image)!.Img;
+					{
+						var foundImage = images.FirstOrDefault(_ => _.ID.ToString() == affectedProduct.Image);
+						if (foundImage is null)
+						{
+							affectedProduct.Image = null;
+							goto end;
+						}
+
+						affectedProduct.Image =
+							images.FirstOrDefault(_ => _.ID.ToString() == affectedProduct.Image)!.Img;
+					}
 					else
 						affectedProduct.Image = null;
 
+					end:
 					affectedProduct.Name = LanguageHelpers.Translate(affectedProduct.Name, language);
 				}
 			}

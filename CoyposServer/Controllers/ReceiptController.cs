@@ -26,25 +26,26 @@ public class ReceiptController : ControllerBase
 	{
 		try
 		{
-			var products = _dbContext.Products.Where(_ => basketProducts.Any(_b => _b.ProductId == _.ID)).ToList();
-			
+			var products = _dbContext.Products.ToList();
 			var promotions = _dbContext.Promotions.ToList();
-			for (var i = 0; i < products.Count; i++)
+
+			var sum = decimal.Zero;
+			foreach (var basketProduct in basketProducts)
 			{
-				PromotionsHelper.GetBestPromotion(promotions, products[i], out var bestPromotion, out var discountedPrice);
-				if (bestPromotion is null)
+				var found = products.FirstOrDefault(_ => _.ID == basketProduct.ProductId);
+				if (found is null)
 					continue;
-				products[i].AppliedPromotion = bestPromotion;
-				products[i].DiscountedPrice = discountedPrice;
+				PromotionsHelper.GetBestPromotion(promotions, found, out var bestPromotion, out var discountedPrice);
+				if (bestPromotion is null)
+					sum += (decimal)found.Price * basketProduct.Quantity;
+				else
+					sum += (decimal)discountedPrice * basketProduct.Quantity;
 			}
 
-			decimal totalPrice = basketProducts.Sum(basketProduct =>
-				((decimal)products.First(_ => _.ID == basketProduct.ProductId).DiscountedPrice * basketProduct.Quantity));
-
 			// one more time, to prevent the floating-point error:
-			totalPrice = Math.Round(totalPrice, 2); 
+			sum = Math.Round(sum, 2); 
 
-			return StatusCode((int)HttpStatusCode.OK, totalPrice);
+			return StatusCode((int)HttpStatusCode.OK, sum);
 		}
 		catch (Exception e)
 		{
