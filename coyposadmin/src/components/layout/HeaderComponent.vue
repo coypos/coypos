@@ -1,12 +1,28 @@
 <template>
   <div id="header" class="row">
-    <div class="col-4">Panel</div>
-    <div class="col-4">Searchplaceholder</div>
-    <div class="col-2">buttonslaceholder</div>
+    <div class="col-3">Panel</div>
+    <div class="col-3">Searchplaceholder</div>
+    <div class="col-2">buttons</div>
     <div class="col-2">Piotr Smilgin</div>
+    <div class="col-2">
+      <div @click="logout" class="btn btn-outline-warning">Wyloguj</div>
+    </div>
   </div>
 </template>
-<script setup lang="ts"></script>
+<script lang="ts">
+import { defineComponent, ref } from "vue";
+
+export default defineComponent({
+  name: "HeaderComponent",
+
+  methods: {
+    logout() {
+      this.$storage.setStorageSync("logged", false);
+      window.location.reload();
+    },
+  },
+});
+</script>
 <style scoped lang="scss">
 #header {
   z-index: 10;

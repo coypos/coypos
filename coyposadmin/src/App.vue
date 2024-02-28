@@ -1,9 +1,12 @@
 <template>
-  <sidebar-component></sidebar-component>
-  <div id="content">
-    <header-component></header-component>
-    <router-view />
+  <div v-if="logged">
+    <sidebar-component></sidebar-component>
+    <div id="content">
+      <header-component></header-component>
+      <router-view />
+    </div>
   </div>
+  <div v-else><login-view></login-view></div>
 </template>
 
 <style lang="scss">
@@ -28,7 +31,8 @@
 <script lang="ts">
 import HeaderComponent from "@/components/layout/HeaderComponent.vue";
 import SidebarComponent from "@/components/layout/SidebarComponent.vue";
-import { defineComponent } from "vue";
+import LoginView from "@/views/LoginView.vue";
+import { defineComponent, ref } from "vue";
 import type { AxiosInstance } from "axios";
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
@@ -41,6 +45,11 @@ export default defineComponent({
   components: {
     HeaderComponent,
     SidebarComponent,
+    LoginView,
+  },
+  setup() {
+    let logged = ref<boolean>(false);
+    return { logged };
   },
   methods: {
     async openNav() {
@@ -63,6 +72,7 @@ export default defineComponent({
       } else {
         this.openNav();
       }
+      this.logged = this.$storage.getStorageSync("logged") as boolean;
     }, 100);
   },
 });
