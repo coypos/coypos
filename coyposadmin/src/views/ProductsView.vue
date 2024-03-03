@@ -64,9 +64,10 @@ export default defineComponent({
     let product = ref<ProductModel>();
     let item = ref<DeleteItemModel>();
     const toast = useToast();
-
+    let search = ref<string>("");
     let create = ref<boolean>(false);
     return {
+      search,
       create,
       item,
       product,
@@ -125,16 +126,29 @@ export default defineComponent({
     async getProducts() {
       try {
         this.products = [];
-        await this.$axios
-          .get(
-            `/products?filter=AND&loadImages=true&language=all&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
-          )
-          .then((response) => {
-            const resp: ResponseModel = response.data;
-            this.products = resp.response;
+        if (this.$route.query.q) {
+          await this.$axios
+            .get(
+              `/search/${this.$route.query.q}?filter=AND&loadImages=true&language=all&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
+            )
+            .then((response) => {
+              const resp: ResponseModel = response.data;
+              this.products = resp.response;
 
-            this.totalPages = resp.totalPages;
-          });
+              this.totalPages = resp.totalPages;
+            });
+        } else {
+          await this.$axios
+            .get(
+              `/products?filter=AND&loadImages=true&language=all&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
+            )
+            .then((response) => {
+              const resp: ResponseModel = response.data;
+              this.products = resp.response;
+
+              this.totalPages = resp.totalPages;
+            });
+        }
       } catch (e: any) {
         this.toast.error(e.code, {
           position: "top-right" as POSITION,
@@ -158,6 +172,12 @@ export default defineComponent({
     this.itemsPerPage = parseInt(
       this.$router.currentRoute.value.query.itemsPerPage as string
     );
+    setInterval(() => {
+      if (this.search != (this.$route.query.q as string)) {
+        this.search = this.$route.query.q as string;
+        this.getProducts();
+      }
+    }, 200);
     this.getProducts();
   },
   updated() {
