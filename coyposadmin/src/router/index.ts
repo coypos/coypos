@@ -6,6 +6,7 @@ import CategoriesView from "@/views/CategoriesView.vue";
 import PromotionsView from "@/views/PromotionsView.vue";
 import UsersView from "@/views/UsersView.vue";
 import StoreUsersView from "@/views/StoreUsersView.vue";
+import InstallView from "@/views/InstallView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -42,6 +43,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/settings",
     name: "SettingsView",
     component: SettingsView,
+  },
+  {
+    path: "/install",
+    name: "InstallView",
+    component: InstallView,
   },
 ];
 

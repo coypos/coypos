@@ -1,8 +1,8 @@
 <template>
   <div v-if="logged">
-    <sidebar-component></sidebar-component>
+    <sidebar-component v-if="$route.name != 'InstallView'"></sidebar-component>
     <div id="content">
-      <header-component></header-component>
+      <header-component v-if="$route.name != 'InstallView'"></header-component>
       <router-view />
     </div>
   </div>
@@ -34,6 +34,7 @@ import SidebarComponent from "@/components/layout/SidebarComponent.vue";
 import LoginView from "@/views/LoginView.vue";
 import { defineComponent, ref } from "vue";
 import type { AxiosInstance } from "axios";
+import InstallView from "@/views/InstallView.vue";
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
     $axios: AxiosInstance;
@@ -52,6 +53,7 @@ export default defineComponent({
     return { logged };
   },
   methods: {
+    InstallView,
     async openNav() {
       const sidebar = document.getElementById("content");
       if (sidebar) {
@@ -67,6 +69,9 @@ export default defineComponent({
   },
   mounted() {
     setInterval(() => {
+      if (this.$route.name == "InstallView") {
+        this.$storage.setStorageSync("hidden", true);
+      }
       if (this.$storage.getStorageSync("hidden")) {
         this.closeNav();
       } else {
