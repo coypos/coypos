@@ -25,6 +25,8 @@ public class ProductController : ControllerBase
     /// <param name="filter">filter type to use (AND/OR/NOR)</param>
     /// <param name="itemsPerPage">number of items per page</param>
     /// <param name="page">page number</param>
+    /// <param name="language">language to use</param>
+    /// <param name="loadImages">should we load images?</param>
     [HttpGet]
     [Route("products")]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
