@@ -66,23 +66,24 @@ public class ReceiptController : ControllerBase
 	{
 		try
 		{
-			if (!new[] { "PAID_CASH", "PAID_CARD", "PAID_BLIK", "PAID_EXTERNAL" }.Contains(receiptPost.Action))
-				throw new Exception("Not supported Action type");
-
-			if (receiptPost.Action != "PAID_CASH" && receiptPost.TransactionId is null)
-				throw new Exception("Non-cash transactions require a transaction ID");
-
 			if (receiptPost.BasketItems.Count == 0)
 				throw new Exception("The basket cannot be empty");
+
+			if (!_dbContext.PaymentMethods.Any(_ => _.ID == receiptPost.PaymentMethodId))
+				throw new Exception($"No such payment method with ID of {receiptPost.PaymentMethodId}");
+			
+			if (!((bool)_dbContext.PaymentMethods.First(_ => _.ID == receiptPost.PaymentMethodId).Enabled))
+				throw new Exception($"Payment method with ID of {receiptPost.PaymentMethodId} is disabled");
 
 			#region [Receipt]
 			
 				var receipt = new Receipt();
-				receipt.Action = receiptPost.Action;
+				receipt.Action = "PAID";
 				if (receiptPost.TransactionId is not null)
 					receipt.TransactionId = receiptPost.TransactionId;
 				receipt.CreateDate = DateTime.Now;
 				receipt.UpdateDate = DateTime.Now;
+				receipt.PaymentMethod = _dbContext.PaymentMethods.First(_ => _.ID == receiptPost.PaymentMethodId);
 
 				if (receiptPost.UserId is not null)
 				{
@@ -140,6 +141,8 @@ public class ReceiptController : ControllerBase
 		}
 		catch (Exception e)
 		{
+			if (e.InnerException is not null)
+				return StatusCode((int)HttpStatusCode.InternalServerError, new ProblemDetails() { Title = e.InnerException.Message });
 			return StatusCode((int)HttpStatusCode.InternalServerError, new ProblemDetails() { Title = e.Message });
 		}
 	}
@@ -161,10 +164,10 @@ public class ReceiptController : ControllerBase
 			if (found is null)
 				throw new Exception($"Receipt with ID of {id} does not exist");
 
-			if (found.Action.Contains("REFUNDED"))
+			if (found.Action == "REFUNDED")
 				throw new Exception($"This receipt is already refunded");
 
-			found.Action = found.Action.Replace("PAID_", "REFUNDED_");
+			found.Action = "REFUNDED";
 
 			await _dbContext.SaveChangesAsync();
 			

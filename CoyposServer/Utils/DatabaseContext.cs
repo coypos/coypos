@@ -26,4 +26,10 @@ public class DatabaseContext : DbContext
     public DbSet<Receipt> Receipts { get; set; }
     
     public DbSet<Transaction> Transactions { get; set; }
+    
+    public DbSet<PaymentMethod> PaymentMethods { get; set; }
+    
+    public DbSet<Language> Languages { get; set; }
+    
+    public DbSet<Employee> Employees { get; set; }
 }

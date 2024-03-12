@@ -23,6 +23,9 @@ public class Receipt
 	[Column("UpdateDate")] 
 	public DateTime? UpdateDate { get; set; }
 	
+	[Column("PaymentMethod")]
+	public virtual PaymentMethod? PaymentMethod { get; set; }
+	
 	[NotMapped]
 	public List<Transaction> Transactions { get; set; }
 }

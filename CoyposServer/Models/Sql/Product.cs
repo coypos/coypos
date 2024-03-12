@@ -42,7 +42,6 @@ public class Product
     [Column("CategoryID")]
     public virtual Category? Category { get; set; }
 
-    [MaxLength(255)]
     [Column("Image")]
     public string? Image { get; set; }
     
