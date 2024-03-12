@@ -7811,6 +7811,11 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
+vue-accessible-color-picker@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/vue-accessible-color-picker/-/vue-accessible-color-picker-5.0.1.tgz#8dd36ee0c45ae28f0a4ae6abd934690ae2eb1811"
+  integrity sha512-IaxDTzW652blWmaNNbqQZzORQAbP19sdO7oJ5fvJIfVizWr2fVV+3z39ORI210Ee7l8YiD5FhpOY/XrToQCBwg==
+
 vue-class-component@^8.0.0-0:
   version "8.0.0-rc.1"
   resolved "https://registry.npmjs.org/vue-class-component/-/vue-class-component-8.0.0-rc.1.tgz"
