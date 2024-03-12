@@ -41,6 +41,15 @@
       </div>
     </div>
     <div class="page2" v-if="page == 2">
+      <div id="wheel">
+        <ColorPicker
+          alpha-channel="hide"
+          :color="color"
+          @color-change="handleChangeColors"
+          default-format="hex"
+        />
+        <button @click="closewheel" class="btn btn-info">Zamknij</button>
+      </div>
       <div class="row">
         <div class="col-6">
           <div class="row">
@@ -52,14 +61,32 @@
                 type="text"
                 class="form-control"
               />
+              <button
+                @click="openwheel('backgroundColor')"
+                class="btn btn-info"
+              >
+                <i class="fa-solid fa-paintbrush"></i>
+              </button>
+
               <label>Kolor tekstu</label>
               <input v-model="textColor" type="text" class="form-control" />
+              <button @click="openwheel('textColor')" class="btn btn-info">
+                <i class="fa-solid fa-paintbrush"></i>
+              </button>
               <label>Kolor obwódki koszyka</label>
               <input
                 v-model="cartFirstBackgroundColor"
                 type="text"
                 class="form-control"
               />
+
+              <button
+                @click="openwheel('cartFirstBackgroundColor')"
+                class="btn btn-info"
+              >
+                <i class="fa-solid fa-paintbrush"></i>
+              </button>
+
               <label>Kolor tła koszyka koszyka</label>
 
               <input
@@ -67,6 +94,12 @@
                 type="text"
                 class="form-control"
               />
+              <button
+                @click="openwheel('cartSecondBackgroundColor')"
+                class="btn btn-info"
+              >
+                <i class="fa-solid fa-paintbrush"></i>
+              </button>
               <label>Kolor ramki koszyka</label>
 
               <input
@@ -74,9 +107,18 @@
                 type="text"
                 class="form-control"
               />
+              <button
+                @click="openwheel('cartBorderColor')"
+                class="btn btn-info"
+              >
+                <i class="fa-solid fa-paintbrush"></i>
+              </button>
               <label>Kolor produktu</label>
 
               <input v-model="productColor" type="text" class="form-control" />
+              <button @click="openwheel('productColor')" class="btn btn-info">
+                <i class="fa-solid fa-paintbrush"></i>
+              </button>
               <label>Kolor ramki produktu</label>
 
               <input
@@ -84,6 +126,12 @@
                 type="text"
                 class="form-control"
               />
+              <button
+                @click="openwheel('productColorDarker')"
+                class="btn btn-info"
+              >
+                <i class="fa-solid fa-paintbrush"></i>
+              </button>
               <label>Kolor tekstu produktu</label>
 
               <input
@@ -91,8 +139,17 @@
                 type="text"
                 class="form-control"
               />
+              <button
+                @click="openwheel('productTextColor')"
+                class="btn btn-info"
+              >
+                <i class="fa-solid fa-paintbrush"></i>
+              </button>
               <label>Kolor przycisku zapłac</label>
               <input v-model="buttonColor" type="text" class="form-control" />
+              <button @click="openwheel('buttonColor')" class="btn btn-info">
+                <i class="fa-solid fa-paintbrush"></i>
+              </button>
               <label>Kolor ramki przycisku zapłac</label>
 
               <input
@@ -100,6 +157,12 @@
                 type="text"
                 class="form-control"
               />
+              <button
+                @click="openwheel('buttonColorDarker')"
+                class="btn btn-info"
+              >
+                <i class="fa-solid fa-paintbrush"></i>
+              </button>
               <label>Kolor tekstu przycisku zapłac</label>
 
               <input
@@ -107,6 +170,12 @@
                 type="text"
                 class="form-control"
               />
+              <button
+                @click="openwheel('buttonTextColor')"
+                class="btn btn-info"
+              >
+                <i class="fa-solid fa-paintbrush"></i>
+              </button>
             </div>
             <div class="col-6">
               <label>Kolor ramki aktywnej flagi</label>
@@ -116,6 +185,12 @@
                 type="text"
                 class="form-control"
               />
+              <button
+                @click="openwheel('flagBorderColor')"
+                class="btn btn-info"
+              >
+                <i class="fa-solid fa-paintbrush"></i>
+              </button>
               <label>Kolor przycisku pomocy</label>
 
               <input
@@ -123,6 +198,12 @@
                 type="text"
                 class="form-control"
               />
+              <button
+                @click="openwheel('buttonColorWarning')"
+                class="btn btn-info"
+              >
+                <i class="fa-solid fa-paintbrush"></i>
+              </button>
               <label>Kolor ramki przycisku pomocy</label>
 
               <input
@@ -130,6 +211,12 @@
                 type="text"
                 class="form-control"
               />
+              <button
+                @click="openwheel('buttonColorWarningDarker')"
+                class="btn btn-info"
+              >
+                <i class="fa-solid fa-paintbrush"></i>
+              </button>
               <label>Kolor teksu przycisku pomocy</label>
 
               <input
@@ -137,6 +224,12 @@
                 type="text"
                 class="form-control"
               />
+              <button
+                @click="openwheel('buttonWarningTextColor')"
+                class="btn btn-info"
+              >
+                <i class="fa-solid fa-paintbrush"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -304,9 +397,11 @@ import { compressImage } from "@/functions";
 import { useToast } from "vue-toastification";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
+import { ColorPicker } from "vue-accessible-color-picker";
 
 export default defineComponent({
   name: "InstallView",
+  components: { ColorPicker },
   setup() {
     let textColor = ref<string>("#000");
     let backgroundColor = ref<string>("#fff");
@@ -324,13 +419,21 @@ export default defineComponent({
     let buttonColorWarning = ref<string>("#ffa629");
     let buttonColorWarningDarker = ref<string>("#ff9603");
     let buttonWarningTextColor = ref<string>("#000");
-
+    let color = ref<string>("");
+    let item = ref<string>("");
     let image = ref<string>("");
     const toast = useToast();
     const v$ = useVuelidate();
     let buttondisabled = ref<boolean>(true);
     let page = ref<number>(1);
+    let x = ref<number>(0);
+    let y = ref<number>(0);
+
     return {
+      x,
+      y,
+      color,
+      item,
       page,
       buttondisabled,
       image,
@@ -376,6 +479,99 @@ export default defineComponent({
     };
   },
   methods: {
+    async closewheel() {
+      let wheel = document.getElementById("wheel");
+      if (wheel) {
+        wheel.style.display = "none";
+      }
+    },
+    async openwheel(item: string) {
+      this.item = item;
+      this.checkWichColor();
+      document.addEventListener("click", this.onMouseMove, false);
+    },
+    async handleChangeColors(eventData: any) {
+      if (this.item == "backgroundColor") {
+        this.backgroundColor = eventData.cssColor;
+      } else if (this.item == "textColor") {
+        this.textColor = eventData.cssColor;
+      } else if (this.item == "flagBorderColor") {
+        this.flagBorderColor = eventData.cssColor;
+      } else if (this.item == "cartFirstBackgroundColor") {
+        this.cartFirstBackgroundColor = eventData.cssColor;
+      } else if (this.item == "cartSecondBackgroundColor") {
+        this.cartSecondBackgroundColor = eventData.cssColor;
+      } else if (this.item == "cartSecondBackgroundColorDarker") {
+        this.cartSecondBackgroundColorDarker = eventData.cssColor;
+      } else if (this.item == "cartBorderColor") {
+        this.cartBorderColor = eventData.cssColor;
+      } else if (this.item == "productColor") {
+        this.productColor = eventData.cssColor;
+      } else if (this.item == "productColorDarker") {
+        this.productColorDarker = eventData.cssColor;
+      } else if (this.item == "buttonColor") {
+        this.buttonColor = eventData.cssColor;
+      } else if (this.item == "buttonTextColor") {
+        this.buttonTextColor = eventData.cssColor;
+      } else if (this.item == "productTextColor") {
+        this.productTextColor = eventData.cssColor;
+      } else if (this.item == "buttonColorDarker") {
+        this.buttonColorDarker = eventData.cssColor;
+      } else if (this.item == "buttonColorWarning") {
+        this.buttonColorWarning = eventData.cssColor;
+      } else if (this.item == "buttonColorWarningDarker") {
+        this.buttonColorWarningDarker = eventData.cssColor;
+      } else if (this.item == "buttonWarningTextColor") {
+        this.buttonWarningTextColor = eventData.cssColor;
+      }
+    },
+    checkWichColor() {
+      if (this.item == "backgroundColor") {
+        this.color = this.backgroundColor;
+      } else if (this.item == "textColor") {
+        this.color = this.textColor;
+      } else if (this.item == "flagBorderColor") {
+        this.color = this.flagBorderColor;
+      } else if (this.item == "cartFirstBackgroundColor") {
+        this.color = this.cartFirstBackgroundColor;
+      } else if (this.item == "cartSecondBackgroundColor") {
+        this.color = this.cartSecondBackgroundColor;
+      } else if (this.item == "cartSecondBackgroundColorDarker") {
+        this.color = this.cartSecondBackgroundColorDarker;
+      } else if (this.item == "cartBorderColor") {
+        this.color = this.cartBorderColor;
+      } else if (this.item == "productColor") {
+        this.color = this.productColor;
+      } else if (this.item == "productColorDarker") {
+        this.color = this.productColorDarker;
+      } else if (this.item == "buttonColor") {
+        this.color = this.buttonColor;
+      } else if (this.item == "productTextColor") {
+        this.color = this.productTextColor;
+      } else if (this.item == "buttonTextColor") {
+        this.color = this.buttonTextColor;
+      } else if (this.item == "buttonColorDarker") {
+        this.color = this.buttonColorDarker;
+      } else if (this.item == "buttonColorWarning") {
+        this.color = this.buttonColorWarning;
+      } else if (this.item == "buttonColorWarningDarker") {
+        this.color = this.buttonColorWarningDarker;
+      } else if (this.item == "buttonWarningTextColor") {
+        this.color = this.buttonWarningTextColor;
+      }
+    },
+    onMouseMove(e: any) {
+      this.x = e.clientX;
+      this.y = e.clientY;
+      let wheel = document.getElementById("wheel");
+      if (wheel) {
+        wheel.style.display = "inline";
+        wheel.style.top = this.y + "px";
+        wheel.style.left = this.x + "px";
+      }
+
+      document.removeEventListener("click", this.onMouseMove, false);
+    },
     async nextPage() {
       if (this.page != 2) {
         this.page += 1;
@@ -472,6 +668,8 @@ export default defineComponent({
 });
 </script>
 <style scoped lang="scss">
+@import url("vue-accessible-color-picker/styles");
+
 .install {
   padding-top: 20px;
   max-width: 90%;
@@ -561,11 +759,35 @@ export default defineComponent({
       }
     }
   }
-  .btn {
+  .btn-success {
     width: 100px;
     position: absolute;
     bottom: 100px;
     right: 100px;
+  }
+  #wheel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    color: black;
+    border-radius: 20px;
+    border: 2px solid black;
+    padding: 50px;
+    display: none;
+    button {
+      position: relative;
+      top: 40px;
+      left: 140px;
+      z-index: 999;
+    }
+  }
+  .form-control {
+    width: 70%;
+    display: inline-block;
+  }
+  label {
+    display: block;
   }
 }
 </style>
