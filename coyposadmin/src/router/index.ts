@@ -5,7 +5,9 @@ import SettingsView from "@/views/SettingsView.vue";
 import CategoriesView from "@/views/CategoriesView.vue";
 import PromotionsView from "@/views/PromotionsView.vue";
 import UsersView from "@/views/UsersView.vue";
+import PaymentMethodsView from "@/views/PaymentMethodsView.vue";
 import EmployeesView from "@/views/EmployeesView.vue";
+
 import StoreUsersView from "@/views/StoreUsersView.vue";
 
 import InstallView from "@/views/InstallView.vue";
@@ -50,6 +52,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/settings",
     name: "SettingsView",
     component: SettingsView,
+  },
+  {
+    path: "/payment_methods",
+    name: "PaymentMethodsView",
+    component: PaymentMethodsView,
   },
   {
     path: "/install",

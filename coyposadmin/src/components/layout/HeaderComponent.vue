@@ -17,7 +17,7 @@
         <i class="fa-solid fa-2xl fa-magnifying-glass"></i>
       </button>
     </div>
-    <div class="col-2">Piotr Smilgin</div>
+    <div class="col-2">{{ $storage.getStorageSync("username") }}</div>
     <div class="col-1">
       <div @click="logout" class="btn btn-outline-warning">Wyloguj</div>
     </div>

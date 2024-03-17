@@ -13,27 +13,29 @@
       <div class="modal-content">
         <div class="modal-header">
           <h1 v-if="!create" class="modal-title" id="staticBackdropLabel">
-            Edytuj pracownika
+            Edytuj płatność
           </h1>
           <h1 v-else class="modal-title" id="staticBackdropLabel">
-            Dodaj pracownika
+            Dodaj płatność
           </h1>
         </div>
-        <div v-if="editemployee" class="modal-body">
+        <div v-if="editpayment_method" class="modal-body">
           <div class="row">
             <div class="col-3">
               <div class="form-group">
                 <label for="value">Nazwa</label>
 
-                <div :class="{ error: v$.editemployee.name.$errors.length }">
+                <div
+                  :class="{ error: v$.editpayment_method.name.$errors.length }"
+                >
                   <input
-                    v-model="editemployee.name"
+                    v-model="editpayment_method.name"
                     class="form-control"
                     id="value"
                   />
                   <div
                     class="input-errors"
-                    v-for="error of v$.editemployee.name.$errors"
+                    v-for="error of v$.editpayment_method.name.$errors"
                     :key="error.$uid"
                   >
                     <div class="error-msg">{{ error.$message }}</div>
@@ -44,59 +46,25 @@
 
             <div class="col-3">
               <div class="form-group">
-                <label for="value">Numer karty</label>
+                <label for="value">Dane autoryzacyjne</label>
 
-                <div :class="{ error: v$.editemployee.cardId.$errors.length }">
+                <div
+                  :class="{
+                    error: v$.editpayment_method.authData.$errors.length,
+                  }"
+                >
                   <input
-                    v-model="editemployee.cardId"
+                    v-model="editpayment_method.authData"
                     class="form-control"
                     id="value"
                   />
                   <div
                     class="input-errors"
-                    v-for="error of v$.editemployee.cardId.$errors"
+                    v-for="error of v$.editpayment_method.authData.$errors"
                     :key="error.$uid"
                   >
                     <div class="error-msg">{{ error.$message }}</div>
                   </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-3">
-              <div class="form-group">
-                <label for="value">PIN</label>
-
-                <div :class="{ error: v$.editemployee.pin.$errors.length }">
-                  <input
-                    v-model="editemployee.pin"
-                    class="form-control"
-                    id="value"
-                  />
-                  <div
-                    class="input-errors"
-                    v-for="error of v$.editemployee.pin.$errors"
-                    :key="error.$uid"
-                  >
-                    <div class="error-msg">{{ error.$message }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-3">
-              <div class="form-group">
-                <div class="form-check">
-                  <input
-                    v-model="editemployee.enabled"
-                    type="checkbox"
-                    class="form-check-input"
-                    id="enabled"
-                  />
-                  <label class="form-check-label" for="exampleCheck1"
-                    >Czy aktywny?</label
-                  >
                 </div>
               </div>
             </div>
@@ -104,15 +72,43 @@
               <div class="form-group">
                 <div class="form-check">
                   <input
-                    v-model="editemployee.admin"
+                    v-model="editpayment_method.enabled"
                     type="checkbox"
                     class="form-check-input"
                     id="enabled"
                   />
                   <label class="form-check-label" for="exampleCheck1"
-                    >Czy admin?</label
+                    >Czy aktywna?</label
                   >
                 </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="image">Zdjęcie</label>
+                  <input
+                    type="file"
+                    ref="photo"
+                    accept="image/*"
+                    @change="encodeImageFileAsURL()"
+                    class="form-control"
+                    id="image"
+                  />
+                  <div
+                    class="input-errors"
+                    v-for="error of v$.editpayment_method.image.$errors"
+                    :key="error.$uid"
+                  >
+                    <div class="error-msg">{{ error.$message }}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <img
+                  id="base64image"
+                  :src="'data:image/jpeg;base64,' + editpayment_method.image"
+                />
               </div>
             </div>
           </div>
@@ -127,11 +123,11 @@
             ANULUJ
           </button>
           <button
-            :disabled="v$.editemployee.$errors.length"
+            :disabled="buttondisabled || v$.editpayment_method.$errors.length"
             type="button"
             :class="'btn btn-success'"
             data-bs-dismiss="modal"
-            @click="updateEmployee()"
+            @click="updatePaymentMethod()"
           >
             ZAPISZ
           </button>
@@ -142,58 +138,86 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, reactive } from "vue";
-import { EmployeeModel } from "@/types/api/Employee";
+import { PaymentMethodModel } from "@/types/api/PaymentMethod";
 import { useVuelidate } from "@vuelidate/core";
 import { useToast, POSITION } from "vue-toastification";
-import { required, minLength, numeric } from "@vuelidate/validators";
+import { required, minLength } from "@vuelidate/validators";
+import { compressImage, resizePNG } from "@/functions";
 
 export default defineComponent({
   props: {
-    employee: Object,
+    payment_method: Object,
     create: Boolean,
   },
 
   expose: ["showModal"],
-  name: "EmployeeModal",
+  name: "PaymentMethodModal",
   setup() {
     const toast = useToast();
     let keys = ref<string[]>();
-    let editemployee = ref<EmployeeModel>({
+    let editpayment_method = ref<PaymentMethodModel>({
       id: null,
       name: null,
-      cardId: null,
-      pin: null,
+      image: null,
+      authData: null,
       enabled: null,
-      admin: null,
     });
+    let buttondisabled = ref<boolean>(false);
 
     const v$ = useVuelidate();
-    return { toast, v$, keys, editemployee };
+    return { buttondisabled, toast, v$, keys, editpayment_method };
   },
   validations() {
     return {
-      editemployee: {
+      editpayment_method: {
         name: { required, minLength: minLength(3), $autoDirty: true },
-        cardId: { required, numeric, $autoDirty: true },
-        pin: { required, numeric, $autoDirty: true },
+        image: { required, $autoDirty: true },
+        authData: { $autoDirty: true },
         enabled: { $autoDirty: true },
-        admin: { $autoDirty: true },
       },
     };
   },
   methods: {
-    async updateEmployee() {
+    async encodeImageFileAsURL() {
+      this.buttondisabled = true;
+      const element: HTMLInputElement = this.$refs.photo as HTMLInputElement;
+      if (element.files) {
+        const file = element.files[0];
+        if (file) {
+          if (file.type == "image/png") {
+            const targetSizeInKB = 20;
+            this.editpayment_method.image = (
+              await resizePNG(file, targetSizeInKB)
+            ).substring("data:image/png;base64,".length);
+          } else {
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+              const originalImageBase64 = reader.result as string;
+              const maxSizeInBytes = 1024 * 10;
+              const maxWidth = 720;
+              this.editpayment_method.image = await compressImage(
+                originalImageBase64,
+                maxSizeInBytes,
+                maxWidth
+              );
+            };
+            reader.readAsDataURL(file);
+          }
+          this.buttondisabled = false;
+        }
+      }
+    },
+    async updatePaymentMethod() {
       let data = {
-        name: this.editemployee.name,
-        cardId: this.editemployee.cardId,
-        pin: this.editemployee.pin,
-        enabled: this.editemployee.enabled,
-        admin: this.editemployee.admin,
+        name: this.editpayment_method.name,
+        image: this.editpayment_method.image,
+        authData: this.editpayment_method.authData,
+        enabled: this.editpayment_method.enabled,
       };
       if (this.create) {
         try {
-          await this.$axios.post(`/employee`, data);
-          this.toast.success("Utworzono pracownika", {
+          await this.$axios.post(`/payment_method`, data);
+          this.toast.success("Utworzono metode płatności", {
             position: "top-right" as POSITION,
             timeout: 5000,
             closeOnClick: true,
@@ -225,8 +249,11 @@ export default defineComponent({
         }
       } else {
         try {
-          await this.$axios.put(`/employee/${this.editemployee.id}`, data);
-          this.toast.success("Zedytowano pracownika", {
+          await this.$axios.put(
+            `/payment_method/${this.editpayment_method.id}`,
+            data
+          );
+          this.toast.success("Zedytowano metode płatności", {
             position: "top-right" as POSITION,
             timeout: 5000,
             closeOnClick: true,
@@ -257,25 +284,23 @@ export default defineComponent({
           });
         }
       }
-      this.editemployee = {
+      this.editpayment_method = {
         id: null,
         name: null,
-        cardId: null,
-        pin: null,
+        image: null,
+        authData: null,
         enabled: null,
-        admin: null,
       };
-      this.$emit("refreshemployees", true);
+      this.$emit("refreshpayment_methods", true);
     },
 
     async canceladd() {
-      this.editemployee = {
+      this.editpayment_method = {
         id: null,
         name: null,
-        cardId: null,
-        pin: null,
+        image: null,
+        authData: null,
         enabled: null,
-        admin: null,
       };
 
       this.$emit("canceladd", false);
@@ -286,8 +311,8 @@ export default defineComponent({
   },
   watch: {
     // whenever question changes, this function will run
-    employee(value, newvalue) {
-      this.editemployee = this.employee as EmployeeModel;
+    payment_method(value, newvalue) {
+      this.editpayment_method = this.payment_method as PaymentMethodModel;
     },
   },
 });
@@ -305,6 +330,12 @@ export default defineComponent({
       .input-errors {
         color: red;
         font-size: 0.7em;
+      }
+      #base64image {
+        margin: 20px;
+        display: block;
+        width: auto;
+        height: 150px;
       }
     }
     .modal-footer {

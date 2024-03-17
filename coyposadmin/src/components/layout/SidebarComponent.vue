@@ -72,6 +72,14 @@
           </router-link>
         </div>
         <div class="nav-block">
+          <router-link to="/payment_methods?page=1&itemsPerPage=10"
+            ><div class="icon">
+              <i class="fa-solid fa-user-tie fa-xl"></i>
+            </div>
+            <span v-show="!this.hidden">Płatności</span>
+          </router-link>
+        </div>
+        <div class="nav-block">
           <router-link to="/settings?page=1&itemsPerPage=10"
             ><div class="icon">
               <i class="fa-solid fa-gear fa-xl"></i>

@@ -30,18 +30,52 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
+import { ResponseModel } from "@/types/Response";
+import { POSITION, useToast } from "vue-toastification";
 
 export default defineComponent({
   name: "LoginPageView",
   setup() {
     let login = ref<string>();
     let password = ref<string>();
-    return { login, password };
+    const toast = useToast();
+
+    return { toast, login, password };
   },
   methods: {
-    loginCheck() {
-      if (this.login == "admin" && this.password == "admin") {
-        this.$storage.setStorageSync("logged", true);
+    async loginCheck() {
+      this.$storage.setStorageSync("logged", true);
+
+      try {
+        const data = {
+          card_id: this.login,
+          pin: this.password,
+        };
+
+        const jsonString = JSON.stringify(data);
+        const encodedJsonString = encodeURIComponent(jsonString);
+        await this.$axios
+          .get(`/employee_validate_admin?body=${encodedJsonString}`)
+          .then((response) => {
+            const resp: ResponseModel = response.data;
+            this.$storage.setStorageSync("logged", true);
+            this.$storage.setStorageSync("username", resp);
+          });
+      } catch (e: any) {
+        this.toast.error(e.code, {
+          position: "top-right" as POSITION,
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
+          rtl: false,
+        });
       }
     },
   },

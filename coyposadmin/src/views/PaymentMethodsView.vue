@@ -1,65 +1,64 @@
 <template>
   <div class="row">
-    <div class="col-10">Pracownicy</div>
+    <div class="col-10">Metody Płatności</div>
     <div class="col-2">
-      <div class="btn btn-success" @click="addEmployee()">DODAJ</div>
+      <div class="btn btn-success" @click="addPaymentMethod()">DODAJ</div>
     </div>
   </div>
   <div class="row header">
     <div class="col-2">Nazwa</div>
-    <div class="col-2">Numer Karty</div>
-    <div class="col-2">Numer PIN</div>
-    <div class="col-2">Czy Admin</div>
+    <div class="col-2">Włączona?</div>
+    <div class="col-4">Dodatkowe dane</div>
   </div>
 
-  <employee-component
-    v-for="(employee, index) in employees"
+  <payment-method-component
+    v-for="(payment_method, index) in payment_methods"
     :key="index"
     :index="index"
-    :employee="employee"
-    @getemployeeedited="getemployeeedited"
-    @getemployeedeleted="getemployeedeleted"
-  ></employee-component
+    :payment_method="payment_method"
+    @getpayment_methodedited="getpayment_methodedited"
+    @getpayment_methoddeleted="getpayment_methoddeleted"
+  ></payment-method-component
   ><pagination-component
     :page="page"
     :itemsPerPage="itemsPerPage"
     :totalPages="totalPages"
   ></pagination-component
-  ><employee-modal
+  ><payment-method-modal
     @canceladd="canceladd"
     :create="create"
-    :employee="employee"
-    @refreshemployees="refreshemployees"
-  ></employee-modal>
-  <delete-modal @refresh="refreshemployees" :item="item"></delete-modal>
+    :payment_method="payment_method"
+    @refreshpayment_methods="refreshpayment_methods"
+  ></payment-method-modal>
+  <delete-modal @refresh="refreshpayment_methods" :item="item"></delete-modal>
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { ResponseModel } from "@/types/Response";
-import EmployeeComponent from "@/components/EmployeesComponent.vue";
+import PaymentMethodComponent from "@/components/PaymentMethodsComponent.vue";
 import PaginationComponent from "@/components/PaginationComponent.vue";
 import DeleteModal from "@/components/Modals/DeleteModal.vue";
 import { showModal } from "@/functions";
 import { DeleteItemModel } from "@/types/DeleteItem";
-import { EmployeeModel } from "@/types/api/Employee";
-import EmployeeModal from "@/components/Modals/EmployeeModal.vue";
+import { PaymentMethodModel } from "@/types/api/PaymentMethod";
+import PaymentMethodModal from "@/components/Modals/PaymentMethodModal.vue";
 import { POSITION, useToast } from "vue-toastification";
 
 export default defineComponent({
-  name: "EmployeeView",
+  name: "PaymentMethodView",
   components: {
-    EmployeeModal,
+    PaymentMethodModal,
     PaginationComponent,
-    EmployeeComponent,
+    PaymentMethodComponent,
     DeleteModal,
   },
   setup() {
-    let employees = ref<EmployeeModel[]>([]);
+    let payment_methods = ref<PaymentMethodModel[]>([]);
     let column = ref<number>(0);
     let itemsPerPage = ref<number>(50);
     let page = ref<number>(1);
     let totalPages = ref<number>(1);
-    let employee = ref<EmployeeModel>();
+    let payment_method = ref<PaymentMethodModel>();
     let item = ref<DeleteItemModel>();
     const toast = useToast();
 
@@ -68,49 +67,48 @@ export default defineComponent({
       toast,
       create,
       item,
-      employee,
+      payment_method,
       totalPages,
-      employees,
+      payment_methods,
       column,
       itemsPerPage,
       page,
     };
   },
   methods: {
-    async getemployeeedited(value: EmployeeModel) {
-      this.employee = value;
+    async getpayment_methodedited(value: PaymentMethodModel) {
+      this.payment_method = value;
     },
-    async getemployeedeleted(value: DeleteItemModel) {
+    async getpayment_methoddeleted(value: DeleteItemModel) {
       this.item = value;
     },
-    async refreshemployees(value: boolean) {
-      await this.getEmployees();
+    async refreshpayment_methods(value: boolean) {
+      await this.getPaymentMethods();
     },
     async canceladd(value: boolean) {
       this.create = value;
-      this.employee = {
+      this.payment_method = {
         id: null,
         name: null,
-        cardId: null,
-        pin: null,
+        image: null,
+        authData: null,
         enabled: null,
-        admin: null,
       };
     },
-    async addEmployee() {
+    async addPaymentMethod() {
       this.create = true;
       showModal();
     },
     showModal,
-    async getEmployees() {
+    async getPaymentMethods() {
       try {
         await this.$axios
           .get(
-            `/employees?filter=AND&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
+            `/payment_methods?filter=AND&loadimages=true&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
           )
           .then((response) => {
             const resp: ResponseModel = response.data;
-            this.employees = resp.response;
+            this.payment_methods = resp.response;
             this.totalPages = resp.totalPages;
           });
       } catch (e: any) {
@@ -136,7 +134,7 @@ export default defineComponent({
     this.itemsPerPage = parseInt(
       this.$router.currentRoute.value.query.itemsPerPage as string
     );
-    this.getEmployees();
+    this.getPaymentMethods();
   },
   updated() {
     if (
@@ -151,7 +149,7 @@ export default defineComponent({
       this.itemsPerPage = parseInt(
         this.$router.currentRoute.value.query.itemsPerPage as string
       );
-      this.getEmployees();
+      this.getPaymentMethods();
     }
   },
 });

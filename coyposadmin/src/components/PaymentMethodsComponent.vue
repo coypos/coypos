@@ -1,15 +1,14 @@
 <template>
-  <div :id="'employee' + index" class="row employee">
-    <div class="col-3">{{ employee.name }}</div>
-    <div class="col-2">{{ employee.cardId }}</div>
-    <div class="col-2">{{ employee.pin }}</div>
-    <div class="col-2">{{ employee.admin }}</div>
+  <div :id="'payment_method' + index" class="row payment_method">
+    <div class="col-3">{{ payment_method.name }}</div>
+    <div class="col-2">{{ payment_method.enabled }}</div>
+    <div class="col-2">{{ payment_method.authData }}</div>
 
     <div class="col-1">
-      <div class="btn btn-warning" @click="editemployee()">EDYTUJ</div>
+      <div class="btn btn-warning" @click="editpayment_method()">EDYTUJ</div>
     </div>
     <div class="col-1">
-      <div class="btn btn-danger" @click="deleteemployee()">USUŃ</div>
+      <div class="btn btn-danger" @click="deletepayment_method()">USUŃ</div>
     </div>
   </div>
 </template>
@@ -22,7 +21,7 @@ import { useToast } from "vue-toastification";
 export default defineComponent({
   name: "OneLineComponent",
   props: {
-    employee: Object,
+    payment_method: Object,
     index: Number,
   },
   setup() {
@@ -33,17 +32,17 @@ export default defineComponent({
     return { edit, item, toast };
   },
   methods: {
-    async editemployee() {
+    async editpayment_method() {
       showModal();
-      this.$emit("getemployeeedited", this.employee);
+      this.$emit("getpayment_methodedited", this.payment_method);
     },
-    async deleteemployee() {
-      if (this.employee) {
-        this.item.id = this.employee.id;
-        this.item.what = "employee";
-        this.item.name = this.employee.discountPercentage;
+    async deletepayment_method() {
+      if (this.payment_method) {
+        this.item.id = this.payment_method.id;
+        this.item.what = "payment_method";
+        this.item.name = this.payment_method.discountPercentage;
         showDeleteModal();
-        this.$emit("getemployeedeleted", this.item);
+        this.$emit("getpayment_methoddeleted", this.item);
       }
     },
 
@@ -53,7 +52,7 @@ export default defineComponent({
       if (this.index) {
         if (this.index % 2 == 1) {
           let elem = document.getElementById(
-            "employee" + this.index
+            "payment_method" + this.index
           ) as HTMLElement;
           elem.style.backgroundColor = "#2c2c2c";
         }
@@ -66,7 +65,7 @@ export default defineComponent({
 });
 </script>
 <style scoped lang="scss">
-.employee {
+.payment_method {
   min-height: 50px;
   line-height: 50px;
 }
