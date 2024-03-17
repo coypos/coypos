@@ -1,13 +1,15 @@
 <template>
-  <div :id="'setting' + index" class="row setting">
-    <div class="col-4">{{ setting.key }}</div>
-    <div class="col-4">{{ setting.value.substring(0, 50) }}</div>
+  <div :id="'employee' + index" class="row employee">
+    <div class="col-3">{{ employee.name }}</div>
+    <div class="col-2">{{ employee.cardId }}</div>
+    <div class="col-2">{{ employee.pin }}</div>
+    <div class="col-2">{{ employee.admin }}</div>
 
     <div class="col-1">
-      <div class="btn btn-warning" @click="editsetting()">EDYTUJ</div>
+      <div class="btn btn-warning" @click="editemployee()">EDYTUJ</div>
     </div>
     <div class="col-1">
-      <!---<div class="btn btn-danger" @click="deletesetting()">USUŃ</div>- !-->
+      <div class="btn btn-danger" @click="deleteemployee()">USUŃ</div>
     </div>
   </div>
 </template>
@@ -15,39 +17,43 @@
 import { defineComponent, ref } from "vue";
 import { showModal, showDeleteModal } from "@/functions";
 import { DeleteItemModel } from "@/types/DeleteItem";
+import { POSITION, useToast } from "vue-toastification";
 
 export default defineComponent({
   name: "OneLineComponent",
   props: {
-    setting: Object,
+    employee: Object,
     index: Number,
   },
   setup() {
     let edit = ref<boolean>(false);
     let item = ref<DeleteItemModel>({ id: 0, what: "test", name: "test" });
-    return { edit, item };
+    const toast = useToast();
+
+    return { edit, item, toast };
   },
   methods: {
-    async editsetting() {
+    async editemployee() {
       showModal();
-      this.$emit("getsettingedited", this.setting);
+      this.$emit("getemployeeedited", this.employee);
     },
-    async deletesetting() {
-      if (this.setting) {
-        this.item.id = this.setting.id;
-        this.item.what = "setting";
-        this.item.name = this.setting.key;
+    async deleteemployee() {
+      if (this.employee) {
+        this.item.id = this.employee.id;
+        this.item.what = "employee";
+        this.item.name = this.employee.discountPercentage;
         showDeleteModal();
-        this.$emit("getsettingdeleted", this.item);
+        this.$emit("getemployeedeleted", this.item);
       }
     },
+
     showModal,
     showDeleteModal,
     async colorBackground() {
       if (this.index) {
         if (this.index % 2 == 1) {
           let elem = document.getElementById(
-            "setting" + this.index
+            "employee" + this.index
           ) as HTMLElement;
           elem.style.backgroundColor = "#2c2c2c";
         }
@@ -60,7 +66,7 @@ export default defineComponent({
 });
 </script>
 <style scoped lang="scss">
-.setting {
+.employee {
   min-height: 50px;
   line-height: 50px;
 }

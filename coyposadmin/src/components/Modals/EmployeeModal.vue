@@ -13,28 +13,27 @@
       <div class="modal-content">
         <div class="modal-header">
           <h1 v-if="!create" class="modal-title" id="staticBackdropLabel">
-            Edytuj ustawienie
+            Edytuj pracownika
           </h1>
           <h1 v-else class="modal-title" id="staticBackdropLabel">
-            Dodaj ustawienie
+            Dodaj pracownika
           </h1>
         </div>
-        <div v-if="editsetting" class="modal-body">
+        <div v-if="editemployee" class="modal-body">
           <div class="row">
-            <div class="col-6">
+            <div class="col-3">
               <div class="form-group">
-                <label for="value">Nazwa ustawienia</label>
+                <label for="value">Nazwa</label>
 
-                <div :class="{ error: v$.editsetting.key.$errors.length }">
+                <div :class="{ error: v$.editemployee.name.$errors.length }">
                   <input
-                    v-model="editsetting.key"
-                    type="text"
+                    v-model="editemployee.name"
                     class="form-control"
                     id="value"
                   />
                   <div
                     class="input-errors"
-                    v-for="error of v$.editsetting.key.$errors"
+                    v-for="error of v$.editemployee.name.$errors"
                     :key="error.$uid"
                   >
                     <div class="error-msg">{{ error.$message }}</div>
@@ -42,24 +41,77 @@
                 </div>
               </div>
             </div>
-            <div class="col-6">
-              <div class="form-group">
-                <label for="value">Wartosc</label>
 
-                <div :class="{ error: v$.editsetting.value.$errors.length }">
+            <div class="col-3">
+              <div class="form-group">
+                <label for="value">Numer karty</label>
+
+                <div :class="{ error: v$.editemployee.cardId.$errors.length }">
                   <input
-                    v-model="editsetting.value"
-                    type="text"
+                    v-model="editemployee.cardId"
                     class="form-control"
                     id="value"
                   />
                   <div
                     class="input-errors"
-                    v-for="error of v$.editsetting.value.$errors"
+                    v-for="error of v$.editemployee.cardId.$errors"
                     :key="error.$uid"
                   >
                     <div class="error-msg">{{ error.$message }}</div>
                   </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-3">
+              <div class="form-group">
+                <label for="value">PIN</label>
+
+                <div :class="{ error: v$.editemployee.pin.$errors.length }">
+                  <input
+                    v-model="editemployee.pin"
+                    class="form-control"
+                    id="value"
+                  />
+                  <div
+                    class="input-errors"
+                    v-for="error of v$.editemployee.pin.$errors"
+                    :key="error.$uid"
+                  >
+                    <div class="error-msg">{{ error.$message }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-3">
+              <div class="form-group">
+                <div class="form-check">
+                  <input
+                    v-model="editemployee.enabled"
+                    type="checkbox"
+                    class="form-check-input"
+                    id="enabled"
+                  />
+                  <label class="form-check-label" for="exampleCheck1"
+                    >Czy aktywny?</label
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="col-3">
+              <div class="form-group">
+                <div class="form-check">
+                  <input
+                    v-model="editemployee.admin"
+                    type="checkbox"
+                    class="form-check-input"
+                    id="enabled"
+                  />
+                  <label class="form-check-label" for="exampleCheck1"
+                    >Czy admin?</label
+                  >
                 </div>
               </div>
             </div>
@@ -75,11 +127,11 @@
             ANULUJ
           </button>
           <button
-            :disabled="v$.editsetting.$errors.length"
+            :disabled="v$.editemployee.$errors.length"
             type="button"
             :class="'btn btn-success'"
             data-bs-dismiss="modal"
-            @click="updateSetting()"
+            @click="updateEmployee()"
           >
             ZAPISZ
           </button>
@@ -89,49 +141,65 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-
-import { SettingModel } from "@/types/api/Setting";
-import { POSITION, useToast } from "vue-toastification";
-import { required, minLength } from "@vuelidate/validators";
+import { defineComponent, ref, reactive } from "vue";
+import { EmployeeModel } from "@/types/api/Employee";
 import { useVuelidate } from "@vuelidate/core";
+import { useToast, POSITION } from "vue-toastification";
+import {
+  required,
+  email,
+  minLength,
+  numeric,
+  helpers,
+} from "@vuelidate/validators";
+
 export default defineComponent({
   props: {
-    setting: Object,
+    employee: Object,
     create: Boolean,
   },
-  expose: ["showModal"],
-  name: "SettingModal",
-  setup() {
-    let keys = ref<string[]>();
-    let editsetting = ref<SettingModel>({
-      id: null,
-      key: null,
-      value: null,
-    });
-    const toast = useToast();
-    const v$ = useVuelidate();
 
-    return { keys, editsetting, toast, v$ };
+  expose: ["showModal"],
+  name: "EmployeeModal",
+  setup() {
+    const toast = useToast();
+    let keys = ref<string[]>();
+    let editemployee = ref<EmployeeModel>({
+      id: null,
+      name: null,
+      cardId: null,
+      pin: null,
+      enabled: null,
+      admin: null,
+    });
+
+    const v$ = useVuelidate();
+    return { toast, v$, keys, editemployee };
   },
   validations() {
     return {
-      editsetting: {
-        key: { required, minLength: minLength(3), $autoDirty: true },
-        value: { required, $autoDirty: true },
+      editemployee: {
+        name: { required, minLength: minLength(3), $autoDirty: true },
+        cardId: { required, numeric, $autoDirty: true },
+        pin: { required, numeric, $autoDirty: true },
+        enabled: { $autoDirty: true },
+        admin: { $autoDirty: true },
       },
     };
   },
   methods: {
-    async updateSetting() {
+    async updateEmployee() {
       let data = {
-        key: this.editsetting.key,
-        value: this.editsetting.value,
+        name: this.editemployee.name,
+        cardId: this.editemployee.cardId,
+        pin: this.editemployee.pin,
+        enabled: this.editemployee.enabled,
+        admin: this.editemployee.admin,
       };
       if (this.create) {
         try {
-          await this.$axios.post(`/setting`, data);
-          this.toast.success("Utworzono ustawienie", {
+          await this.$axios.post(`/employee`, data);
+          this.toast.success("Utworzono użytkownika", {
             position: "top-right" as POSITION,
             timeout: 5000,
             closeOnClick: true,
@@ -163,8 +231,8 @@ export default defineComponent({
         }
       } else {
         try {
-          await this.$axios.put(`/setting`, data);
-          this.toast.success("Zedytowano ustawienie", {
+          await this.$axios.put(`/employee/${this.editemployee.id}`, data);
+          this.toast.success("Zedytowano użytkownika", {
             position: "top-right" as POSITION,
             timeout: 5000,
             closeOnClick: true,
@@ -195,19 +263,25 @@ export default defineComponent({
           });
         }
       }
-      this.editsetting = {
+      this.editemployee = {
         id: null,
-        key: null,
-        value: null,
+        name: null,
+        cardId: null,
+        pin: null,
+        enabled: null,
+        admin: null,
       };
-      this.$emit("refreshsettings", true);
+      this.$emit("refreshemployees", true);
     },
 
     async canceladd() {
-      this.editsetting = {
+      this.editemployee = {
         id: null,
-        key: null,
-        value: null,
+        name: null,
+        cardId: null,
+        pin: null,
+        enabled: null,
+        admin: null,
       };
 
       this.$emit("canceladd", false);
@@ -218,8 +292,8 @@ export default defineComponent({
   },
   watch: {
     // whenever question changes, this function will run
-    setting(value, newvalue) {
-      this.editsetting = this.setting as SettingModel;
+    employee(value, newvalue) {
+      this.editemployee = this.employee as EmployeeModel;
     },
   },
 });
