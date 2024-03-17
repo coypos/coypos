@@ -35,6 +35,9 @@ import LoginView from "@/views/LoginView.vue";
 import { defineComponent, ref } from "vue";
 import type { AxiosInstance } from "axios";
 import InstallView from "@/views/InstallView.vue";
+import { ResponseModel } from "@/types/Response";
+import { POSITION } from "vue-toastification";
+import { SettingModel } from "@/types/api/Setting";
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
     $axios: AxiosInstance;
@@ -50,7 +53,9 @@ export default defineComponent({
   },
   setup() {
     let logged = ref<boolean>(false);
-    return { logged };
+    let settings = ref<SettingModel[]>();
+
+    return { logged, settings };
   },
   methods: {
     InstallView,
@@ -66,8 +71,24 @@ export default defineComponent({
         content.style.marginLeft = "100px";
       }
     },
+    async getSettings() {
+      try {
+        await this.$axios.get(`/settings`).then((response) => {
+          const resp: ResponseModel = response.data;
+          this.settings = resp.response;
+          if (this.settings.length < 3) {
+            this.$router.push({ name: "InstallView" });
+          }
+        });
+      } catch (e: any) {
+        this.$router.push({ name: "InstallView" });
+      }
+    },
   },
+
   mounted() {
+    this.getSettings();
+
     setInterval(() => {
       if (this.$route.name == "InstallView") {
         this.$storage.setStorageSync("hidden", true);

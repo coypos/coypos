@@ -1,36 +1,38 @@
 <template>
   <div class="loginpage">
     <div class="loginbox">
-      <div class="login form-group">
-        <label for="logininput">Login</label>
-        <input
-          v-model="login"
-          type="text"
-          class="form-control"
-          id="logininput"
-          placeholder="Login"
-        />
-      </div>
-      <div class="password form-group">
-        <label for="password">Hasło</label>
-        <input
-          v-model="password"
-          type="password"
-          class="form-control"
-          id="passwordinput"
-          placeholder="Hasło"
-        />
-      </div>
-      <div class="buttons">
-        <div @click="loginCheck" class="btn btn-success">Loguj</div>
-      </div>
+      <form @submit.prevent="loginCheck">
+        <div class="login form-group">
+          <label for="logininput">Login</label>
+          <input
+            v-model="login"
+            type="text"
+            class="form-control"
+            id="logininput"
+            placeholder="Login"
+            autofocus
+          />
+        </div>
+        <div class="password form-group">
+          <label for="password">Hasło</label>
+          <input
+            v-model="password"
+            type="password"
+            class="form-control"
+            id="passwordinput"
+            placeholder="Hasło"
+          />
+        </div>
+        <div class="buttons">
+          <button @click="loginCheck" class="btn btn-success">Loguj</button>
+        </div>
+      </form>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { ResponseModel } from "@/types/Response";
 import { POSITION, useToast } from "vue-toastification";
 
 export default defineComponent({
@@ -44,8 +46,6 @@ export default defineComponent({
   },
   methods: {
     async loginCheck() {
-      this.$storage.setStorageSync("logged", true);
-
       try {
         const data = {
           card_id: this.login,
@@ -57,9 +57,9 @@ export default defineComponent({
         await this.$axios
           .get(`/employee_validate_admin?body=${encodedJsonString}`)
           .then((response) => {
-            const resp: ResponseModel = response.data;
+            const resp = response.data;
             this.$storage.setStorageSync("logged", true);
-            this.$storage.setStorageSync("username", resp);
+            this.$storage.setStorageSync("username", resp.name);
           });
       } catch (e: any) {
         this.toast.error(e.code, {

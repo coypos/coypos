@@ -36,6 +36,7 @@ export default defineComponent({
   methods: {
     logout() {
       this.$storage.setStorageSync("logged", false);
+      this.$storage.setStorageSync("username", "");
       window.location.reload();
     },
     addToSearchQuery() {
