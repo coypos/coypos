@@ -20,8 +20,7 @@ public class JsonModelBinderProvider : IModelBinderProvider
             throw new ArgumentNullException(nameof(context));
         }
 
-        
-        if (context.Metadata.ModelType.AssemblyQualifiedName.Contains(".Sql."))
+        if (context.Metadata.ModelType.AssemblyQualifiedName.Contains("CoyposServer.Models"))
         {
             return new JsonModelBinder(_dbContext);
         }
