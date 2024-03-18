@@ -28,7 +28,22 @@
               </div>
               <div class="row" v-for="name in names" :key="name">
                 <div class="col-4">
-                  <input v-model="name.lang" />
+                  <select
+                    class="form-control selectpicker"
+                    id="category"
+                    data-live-search="true"
+                    v-model="name.lang"
+                  >
+                    <option :data-tokens="null">Brak</option>
+                    <option
+                      :key="language.id"
+                      v-for="language in languages"
+                      :data-tokens="language.countryCode"
+                      :value="language.countryCode"
+                    >
+                      {{ language.name }}
+                    </option>
+                  </select>
                 </div>
                 <div class="col-4"><input v-model="name.name" /></div>
                 <div class="col-4">
@@ -51,12 +66,13 @@
                   class="form-control selectpicker"
                   id="category"
                   data-live-search="true"
-                  v-model="editproduct.category.name"
+                  v-model="editproduct.category.id"
                 >
                   <option
                     :key="category.id"
                     v-for="category in categories"
                     :data-tokens="category.name"
+                    :value="category.id"
                   >
                     {{ category.name }}
                   </option>
@@ -242,6 +258,7 @@ import { POSITION, useToast } from "vue-toastification";
 import { useVuelidate } from "@vuelidate/core";
 import { required, numeric } from "@vuelidate/validators";
 import { LanguageNamesModal } from "@/types/LanguageNames";
+import { LanguageModel } from "@/types/api/Language";
 export default defineComponent({
   props: {
     product: Object,
@@ -252,6 +269,8 @@ export default defineComponent({
   setup() {
     let keys = ref<string[]>();
     let categories = ref<CategoryModel[]>([]);
+    let languages = ref<LanguageModel[]>([]);
+
     let editproduct = ref<ProductModel>({
       id: null,
       createDate: null,
@@ -282,7 +301,16 @@ export default defineComponent({
     let names = ref<LanguageNamesModal[]>([]);
 
     let buttondisabled = ref<boolean>(false);
-    return { names, keys, editproduct, categories, buttondisabled, toast, v$ };
+    return {
+      languages,
+      names,
+      keys,
+      editproduct,
+      categories,
+      buttondisabled,
+      toast,
+      v$,
+    };
   },
   validations() {
     return {
@@ -348,17 +376,10 @@ export default defineComponent({
         }
       }
       tempname = tempname.slice(0, -1);
-      let result: CategoryModel[] = this.categories.filter(
-        (obj: CategoryModel) => {
-          if (this.editproduct.category)
-            return obj.name === this.editproduct.category.name;
-        }
-      );
-
       let data = {
         name: tempname,
 
-        category: result[0].id,
+        category: 0,
         barcode: this.editproduct.barcode,
         price: this.editproduct.price,
         enabled: this.editproduct.enabled,
@@ -368,6 +389,21 @@ export default defineComponent({
         image: this.editproduct.image,
         ageRestricted: this.editproduct.ageRestricted,
       };
+      if (this.editproduct.category) {
+        data = {
+          name: tempname,
+
+          category: this.editproduct.category.id as number,
+          barcode: this.editproduct.barcode,
+          price: this.editproduct.price,
+          enabled: this.editproduct.enabled,
+          isLoose: this.editproduct.isLoose,
+          weight: this.editproduct.weight,
+          description: this.editproduct.description,
+          image: this.editproduct.image,
+          ageRestricted: this.editproduct.ageRestricted,
+        };
+      }
       if (this.create) {
         try {
           await this.$axios.post(`/product`, data);
@@ -489,6 +525,31 @@ export default defineComponent({
         });
       }
     },
+    async getLanguages() {
+      try {
+        await this.$axios
+          .get(`/languages?filter=AND&itemsPerPage=999999&page=1`)
+          .then((response) => {
+            const resp: ResponseModel = response.data;
+            this.languages = resp.response;
+          });
+      } catch (e: any) {
+        this.toast.error(e.code, {
+          position: "top-right" as POSITION,
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
+          rtl: false,
+        });
+      }
+    },
     async canceladd() {
       this.editproduct = {
         id: null,
@@ -523,12 +584,16 @@ export default defineComponent({
   mounted() {
     this.getNames();
     this.getCategories();
+    this.getLanguages();
+
     this.v$.$validate();
   },
   watch: {
     // whenever question changes, this function will run
     product(value, newvalue) {
       this.getNames();
+      this.getLanguages();
+
       this.getCategories();
       this.editproduct = this.product as ProductModel;
     },

@@ -23,7 +23,6 @@ export interface ProductModel {
   description: string | null;
 
   category: CategoryModel | null;
-
   image: string | null;
 
   discountedPrice: number | null;

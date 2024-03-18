@@ -28,7 +28,22 @@
               </div>
               <div class="row" v-for="name in names" :key="name">
                 <div class="col-4">
-                  <input v-model="name.lang" />
+                  <select
+                    class="form-control selectpicker"
+                    id="category"
+                    data-live-search="true"
+                    v-model="name.lang"
+                  >
+                    <option :data-tokens="null">Brak</option>
+                    <option
+                      :key="language.id"
+                      v-for="language in languages"
+                      :data-tokens="language.countryCode"
+                      :value="language.countryCode"
+                    >
+                      {{ language.name }}
+                    </option>
+                  </select>
                 </div>
                 <div class="col-4"><input v-model="name.name" /></div>
                 <div class="col-4">
@@ -149,6 +164,8 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { CategoryModel } from "@/types/api/Category";
+import { LanguageModel } from "@/types/api/Language";
+
 import { ResponseModel } from "@/types/Response";
 import { compressImage, resizePNG } from "@/functions";
 import { POSITION, useToast } from "vue-toastification";
@@ -165,6 +182,7 @@ export default defineComponent({
   setup() {
     let keys = ref<string[]>();
     let categories = ref<CategoryModel[]>([]);
+    let languages = ref<LanguageModel[]>([]);
 
     let editcategory = ref<CategoryModel>({
       id: null,
@@ -187,7 +205,16 @@ export default defineComponent({
     let names = ref<LanguageNamesModal[]>([]);
     const toast = useToast();
     const v$ = useVuelidate();
-    return { names, categories, keys, editcategory, buttondisabled, toast, v$ };
+    return {
+      languages,
+      names,
+      categories,
+      keys,
+      editcategory,
+      buttondisabled,
+      toast,
+      v$,
+    };
   },
   validations() {
     return {
@@ -387,6 +414,31 @@ export default defineComponent({
         });
       }
     },
+    async getLanguages() {
+      try {
+        await this.$axios
+          .get(`/languages?filter=AND&itemsPerPage=999999&page=1`)
+          .then((response) => {
+            const resp: ResponseModel = response.data;
+            this.languages = resp.response;
+          });
+      } catch (e: any) {
+        this.toast.error(e.code, {
+          position: "top-right" as POSITION,
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
+          rtl: false,
+        });
+      }
+    },
     async getNames() {
       this.names = [];
       if (this.category) {
@@ -435,12 +487,15 @@ export default defineComponent({
   mounted() {
     this.getNames();
     this.getCategories();
+    this.getLanguages();
     this.v$.$validate();
   },
   watch: {
     // whenever question changes, this function will run
     category(value, newvalue) {
       this.getCategories();
+      this.getLanguages();
+
       this.getNames();
 
       this.editcategory = this.category as CategoryModel;
