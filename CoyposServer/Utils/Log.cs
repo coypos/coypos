@@ -71,8 +71,10 @@ public static class Log
                 NOUNDERLINE, REVERSE, NOREVERSE);
             LocalCache += message += "\n";
             _logFileStream.WriteLine(message);
-        } catch (EncoderFallbackException) {}
+        } 
+        catch (EncoderFallbackException) {}
         catch (OverflowException) {}
+        catch (ArgumentOutOfRangeException) {}
     }
 
     public static void Dispose()
