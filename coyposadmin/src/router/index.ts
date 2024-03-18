@@ -7,6 +7,7 @@ import PromotionsView from "@/views/PromotionsView.vue";
 import UsersView from "@/views/UsersView.vue";
 import PaymentMethodsView from "@/views/PaymentMethodsView.vue";
 import EmployeesView from "@/views/EmployeesView.vue";
+import LanguagesView from "@/views/LanguagesView.vue";
 
 import StoreUsersView from "@/views/StoreUsersView.vue";
 
@@ -52,6 +53,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/settings",
     name: "SettingsView",
     component: SettingsView,
+  },
+  {
+    path: "/languages",
+    name: "LanguagesView",
+    component: LanguagesView,
   },
   {
     path: "/payment_methods",

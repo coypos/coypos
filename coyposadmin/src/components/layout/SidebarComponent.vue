@@ -80,11 +80,19 @@
           </router-link>
         </div>
         <div class="nav-block">
+          <router-link to="/languages?page=1&itemsPerPage=10"
+            ><div class="icon">
+              <i class="fa-solid fa-user-tie fa-xl"></i>
+            </div>
+            <span v-show="!this.hidden">Języki kas</span>
+          </router-link>
+        </div>
+        <div class="nav-block">
           <router-link to="/settings?page=1&itemsPerPage=10"
             ><div class="icon">
               <i class="fa-solid fa-gear fa-xl"></i>
             </div>
-            <span v-show="!this.hidden">Ustawienia Kas</span>
+            <span v-show="!this.hidden">Ustawienia kas</span>
           </router-link>
         </div>
       </nav>
