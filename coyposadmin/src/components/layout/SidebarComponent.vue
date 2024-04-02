@@ -74,7 +74,7 @@
         <div class="nav-block">
           <router-link to="/payment_methods?page=1&itemsPerPage=10"
             ><div class="icon">
-              <i class="fa-solid fa-user-tie fa-xl"></i>
+              <i class="fa-solid fa-money-bill fa-xl"></i>
             </div>
             <span v-show="!this.hidden">Płatności</span>
           </router-link>
@@ -82,7 +82,7 @@
         <div class="nav-block">
           <router-link to="/languages?page=1&itemsPerPage=10"
             ><div class="icon">
-              <i class="fa-solid fa-user-tie fa-xl"></i>
+              <i class="fa-solid fa-language fa-xl"></i>
             </div>
             <span v-show="!this.hidden">Języki kas</span>
           </router-link>
