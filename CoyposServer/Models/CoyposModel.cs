@@ -14,4 +14,6 @@ public class CoyposModel
     [JsonProperty("os_version")] public string OsVersion { get; set; }
     [JsonProperty("os_name")] public string OsName { get; set; }
     [JsonProperty("docker_container_id")] public string DockerContainerId { get; set; }
+    
+    [JsonProperty("uptime")] public TimeSpan Uptime { get; set; }
 }

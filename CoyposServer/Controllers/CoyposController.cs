@@ -24,7 +24,7 @@ public class CoyposController : ControllerBase
         var computerInfo = new ComputerInfo();
         var coypos = new CoyposModel()
         {
-            Version = "0.1", //todo
+            Version = "0.4", //todo
             Time = DateTime.Now,
             MemoryUsed = (ulong)Process.GetCurrentProcess().PrivateMemorySize64,
             MemoryFree = (computerInfo.AvailablePhysicalMemory),
@@ -32,7 +32,8 @@ public class CoyposController : ControllerBase
             OsName = computerInfo.OSFullName,
             OsPlatform = computerInfo.OSPlatform,
             OsVersion = computerInfo.OSVersion,
-            DockerContainerId = System.IO.File.ReadAllText("/etc/hostname").ReplaceLineEndings("")
+            DockerContainerId = System.IO.File.ReadAllText("/etc/hostname").ReplaceLineEndings(""),
+            Uptime = Program.UptimeStopwatch.Elapsed
         };
         return StatusCode((int)HttpStatusCode.OK, coypos);
     }
