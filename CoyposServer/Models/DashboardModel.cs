@@ -50,7 +50,7 @@ public class DashboardModel
 	[JsonProperty("receipt_count")] public int NumberOfReceipts;
 	
 	/// <summary>
-	/// Most recent receipt
+	/// Most recent receipts
 	/// </summary>
 	[JsonProperty("receipts_most_recent")] public List<Receipt> ReceiptsCount = new();
 

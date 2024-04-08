@@ -43,8 +43,8 @@ public class DashboardController : ControllerBase
 		dashboardModel.UserWithMostPoints = _dbContext.Users.OrderByDescending(_ => _.Points).First();
 
 		dashboardModel.ProductCount = _dbContext.Products.Count();
-		dashboardModel.MostPopularProducts = _dbContext.Transactions.GroupBy(_ => _.Product).OrderByDescending(_ => _.Count()).Take(5)
-			.Select(_ => new StatEntry<Product>() { Item = _.Key, Value = _.Count() }).ToList();
+		dashboardModel.MostPopularProducts = _dbContext.Transactions.GroupBy(_ => _.Product).OrderByDescending(_ => _.Sum(a => a.Quantity)).Take(5)
+			.Select(_ => new StatEntry<Product>() { Item = _.Key, Value = Convert.ToInt32(_.Sum(a => a.Quantity)) }).ToList();
 
 		dashboardModel.CategoriesCount = _dbContext.Categories.Count();
 
