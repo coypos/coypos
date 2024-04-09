@@ -60,12 +60,12 @@ public class DashboardController : ControllerBase
 		dashboardModel.ActivePromotions = _dbContext.Promotions
 			.Where(_ => _.StartDate < DateTime.Now && _.EndDate > DateTime.Now).ToList();
 
-		dashboardModel.RevenueToday = _dbContext.Transactions.ToList().Where(_ => _.CreateDate == DateTime.Today)
+		dashboardModel.RevenueToday = _dbContext.Transactions.ToList().Where(_ => _.CreateDate.Value.Date == DateTime.Today)
 			.Select(_ => _.TotalPrice).Sum() ?? 0;
 		dashboardModel.RevenueYesterday = _dbContext.Transactions.ToList()
-			.Where(_ => _.CreateDate == DateTime.Today - TimeSpan.FromDays(1)).Select(_ => _.TotalPrice).Sum() ?? 0;
+			.Where(_ => _.CreateDate.Value.Date == DateTime.Today - TimeSpan.FromDays(1)).Select(_ => _.TotalPrice).Sum() ?? 0;
 		dashboardModel.RevenueTodayTrend = dashboardModel.RevenueToday - dashboardModel.RevenueYesterday;
-		dashboardModel.RevenueTodayPromotionLoss = _dbContext.Transactions.ToList().Where(_ => _.CreateDate == DateTime.Today)
+		dashboardModel.RevenueTodayPromotionLoss = _dbContext.Transactions.ToList().Where(_ => _.CreateDate.Value.Date == DateTime.Today)
 			.Select(_ => _.TotalPrice - _.OriginalPrice).Sum() ?? 0;
 
 		dashboardModel.RevenueThisWeek = _dbContext.Transactions.ToList()
