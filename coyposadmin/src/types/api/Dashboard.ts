@@ -37,7 +37,7 @@ export interface DashboardModel {
   payment_method_count: number;
 
   /**5 most popular payment methods (all time) */
-  most_popular_payment_methods: PaymentMethodModel[];
+  payment_methods_most_popular: [{ item: PaymentMethodModel; value: number }];
 
   /**Total number of promotions */
   promotion_count: number;
