@@ -84,6 +84,7 @@ export default defineComponent({
     },
     async refreshpayment_methods(value: boolean) {
       await this.getPaymentMethods();
+      this.create = false;
     },
     async canceladd(value: boolean) {
       this.create = value;

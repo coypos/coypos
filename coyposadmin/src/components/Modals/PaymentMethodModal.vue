@@ -161,7 +161,7 @@ export default defineComponent({
       name: null,
       image: null,
       authData: null,
-      enabled: null,
+      enabled: false,
     });
     let buttondisabled = ref<boolean>(false);
 
@@ -172,7 +172,7 @@ export default defineComponent({
     return {
       editpayment_method: {
         name: { required, minLength: minLength(3), $autoDirty: true },
-        image: { required, $autoDirty: true },
+        image: { $autoDirty: true },
         authData: { $autoDirty: true },
         enabled: { $autoDirty: true },
       },
@@ -290,7 +290,7 @@ export default defineComponent({
         name: null,
         image: null,
         authData: null,
-        enabled: null,
+        enabled: false,
       };
       this.$emit("refreshpayment_methods", true);
     },
@@ -301,7 +301,7 @@ export default defineComponent({
         name: null,
         image: null,
         authData: null,
-        enabled: null,
+        enabled: false,
       };
 
       this.$emit("canceladd", false);

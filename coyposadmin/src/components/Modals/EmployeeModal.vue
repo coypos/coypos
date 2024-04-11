@@ -163,8 +163,8 @@ export default defineComponent({
       name: null,
       cardId: null,
       pin: null,
-      enabled: null,
-      admin: null,
+      enabled: true,
+      admin: false,
     });
 
     const v$ = useVuelidate();
@@ -262,8 +262,8 @@ export default defineComponent({
         name: null,
         cardId: null,
         pin: null,
-        enabled: null,
-        admin: null,
+        enabled: true,
+        admin: false,
       };
       this.$emit("refreshemployees", true);
     },
@@ -274,8 +274,8 @@ export default defineComponent({
         name: null,
         cardId: null,
         pin: null,
-        enabled: null,
-        admin: null,
+        enabled: true,
+        admin: false,
       };
 
       this.$emit("canceladd", false);

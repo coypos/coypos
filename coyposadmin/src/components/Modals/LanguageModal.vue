@@ -155,7 +155,7 @@ export default defineComponent({
       id: null,
       name: null,
       image: null,
-      enabled: null,
+      enabled: false,
       countryCode: null,
     });
 
@@ -170,7 +170,7 @@ export default defineComponent({
         name: { required, minLength: minLength(3), $autoDirty: true },
         countryCode: { required, $autoDirty: true },
         enabled: { $autoDirty: true },
-        image: { required, $autoDirty: true },
+        image: { $autoDirty: true },
       },
     };
   },
@@ -282,7 +282,7 @@ export default defineComponent({
         id: null,
         name: null,
         image: null,
-        enabled: null,
+        enabled: false,
         countryCode: null,
       };
       this.$emit("refreshlanguages", true);
@@ -293,7 +293,7 @@ export default defineComponent({
         id: null,
         name: null,
         image: null,
-        enabled: null,
+        enabled: false,
         countryCode: null,
       };
 

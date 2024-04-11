@@ -88,6 +88,8 @@ export default defineComponent({
     },
     async refreshproducts(value: boolean) {
       console.log("refreshproducts", value);
+      this.create = false;
+
       await this.getProducts();
     },
     async canceladd(value: boolean) {

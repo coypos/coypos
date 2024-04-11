@@ -85,6 +85,7 @@ export default defineComponent({
     },
     async refreshemployees(value: boolean) {
       await this.getEmployees();
+      this.create = false;
     },
     async canceladd(value: boolean) {
       this.create = value;

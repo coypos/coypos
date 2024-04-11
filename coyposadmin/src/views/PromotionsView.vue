@@ -84,6 +84,8 @@ export default defineComponent({
       this.item = value;
     },
     async refreshpromotions(value: boolean) {
+      this.create = false;
+
       console.log("refreshproducts", value);
       await this.getPromotions();
     },

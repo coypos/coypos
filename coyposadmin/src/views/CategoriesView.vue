@@ -84,6 +84,8 @@ export default defineComponent({
       this.item = value;
     },
     async refreshcategories(value: boolean) {
+      this.create = false;
+
       await this.getCategories();
     },
     async canceladd(value: boolean) {

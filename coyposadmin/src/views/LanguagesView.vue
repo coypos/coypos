@@ -84,6 +84,7 @@ export default defineComponent({
     },
     async refreshlanguages(value: boolean) {
       await this.getLanguages();
+      this.create = false;
     },
     async canceladd(value: boolean) {
       this.create = value;

@@ -6,7 +6,7 @@
     </div>
   </div>
   <div class="row header">
-    <div class="col-2">Nazwa</div>
+    <div class="col-3">Nazwa</div>
     <div class="col-2">Numer Karty</div>
     <div class="col-2">Numer Telefonu</div>
     <div class="col-2">Email</div>
@@ -84,6 +84,8 @@ export default defineComponent({
       this.item = value;
     },
     async refreshusers(value: boolean) {
+      this.create = false;
+
       await this.getUsers();
     },
     async canceladd(value: boolean) {

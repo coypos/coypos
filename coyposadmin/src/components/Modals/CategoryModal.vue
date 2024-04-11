@@ -152,7 +152,11 @@
             :class="'btn btn-success'"
             data-bs-dismiss="modal"
             @click="updateCategory()"
-            :disabled="buttondisabled || v$.editcategory.$errors.length"
+            :disabled="
+              buttondisabled ||
+              v$.editcategory.$errors.length ||
+              v$.names.$errors.length
+            "
           >
             ZAPISZ
           </button>
@@ -219,9 +223,15 @@ export default defineComponent({
   validations() {
     return {
       editcategory: {
-        name: { required, $autoDirty: true },
-        image: { required, $autoDirty: true },
+        name: { $autoDirty: true },
+        image: { $autoDirty: true },
       },
+      names: [
+        {
+          lang: { required, $autoDirty: true },
+          name: { required, $autoDirty: true },
+        },
+      ],
     };
   },
   methods: {

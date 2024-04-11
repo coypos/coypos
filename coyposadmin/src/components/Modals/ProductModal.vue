@@ -294,7 +294,7 @@ export default defineComponent({
       image: null,
       discountedPrice: null,
       appliedPromotion: null,
-      ageRestricted: null,
+      ageRestricted: false,
     });
     const toast = useToast();
     const v$ = useVuelidate();
@@ -315,12 +315,11 @@ export default defineComponent({
   validations() {
     return {
       editproduct: {
-        name: { required, $autoDirty: true },
-        category: { name: { required, $autoDirty: true } },
+        category: { id: { required, $autoDirty: true } },
         barcode: { required, numeric, $autoDirty: true },
         price: { required, numeric, $autoDirty: true },
         weight: { required, numeric, $autoDirty: true },
-        image: { required, $autoDirty: true },
+        image: { $autoDirty: true },
       },
     };
   },
