@@ -1,6 +1,6 @@
 <template>
   <div :id="'payment_method' + index" class="row payment_method">
-    <div class="col-3">{{ payment_method.name }}</div>
+    <div class="col-3">{{ payment_method.name.split("|").toString() }}</div>
     <div class="col-2">{{ payment_method.enabled }}</div>
     <div class="col-2">{{ payment_method.authData }}</div>
 

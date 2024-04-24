@@ -21,27 +21,41 @@
         </div>
         <div v-if="editpayment_method" class="modal-body">
           <div class="row">
-            <div class="col-3">
-              <div class="form-group">
-                <label for="value">Nazwa</label>
-
-                <div
-                  :class="{ error: v$.editpayment_method.name.$errors.length }"
-                >
-                  <input
-                    v-model="editpayment_method.name"
-                    class="form-control"
-                    id="value"
-                  />
-                  <div
-                    class="input-errors"
-                    v-for="error of v$.editpayment_method.name.$errors"
-                    :key="error.$uid"
+            <div class="col-8">
+              <div class="row">
+                <div class="col-4">Język</div>
+                <div class="col-4">Nazwa</div>
+              </div>
+              <div class="row" v-for="name in names" :key="name">
+                <div class="col-4">
+                  <select
+                    class="form-control selectpicker"
+                    id="category"
+                    data-live-search="true"
+                    v-model="name.lang"
                   >
-                    <div class="error-msg">{{ error.$message }}</div>
-                  </div>
+                    <option :data-tokens="null">Brak</option>
+                    <option
+                      :key="language.id"
+                      v-for="language in languages"
+                      :data-tokens="language.countryCode"
+                      :value="language.countryCode"
+                    >
+                      {{ language.name }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-4"><input v-model="name.name" /></div>
+                <div class="col-4">
+                  <button
+                    class="btn btn-danger"
+                    @click="deleteName(name.lang, name.name)"
+                  >
+                    Usuń
+                  </button>
                 </div>
               </div>
+              <button class="btn-success btn" @click="addName()">Dodaj</button>
             </div>
 
             <div class="col-3">
@@ -144,6 +158,9 @@ import { useVuelidate } from "@vuelidate/core";
 import { useToast, POSITION } from "vue-toastification";
 import { required, minLength } from "@vuelidate/validators";
 import { compressImage, resizePNG } from "@/functions";
+import { LanguageModel } from "@/types/api/Language";
+import { LanguageNamesModal } from "@/types/LanguageNames";
+import { ResponseModel } from "@/types/Response";
 
 export default defineComponent({
   props: {
@@ -164,9 +181,19 @@ export default defineComponent({
       enabled: false,
     });
     let buttondisabled = ref<boolean>(false);
+    let languages = ref<LanguageModel[]>([]);
+    let names = ref<LanguageNamesModal[]>([]);
 
     const v$ = useVuelidate();
-    return { buttondisabled, toast, v$, keys, editpayment_method };
+    return {
+      names,
+      languages,
+      buttondisabled,
+      toast,
+      v$,
+      keys,
+      editpayment_method,
+    };
   },
   validations() {
     return {
@@ -179,6 +206,53 @@ export default defineComponent({
     };
   },
   methods: {
+    async getLanguages() {
+      try {
+        await this.$axios
+          .get(`/languages?filter=AND&itemsPerPage=999999&page=1`)
+          .then((response) => {
+            const resp: ResponseModel = response.data;
+            this.languages = resp.response;
+          });
+      } catch (e: any) {
+        this.toast.error(e.code, {
+          position: "top-right" as POSITION,
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
+          rtl: false,
+        });
+      }
+    },
+    async getNames() {
+      this.names = [];
+      if (this.payment_method) {
+        if (this.payment_method.name) {
+          let lang = this.payment_method.name.split("|");
+          for (let i = 0; lang.length > i; i++) {
+            this.names.push({
+              name: lang[i].split(":")[1] as string,
+              lang: (lang[i].split(":")[0] as string).toLowerCase(),
+            });
+          }
+        }
+      }
+    },
+    async deleteName(lang: string, name: string) {
+      this.names = this.names.filter((name2) => {
+        return name2.name !== name;
+      });
+    },
+    async addName() {
+      this.names.push({ name: "", lang: "" });
+    },
     async encodeImageFileAsURL() {
       this.buttondisabled = true;
       const element: HTMLInputElement = this.$refs.photo as HTMLInputElement;
@@ -209,8 +283,16 @@ export default defineComponent({
       }
     },
     async updatePaymentMethod() {
+      let tempname = "";
+      for (let i = 0; this.names.length > i; i++) {
+        if (this.names[i]) {
+          tempname += `${this.names[i].lang}:${this.names[i].name}|`;
+        }
+      }
+      tempname = tempname.slice(0, -1);
+
       let data = {
-        name: this.editpayment_method.name,
+        name: tempname,
         image: this.editpayment_method.image,
         authData: this.editpayment_method.authData,
         enabled: this.editpayment_method.enabled,
@@ -308,11 +390,16 @@ export default defineComponent({
     },
   },
   mounted() {
+    this.getNames();
+    this.getLanguages();
     this.v$.$validate();
   },
   watch: {
     // whenever question changes, this function will run
     payment_method(value, newvalue) {
+      this.getLanguages();
+
+      this.getNames();
       this.editpayment_method = this.payment_method as PaymentMethodModel;
     },
   },

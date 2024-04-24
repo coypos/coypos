@@ -461,7 +461,8 @@
               <span
                 :key="product.id"
                 v-for="product in dashboard.products_most_popular"
-                >{{ product.item.name }}: {{ product.value }} sprzedanych <br />
+                >{{ product.item.name.split(":")[1].split("|")[0] }}:
+                {{ product.value }} sprzedanych <br />
               </span>
             </span>
           </div>

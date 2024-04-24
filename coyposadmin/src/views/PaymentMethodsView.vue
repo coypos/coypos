@@ -105,7 +105,7 @@ export default defineComponent({
       try {
         await this.$axios
           .get(
-            `/payment_methods?filter=AND&loadimages=true&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
+            `/payment_methods?filter=AND&language=all&loadimages=true&itemsPerPage=${this.itemsPerPage}&page=${this.page}`
           )
           .then((response) => {
             const resp: ResponseModel = response.data;
