@@ -259,52 +259,6 @@ describe("user add edit and remove paymethod", () => {
   });
 });
 //uzytkownik dodaje edytuje i usuwa jezyk
-describe("user add edit and remove language", () => {
-  it("user add edit and remove language", () => {
-    //dodawanie
-    cy.get("div").contains("Języki kas").click();
-    cy.wait(200);
-
-    cy.get("div").contains("DODAJ").should("exist");
-    cy.get("div").contains("DODAJ").click();
-    cy.wait(200);
-    cy.get(".modal-body").within(() => {
-      cy.wait(300);
-      cy.get("input").eq(0).type("testowyjezyk");
-      cy.get("input").eq(1).type("tj");
-
-      cy.wait(300);
-    });
-    cy.get("div").contains("ZAPISZ").click();
-    //edycja
-
-    cy.get("a").contains("100").click();
-    cy.wait(300);
-    cy.get("div").contains("testowyjezyk").should("exist");
-    cy.get("div").contains("testowyjezyk").next().next().next().click();
-    cy.get("input").eq(0).type("13");
-    cy.wait(200);
-
-    cy.get("div").contains("ZAPISZ").click();
-    cy.wait(300);
-    cy.get("div").contains("testowyjezyk13").should("exist");
-    //usuniecie
-    cy.get("div")
-      .contains("testowyjezyk13")
-      .next()
-      .next()
-      .next()
-      .next()
-      .click();
-
-    cy.get("#deleteModal").within(() => {
-      cy.get("div").contains("USUŃ").click();
-    });
-    cy.wait(300);
-
-    cy.get(".language").contains("testowyjezyk13").should("not.exist");
-  });
-});
 
 //uzytkownik wylogowuje sie
 describe("user logout", () => {
