@@ -141,7 +141,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, reactive } from "vue";
+import { defineComponent, ref } from "vue";
 import { EmployeeModel } from "@/types/api/Employee";
 import { useVuelidate } from "@vuelidate/core";
 import { useToast, POSITION } from "vue-toastification";
@@ -285,7 +285,6 @@ export default defineComponent({
     this.v$.$validate();
   },
   watch: {
-    // whenever question changes, this function will run
     employee(value, newvalue) {
       this.editemployee = this.employee as EmployeeModel;
     },

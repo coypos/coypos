@@ -766,6 +766,7 @@ export default defineComponent({
     right: 100px;
   }
   #wheel {
+    z-index: 888;
     position: absolute;
     top: 0;
     left: 0;

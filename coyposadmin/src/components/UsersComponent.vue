@@ -46,7 +46,7 @@ export default defineComponent({
       if (this.user) {
         this.item.id = this.user.id;
         this.item.what = "user";
-        this.item.name = this.user.discountPercentage;
+        this.item.name = this.user.name;
         showDeleteModal();
         this.$emit("getuserdeleted", this.item);
       }

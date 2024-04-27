@@ -40,7 +40,7 @@ export default defineComponent({
       if (this.language) {
         this.item.id = this.language.id;
         this.item.what = "language";
-        this.item.name = this.language.discountPercentage;
+        this.item.name = this.language.name;
         showDeleteModal();
         this.$emit("getlanguagedeleted", this.item);
       }

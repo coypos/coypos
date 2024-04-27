@@ -40,7 +40,7 @@ export default defineComponent({
       if (this.payment_method) {
         this.item.id = this.payment_method.id;
         this.item.what = "payment_method";
-        this.item.name = this.payment_method.discountPercentage;
+        this.item.name = this.payment_method.name;
         showDeleteModal();
         this.$emit("getpayment_methoddeleted", this.item);
       }

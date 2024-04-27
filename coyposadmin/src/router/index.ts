@@ -8,7 +8,7 @@ import UsersView from "@/views/UsersView.vue";
 import PaymentMethodsView from "@/views/PaymentMethodsView.vue";
 import EmployeesView from "@/views/EmployeesView.vue";
 import LanguagesView from "@/views/LanguagesView.vue";
-
+import ReceiptsView from "@/views/ReceiptsView.vue";
 import StoreUsersView from "@/views/StoreUsersView.vue";
 
 import InstallView from "@/views/InstallView.vue";
@@ -63,6 +63,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/payment_methods",
     name: "PaymentMethodsView",
     component: PaymentMethodsView,
+  },
+  {
+    path: "/receipts",
+    name: "ReceiptsView",
+    component: ReceiptsView,
   },
   {
     path: "/install",

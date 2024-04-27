@@ -195,28 +195,32 @@
             <span
               v-if="dashboard.revenue_today_trend > 0"
               class="info-box-number text-success"
-              >{{ dashboard.revenue_today_trend }} ({{
-                (
-                  (this.dashboard.revenue_today /
-                    this.dashboard.revenue_yesterday -
-                    1) *
-                  100
-                ).toFixed(2)
+              >{{ dashboard.revenue_today_trend }}
+              {{
+                removeInfinity(
+                  (
+                    (this.dashboard.revenue_today /
+                      this.dashboard.revenue_yesterday -
+                      1) *
+                    100
+                  ).toFixed(2)
+                )
               }}
-              %)
             </span>
             <span
               v-if="dashboard.revenue_today_trend < 0"
               class="info-box-number text-danger"
-              >{{ dashboard.revenue_today_trend }} ({{
-                (
-                  (this.dashboard.revenue_today /
-                    this.dashboard.revenue_yesterday -
-                    1) *
-                  100
-                ).toFixed(2)
+              >{{ dashboard.revenue_today_trend }}
+              {{
+                removeInfinity(
+                  (
+                    (this.dashboard.revenue_today /
+                      this.dashboard.revenue_yesterday -
+                      1) *
+                    100
+                  ).toFixed(2)
+                )
               }}
-              %)
             </span>
             <span
               v-if="dashboard.revenue_today_trend == 0"
@@ -237,28 +241,32 @@
             <span
               v-if="dashboard.revenue_this_week_trend > 0"
               class="info-box-number text-success"
-              >{{ dashboard.revenue_this_week_trend }} ({{
-                (
-                  (this.dashboard.revenue_this_week /
-                    this.dashboard.revenue_previous_week -
-                    1) *
-                  100
-                ).toFixed(2)
+              >{{ dashboard.revenue_this_week_trend }}
+              {{
+                removeInfinity(
+                  (
+                    (this.dashboard.revenue_this_week /
+                      this.dashboard.revenue_previous_week -
+                      1) *
+                    100
+                  ).toFixed(2)
+                )
               }}
-              %)
             </span>
             <span
               v-if="dashboard.revenue_this_week_trend < 0"
               class="info-box-number text-danger"
-              >{{ dashboard.revenue_this_week_trend }} ({{
-                (
-                  (this.dashboard.revenue_this_week /
-                    this.dashboard.revenue_previous_week -
-                    1) *
-                  100
-                ).toFixed(2)
+              >{{ dashboard.revenue_this_week_trend }}
+              {{
+                removeInfinity(
+                  (
+                    (this.dashboard.revenue_this_week /
+                      this.dashboard.revenue_previous_week -
+                      1) *
+                    100
+                  ).toFixed(2)
+                )
               }}
-              %)
             </span>
             <span
               v-if="dashboard.revenue_this_week_trend == 0"
@@ -279,28 +287,32 @@
             <span
               v-if="dashboard.revenue_this_month_trend > 0"
               class="info-box-number text-success"
-              >{{ dashboard.revenue_this_month_trend }} ({{
-                (
-                  (this.dashboard.revenue_this_month /
-                    this.dashboard.revenue_previous_month -
-                    1) *
-                  100
-                ).toFixed(2)
+              >{{ dashboard.revenue_this_month_trend }}
+              {{
+                removeInfinity(
+                  (
+                    (this.dashboard.revenue_this_month /
+                      this.dashboard.revenue_previous_month -
+                      1) *
+                    100
+                  ).toFixed(2)
+                )
               }}
-              %)
             </span>
             <span
               v-if="dashboard.revenue_this_month_trend < 0"
               class="info-box-number text-danger"
-              >{{ dashboard.revenue_this_month_trend }} ({{
-                (
-                  (this.dashboard.revenue_this_month /
-                    this.dashboard.revenue_previous_month -
-                    1) *
-                  100
-                ).toFixed(2)
+              >{{ dashboard.revenue_this_month_trend }}
+              {{
+                removeInfinity(
+                  (
+                    (this.dashboard.revenue_this_month /
+                      this.dashboard.revenue_previous_month -
+                      1) *
+                    100
+                  ).toFixed(2)
+                )
               }}
-              %)
             </span>
             <span
               v-if="dashboard.revenue_this_month_trend == 0"
@@ -321,28 +333,32 @@
             <span
               v-if="dashboard.revenue_this_year_trend > 0"
               class="info-box-number text-success"
-              >{{ dashboard.revenue_this_year_trend }} ({{
-                (
-                  (this.dashboard.revenue_this_year /
-                    this.dashboard.revenue_previous_year -
-                    1) *
-                  100
-                ).toFixed(2)
+              >{{ dashboard.revenue_this_year_trend }}
+              {{
+                removeInfinity(
+                  (
+                    (this.dashboard.revenue_this_year /
+                      this.dashboard.revenue_previous_year -
+                      1) *
+                    100
+                  ).toFixed(2)
+                )
               }}
-              %)
             </span>
             <span
               v-if="dashboard.revenue_this_year_trend < 0"
               class="info-box-number text-danger"
-              >{{ dashboard.revenue_this_year_trend }} ({{
-                (
-                  (this.dashboard.revenue_this_year /
-                    this.dashboard.revenue_previous_year -
-                    1) *
-                  100
-                ).toFixed(2)
+              >{{ dashboard.revenue_this_year_trend }}
+              {{
+                removeInfinity(
+                  (
+                    (this.dashboard.revenue_this_year /
+                      this.dashboard.revenue_previous_year -
+                      1) *
+                    100
+                  ).toFixed(2)
+                )
               }}
-              %)
             </span>
             <span
               v-if="dashboard.revenue_this_year_trend == 0"
@@ -375,7 +391,7 @@
             ><i class="fas fa-percent"></i
           ></span>
           <div class="info-box-content">
-            <span class="info-box-text">Strata na promocjach dzisiaj</span>
+            <span class="info-box-text">Różnica na promocjach dzisiaj</span>
 
             <span class="info-box-number text-warning"
               >{{ dashboard.revenue_today_promotion_loss }}
@@ -390,7 +406,7 @@
           ></span>
           <div class="info-box-content">
             <span class="info-box-text"
-              >Strata na promocjach w tym tygodniu</span
+              >Różnica na promocjach w tym tygodniu</span
             >
 
             <span class="info-box-number text-warning"
@@ -406,7 +422,7 @@
           ></span>
           <div class="info-box-content">
             <span class="info-box-text"
-              >Strata na promocjach w tym miesiacu</span
+              >Różnica na promocjach w tym miesiacu</span
             >
 
             <span class="info-box-number text-warning"
@@ -421,7 +437,7 @@
             ><i class="fas fa-percent"></i
           ></span>
           <div class="info-box-content">
-            <span class="info-box-text">Strata na promocjach w tym roku</span>
+            <span class="info-box-text">Różnica na promocjach w tym roku</span>
 
             <span class="info-box-number text-warning"
               >{{ dashboard.revenue_this_year_promotion_loss }}
@@ -519,12 +535,15 @@ export default defineComponent({
         console.log(this.dashboard);
       });
     },
-  },
-  filters: {
-    formatDate(value: Date) {
-      return new Date(value).toLocaleDateString();
+    removeInfinity(value: number) {
+      if (isFinite(value)) {
+        return "(" + value + " %)";
+      } else {
+        return null;
+      }
     },
   },
+
   created() {
     console.log("created");
     this.getDashboard();
@@ -562,7 +581,11 @@ export default defineComponent({
           this.dashboard.payment_methods_most_popular.length > i;
           i++
         ) {
-          labels.push(this.dashboard.payment_methods_most_popular[i].item.name);
+          labels.push(
+            this.dashboard.payment_methods_most_popular[i].item.name
+              ?.split("|")[0]
+              .split(":")[1]
+          );
           data.push(this.dashboard.payment_methods_most_popular[i].value);
         }
 
@@ -721,6 +744,7 @@ export default defineComponent({
     chartOptions() {
       return {
         responsive: true,
+        color: "#fff",
       };
     },
   },

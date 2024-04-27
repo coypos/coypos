@@ -80,6 +80,14 @@
           </router-link>
         </div>
         <div class="nav-block">
+          <router-link to="/receipts?page=1&itemsPerPage=10"
+            ><div class="icon">
+              <i class="fa-solid fa-receipt fa-xl"></i>
+            </div>
+            <span v-show="!this.hidden">Rachunki</span>
+          </router-link>
+        </div>
+        <div class="nav-block">
           <router-link to="/languages?page=1&itemsPerPage=10"
             ><div class="icon">
               <i class="fa-solid fa-language fa-xl"></i>

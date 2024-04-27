@@ -36,7 +36,6 @@ import { defineComponent, ref } from "vue";
 import type { AxiosInstance } from "axios";
 import InstallView from "@/views/InstallView.vue";
 import { ResponseModel } from "@/types/Response";
-import { POSITION } from "vue-toastification";
 import { SettingModel } from "@/types/api/Setting";
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
@@ -81,7 +80,7 @@ export default defineComponent({
           }
         });
       } catch (e: any) {
-        this.$router.push({ name: "InstallView" });
+        await this.$router.push({ name: "InstallView" });
       }
     },
   },

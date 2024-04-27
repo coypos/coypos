@@ -27,7 +27,7 @@ describe("user add edit search and remove product", () => {
       cy.get("button").contains("Dodaj").click();
       cy.get("select").eq(0).select("pl");
       cy.get("input").eq(0).type("testowyprodukt");
-      cy.get("select").eq(1).select("pl:Sypkie|en:Powder|uk:Порошок|de:Pulver");
+      cy.get("select").eq(1).select("pl:Sypkie|en:Loose|ua:Розсипний|de:Lose");
       cy.get("input").eq(1).type("9898989898");
       cy.get("input").eq(2).type("21");
       cy.get("input").eq(3).type("21");
@@ -86,12 +86,12 @@ describe("user add edit and remove category", () => {
     cy.get("div").contains("testowakategoria").next().next().next().click();
     cy.wait(200);
 
-    cy.get("input").eq(0).type("13");
+    cy.get("input").eq(0).type("1");
     cy.wait(200);
 
     cy.get("div").contains("ZAPISZ").click();
     cy.wait(300);
-    cy.get("div").contains("testowakategoria13").should("exist");
+    cy.get("div").contains("testowakategoria1").should("exist");
     //usuniecie
     cy.get("div")
       .contains("testowakategoria")
@@ -224,6 +224,8 @@ describe("user add edit and remove paymethod", () => {
     cy.wait(200);
     cy.get(".modal-body").within(() => {
       cy.wait(300);
+      cy.get("button").contains("Dodaj").click();
+      cy.get("select").eq(0).select("pl");
       cy.get("input").eq(0).type("testowaplatnosc");
 
       cy.wait(300);

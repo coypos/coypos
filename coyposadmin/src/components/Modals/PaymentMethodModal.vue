@@ -138,7 +138,11 @@
             ANULUJ
           </button>
           <button
-            :disabled="buttondisabled || v$.editpayment_method.$errors.length"
+            :disabled="
+              buttondisabled ||
+              v$.editpayment_method.$errors.length ||
+              v$.names.$errors.length
+            "
             type="button"
             :class="'btn btn-success'"
             data-bs-dismiss="modal"
@@ -152,7 +156,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, reactive } from "vue";
+import { defineComponent, ref } from "vue";
 import { PaymentMethodModel } from "@/types/api/PaymentMethod";
 import { useVuelidate } from "@vuelidate/core";
 import { useToast, POSITION } from "vue-toastification";
@@ -198,11 +202,17 @@ export default defineComponent({
   validations() {
     return {
       editpayment_method: {
-        name: { required, minLength: minLength(3), $autoDirty: true },
+        name: { $autoDirty: true },
         image: { $autoDirty: true },
         authData: { $autoDirty: true },
         enabled: { $autoDirty: true },
       },
+      names: [
+        {
+          lang: { required, $autoDirty: true },
+          name: { required, minLength: minLength(3), $autoDirty: true },
+        },
+      ],
     };
   },
   methods: {
@@ -395,7 +405,6 @@ export default defineComponent({
     this.v$.$validate();
   },
   watch: {
-    // whenever question changes, this function will run
     payment_method(value, newvalue) {
       this.getLanguages();
 

@@ -41,7 +41,7 @@ export default defineComponent({
       if (this.employee) {
         this.item.id = this.employee.id;
         this.item.what = "employee";
-        this.item.name = this.employee.discountPercentage;
+        this.item.name = this.employee.name;
         showDeleteModal();
         this.$emit("getemployeedeleted", this.item);
       }

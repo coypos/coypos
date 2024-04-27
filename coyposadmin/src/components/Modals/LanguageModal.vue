@@ -16,7 +16,7 @@
             Edytuj język
           </h1>
           <h1 v-else class="modal-title" id="staticBackdropLabel">
-            Dodaj jęzuk
+            Dodaj język
           </h1>
         </div>
         <div v-if="editlanguage" class="modal-body">
@@ -133,7 +133,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, reactive } from "vue";
+import { defineComponent, ref } from "vue";
 import { LanguageModel } from "@/types/api/Language";
 import { useVuelidate } from "@vuelidate/core";
 import { useToast, POSITION } from "vue-toastification";
