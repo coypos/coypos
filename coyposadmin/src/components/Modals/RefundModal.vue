@@ -13,7 +13,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title" id="staticBackdropLabel">
-            Czy na pewno chcesz anulować tranzakcje?
+            Czy na pewno chcesz anulować rachunek?
           </h1>
         </div>
         <div class="modal-body" v-if="item">
