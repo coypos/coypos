@@ -39,22 +39,22 @@ describe("user add edit search and remove product", () => {
     cy.wait(300);
 
     cy.get("#search").type("testowyprodukt");
-    cy.wait(300);
+    cy.wait(600);
     cy.get("div").contains("testowyprodukt").should("exist");
     cy.get("div").contains("21").should("exist");
     //edycja
-    cy.wait(300);
+    cy.wait(600);
     cy.get("div").contains("EDYTUJ").click();
     cy.get("input").eq(3).type("26");
     cy.get("div").contains("ZAPISZ").click();
-    cy.wait(300);
+    cy.wait(600);
     cy.get("div").contains("26").should("exist");
     //usuniecie
     cy.get("div").contains("USUŃ").click();
     cy.get("#deleteModal").within(() => {
       cy.get("div").contains("USUŃ").click();
     });
-    cy.wait(300);
+    cy.wait(600);
 
     cy.get(".product").should("not.exist");
     cy.get(".product").should("not.exist");
@@ -70,7 +70,7 @@ describe("user add edit and remove category", () => {
 
     cy.get("div").contains("DODAJ").should("exist");
     cy.get("div").contains("DODAJ").click();
-    cy.wait(200);
+    cy.wait(600);
     cy.get(".modal-body").within(() => {
       cy.get("button").contains("Dodaj").click();
       cy.get("select").eq(0).select("pl");
