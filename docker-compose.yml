@@ -12,7 +12,7 @@ services:
       - DB_PASS=${DB_PASS}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
-      - SERVER_APIKEY=${SERVER_APIKEY}
+      - SERVER_APIKEY=${API_SECRET}
     volumes:
       - logs:/var/lib/coypos/logs
   admin:

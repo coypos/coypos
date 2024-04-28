@@ -5,6 +5,7 @@ using CoyposServer.Models.Sql;
 using CoyposServer.Utils;
 using CoyposServer.Utils.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace CoyposServer.Controllers;

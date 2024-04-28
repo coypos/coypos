@@ -8,6 +8,7 @@ public static class EnvVars
     public static string DatabasePass => GetEnvVar("DB_PASS");
     public static string DatabaseHost => GetEnvVar("DB_HOST");
     public static string DatabasePort => GetEnvVar("DB_PORT");
+    public static string ServerApiKey => GetEnvVar("SERVER_APIKEY");
 
     private static string GetEnvVar(string v)
     {
@@ -26,6 +27,7 @@ public static class EnvVars
             Log.Msg($"✅ DB_PASS => {new string('*', DatabasePass.Length)}", "EnvVars");
             Log.Msg($"✅ DB_HOST => {DatabaseHost}", "EnvVars");
             Log.Msg($"✅ DB_PORT => {DatabasePort}", "EnvVars");
+            Log.Msg($"✅ SERVER_APIKEY => {new string('*', ServerApiKey.Length)}", "EnvVars");
         }
         catch (Exception e)
         {

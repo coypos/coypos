@@ -12,7 +12,7 @@ namespace CoyposServer.Middleware;
 public class ApiKeyMiddleware
 {
     private readonly RequestDelegate _next;
-    private const string ApiKey = "samoa-rostra-biometry"; //todo: move me to config
+    private string ApiKey => EnvVars.ServerApiKey;
 
     public ApiKeyMiddleware(RequestDelegate next) => _next = next;
     

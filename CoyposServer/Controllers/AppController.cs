@@ -165,6 +165,10 @@ public class AppController : ControllerBase
 
 					end:
 					affectedProduct.Name = LanguageHelpers.Translate(affectedProduct.Name, language);
+					
+#pragma warning disable CS8629
+					affectedProduct.DiscountedPrice = Math.Round((decimal)(affectedProduct.Price - affectedProduct.Price * pagefiedPromotions[i].DiscountPercentage / 100), 2);
+#pragma warning restore CS8629
 				}
 			}
 
@@ -246,5 +250,68 @@ public class AppController : ControllerBase
 			return StatusCode((int)HttpStatusCode.InternalServerError, new ProblemDetails() { Title = e.Message });
 		}
 	}
+
+
+	/// <summary>
+	/// Edit user data
+	/// </summary>
+	/// <param name="user">new user data</param>
+	/// <param name="token">Token</param>
+	[HttpPut]
+	[Route("app/user")]
+	[ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
+	[ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+	[ProducesResponseType(typeof(User), (int)HttpStatusCode.OK)]
+	[ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
+	[NoApiKey]
+	public async Task<ObjectResult> UserEdit([FromBody] User user, [FromHeader] string password, [FromQuery] string token)
+	{
+		try
+		{
+			if (token.IsNullOrEmpty() || _dbContext.Users.FirstOrDefault(_ => _.LoginToken == token) is null)
+				return StatusCode((int)HttpStatusCode.Unauthorized, "");
+
+			var found = _dbContext.Users.First(_ => _.LoginToken == token);
+			var pass = BCrypt.Net.BCrypt.HashPassword(password, found.Salt);
+			if (pass != found.Password)
+				return StatusCode((int)HttpStatusCode.BadRequest, new ProblemDetails() {Title = "Wrong password"});
+
+			// prevent these values from being updatable by the user
+			user.Role = null;
+			user.CardNumber = null;
+			user.Points = null;
+
+			return (await new UserController(_dbContext).Put(user, (int)found.ID));
+		}
+		catch (Exception e)
+		{
+			return StatusCode((int)HttpStatusCode.InternalServerError, new ProblemDetails() { Title = e.Message });
+		}
+	}
 	
+
+	/// <summary>
+	/// register endpoint for the user
+	/// </summary>
+	[HttpPost]
+	[Route("app/register")]
+	[ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
+	[ProducesResponseType(typeof(User), (int)HttpStatusCode.OK)]
+	[ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
+	public async Task<ObjectResult> Post([FromBody] User user)
+	{
+		return (await new UserController(_dbContext).Post(user));
+	}
+
+	/// <summary>
+	/// returns app logo
+	/// </summary>
+	[HttpGet]
+	[Route("app/logo")]
+	[ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+	[ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
+	public ObjectResult Logo()
+	{
+		return (new SettingsController(_dbContext).Setting("logo"));
+	}
 }

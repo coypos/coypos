@@ -183,7 +183,7 @@ public class UserController : ControllerBase
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password, user.Salt);
             
             var random = new Random();
-            user.CardNumber = (random.Next((int)(100000000000 / 1000000), (int)(999999999999 / 1000000 + 1)) * 1000000 +
+            user.CardNumber = Math.Abs(random.Next((int)(100000000000 / 1000000), (int)(999999999999 / 1000000 + 1)) * 1000000 +
                                random.Next(1000000)).ToString();
             
             // overwritten values:
