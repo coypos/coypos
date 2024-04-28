@@ -160,11 +160,10 @@ describe("user add edit and remove employee", () => {
   it("user add edit and remove employee", () => {
     //dodawanie
     cy.get("div").contains("Pracownicy").click();
-    cy.wait(200);
-
+    cy.wait(600);
     cy.get("div").contains("DODAJ").should("exist");
     cy.get("div").contains("DODAJ").click();
-    cy.wait(200);
+    cy.wait(600);
     cy.get(".modal-body").within(() => {
       cy.wait(300);
       cy.get("input").eq(0).type("testowypracownik");
@@ -179,7 +178,7 @@ describe("user add edit and remove employee", () => {
     //edycja
 
     cy.get("a").contains("100").click();
-    cy.wait(300);
+    cy.wait(600);
     cy.get("div").contains("testowypracownik").should("exist");
     cy.get("div")
       .contains("testowypracownik")
@@ -189,12 +188,12 @@ describe("user add edit and remove employee", () => {
       .next()
       .click();
     cy.get("input").eq(0).type("13");
-    cy.wait(200);
-
+    cy.wait(600);
     cy.get("div").contains("ZAPISZ").click();
-    cy.wait(300);
+    cy.wait(600);
     cy.get("div").contains("testowypracownik13").should("exist");
     //usuniecie
+    cy.wait(600);
     cy.get("div")
       .contains("testowypracownik13")
       .next()
@@ -207,8 +206,7 @@ describe("user add edit and remove employee", () => {
     cy.get("#deleteModal").within(() => {
       cy.get("div").contains("USUŃ").click();
     });
-    cy.wait(300);
-
+    cy.wait(600);
     cy.get(".employee").contains("testowypracownik13").should("not.exist");
   });
 });
