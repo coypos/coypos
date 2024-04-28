@@ -92,6 +92,8 @@ describe("user add edit and remove category", () => {
     cy.get("div").contains("ZAPISZ").click();
     cy.wait(300);
     cy.get("div").contains("testowakategoria1").should("exist");
+    cy.wait(600);
+
     //usuniecie
     cy.get("div")
       .contains("testowakategoria")
@@ -104,7 +106,7 @@ describe("user add edit and remove category", () => {
     cy.get("#deleteModal").within(() => {
       cy.get("div").contains("USUŃ").click();
     });
-    cy.wait(300);
+    cy.wait(600);
 
     cy.get(".category").contains("testowakategoria13").should("not.exist");
   });
