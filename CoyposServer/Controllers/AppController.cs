@@ -294,6 +294,7 @@ public class AppController : ControllerBase
 	/// register endpoint for the user
 	/// </summary>
 	[HttpPost]
+	[NoApiKey]
 	[Route("app/register")]
 	[ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
 	[ProducesResponseType(typeof(User), (int)HttpStatusCode.OK)]
@@ -307,6 +308,7 @@ public class AppController : ControllerBase
 	/// returns app logo
 	/// </summary>
 	[HttpGet]
+	[NoApiKey]
 	[Route("app/logo")]
 	[ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
 	[ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
