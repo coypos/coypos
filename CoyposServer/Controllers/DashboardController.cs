@@ -40,19 +40,24 @@ public class DashboardController : ControllerBase
 
 		dashboardModel.EmployeeCount = _dbContext.Employees.Count();
 		dashboardModel.UserCount = _dbContext.Users.Count();
-		dashboardModel.UserWithMostPoints = _dbContext.Users.OrderByDescending(_ => _.Points).First();
+		dashboardModel.UserWithMostPoints = dashboardModel.UserCount == 0 ? null : _dbContext.Users.OrderByDescending(_ => _.Points).First();
 
 		dashboardModel.ProductCount = _dbContext.Products.Count();
-		dashboardModel.MostPopularProducts = _dbContext.Transactions.GroupBy(_ => _.Product).OrderByDescending(_ => _.Sum(a => a.Quantity)).Take(5)
-			.Select(_ => new StatEntry<Product>() { Item = _.Key, Value = Convert.ToInt32(_.Sum(a => a.Quantity)) }).ToList();
+
+		dashboardModel.MostPopularProducts = (!_dbContext.Transactions.Any() || !_dbContext.Products.Any())
+			? new List<StatEntry<Product>>()
+			: _dbContext.Transactions.GroupBy(_ => _.Product).OrderByDescending(_ => _.Sum(a => a.Quantity)).Take(5)
+				.Select(_ => new StatEntry<Product>()
+					{ Item = _.Key, Value = Convert.ToInt32(_.Sum(a => a.Quantity)) }).ToList();
+		
 
 		dashboardModel.CategoriesCount = _dbContext.Categories.Count();
 
 		dashboardModel.NumberOfReceipts = _dbContext.Receipts.Count();
-		dashboardModel.ReceiptsCount = _dbContext.Receipts.OrderByDescending(_ => _.CreateDate).Take(5).ToList();
+		dashboardModel.ReceiptsCount = !_dbContext.Receipts.Any() ? new List<Receipt>() : _dbContext.Receipts.OrderByDescending(_ => _.CreateDate).Take(5).ToList();
 
 		dashboardModel.PaymentMethodCount = _dbContext.PaymentMethods.Count();
-		dashboardModel.MostPopularPaymentMethods = _dbContext.Receipts.GroupBy(_ => _.PaymentMethod)
+		dashboardModel.MostPopularPaymentMethods = (!_dbContext.Receipts.Any() || !_dbContext.PaymentMethods.Any()) ? new List<StatEntry<PaymentMethod>>() : _dbContext.Receipts.GroupBy(_ => _.PaymentMethod)
 			.OrderByDescending(_ => _.Count()).Take(5)
 			.Select(_ => new StatEntry<PaymentMethod>() { Item = _.Key, Value = _.Count() }).ToList();
 

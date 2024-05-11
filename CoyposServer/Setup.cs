@@ -76,8 +76,21 @@ public class Setup
 
             builder.Services.AddDbContext<DatabaseContext>(options =>
             {
+                var ip = "";
+                try
+                {
+                    ip = Dns.GetHostAddresses("db").First().ToString();
+                }
+                catch (Exception e)
+                {
+                    Log.Msg("Failed to resolve db");
+                    return;
+                }
+
+                Log.Msg($"Resolved db as {ip}");
+                
                 options.UseSqlServer(
-                    $"Server={EnvVars.DatabaseHost},{EnvVars.DatabasePort};Database=COYPOS;User Id={EnvVars.DatabaseUser};Password={EnvVars.DatabasePass};encrypt=False");
+                    $"Server={ip},{EnvVars.DatabasePort};Database=master;User Id={EnvVars.DatabaseUser};Password={EnvVars.DatabasePass};encrypt=False");
             });
             
             builder.Services.AddSingleton<IModelBinderProvider, JsonModelBinderProvider>();

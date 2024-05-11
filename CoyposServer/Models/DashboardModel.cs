@@ -27,7 +27,7 @@ public class DashboardModel
 	/// <summary>
 	/// User with most points
 	/// </summary>
-	[JsonProperty("user_most_points")] public User UserWithMostPoints;
+	[JsonProperty("user_most_points")] public User? UserWithMostPoints;
 	
 	/// <summary>
 	/// Total number of products

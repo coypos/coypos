@@ -11,16 +11,33 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
+      - DB_PORT=1433
       - SERVER_APIKEY=${API_SECRET}
     volumes:
       - logs:/var/lib/coypos/logs
+    depends_on: 
+      - db
+  db:
+    build:
+      context: ./
+      dockerfile: ./Dockerfiledb
+    container_name: 'db'
+    environment:
+      MSSQL_SA_PASSWORD: ${DB_PASS}
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+    ports:
+      - "${DB_PORT}:1433"
+    volumes:
+      - sql-data:/var/opt/mssql
   admin:
     build:
       context: coyposadmin/
       dockerfile: ./Dockerfile
     restart: always
     ports:
-      - '8081:8080'
+    - '8080:8080'
 volumes:
   logs:
+  sql-data:
+    driver: local
