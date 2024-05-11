@@ -1,3 +1,9 @@
+create database COYPOS
+    go
+    
+use COYPOS
+    go
+
 create table Categories
 (
     ID               int identity
@@ -285,9 +291,9 @@ go
 exec sp_addextendedproperty 'microsoft_database_tools_support', 1, 'SCHEMA', 'dbo', 'TABLE', 'sysdiagrams'
 go
 
-IF NOT EXISTS (SELECT 1 FROM master.dbo.Employees)
+IF NOT EXISTS (SELECT 1 FROM COYPOS.dbo.Employees)
 BEGIN
-INSERT INTO master.dbo.Employees (Name, CardID, PIN, Enabled, Admin)
+INSERT INTO COYPOS.dbo.Employees (Name, CardID, PIN, Enabled, Admin)
 VALUES (N'admin', N'1234', N'1234', 1, 1);
 END
 

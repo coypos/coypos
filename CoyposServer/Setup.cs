@@ -90,7 +90,7 @@ public class Setup
                 Log.Msg($"Resolved db as {ip}");
                 
                 options.UseSqlServer(
-                    $"Server={ip},{EnvVars.DatabasePort};Database=master;User Id={EnvVars.DatabaseUser};Password={EnvVars.DatabasePass};encrypt=False");
+                    $"Server={ip},{EnvVars.DatabasePort};Database=COYPOS;User Id={EnvVars.DatabaseUser};Password={EnvVars.DatabasePass};encrypt=False");
             });
             
             builder.Services.AddSingleton<IModelBinderProvider, JsonModelBinderProvider>();
